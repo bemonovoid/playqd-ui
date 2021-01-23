@@ -6,53 +6,32 @@
   <!--    </div>-->
   <!--  </transition>-->
 
-  <v-app-bar v-if="this.$store.state.playlist.currentSong" fixed bottom flat>
+  <v-app-bar v-if="this.$store.state.playlist.currentSong" fixed bottom flat color="grey lighten-3">
 
     <div class="py-2 pr-3">
       <v-img max-height="50px" max-width="50px" v-bind:src="this.$store.getters.getCurrentSongArtworkSrc"></v-img>
     </div>
 
-    <v-btn icon small @click="playPrev()" class="hidden-sm-and-down">
-      <v-icon>mdi-step-backward</v-icon>
-    </v-btn>
-
-    <v-btn v-if="this.$store.state.audio.isPlaying" icon @click="pause()">
-      <v-icon x-large color="red">mdi-pause</v-icon>
-    </v-btn>
-
-    <v-btn v-else icon @click="play()">
-      <v-icon x-large>mdi-play</v-icon>
-    </v-btn>
-
-    <v-btn icon small @click="playNext()">
-      <v-icon>mdi-step-forward</v-icon>
-    </v-btn>
-
-    <v-btn icon x-small class="hidden-sm-and-down px-5">
-      <v-icon v-bind:color="$store.state.playlist.shuffle ? 'red' : 'grey darken-1'">mdi-shuffle-variant</v-icon>
-    </v-btn>
-
-    <v-btn icon x-small class="hidden-sm-and-down">
-      <v-icon>mdi-repeat</v-icon>
-    </v-btn>
-
     <v-toolbar-title class="hidden-md-and-up">
       <div class="caption px-2 text-left text-truncate">
-        {{ this.$store.state.playlist.currentSong.artist.name}}
+        {{this.$store.state.playlist.currentSong.name}}
       </div>
-      <div class="caption px-2 text-left text-truncate">
-        <small>{{this.$store.state.playlist.currentSong.name}}</small>
+      <div class="caption px-2 text-left text-truncate text--disabled">
+        <small>{{ this.$store.state.playlist.currentSong.artist.name}}</small>
       </div>
     </v-toolbar-title>
 
     <v-toolbar-title class="hidden-sm-and-down text-left px-5 pt-2" style="width: 90%">
 
-      <div class="body-2 px-2">
+      <div class="body-2 px-2 text--disabled">
         {{ this.$store.state.playlist.currentSong.artist.name + ' - ' + this.$store.state.playlist.currentSong.name }}
       </div>
 
       <div>
         <v-slider class="toolbar-player-slider" inverse-label
+                  thumb-color="black"
+                  track-color="grey"
+                  track-fill-color="black"
                   persistent-hint
                   min="0"
                   tick-size="1"
@@ -73,38 +52,71 @@
 
     <v-spacer></v-spacer>
 
-    <v-menu top :close-on-content-click="false" :offset-y="true">
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn icon v-bind="attrs" v-on="on" class="hidden-sm-and-down">
-          <v-icon v-bind:color="volumeIcon.color">{{volumeIcon.name}}</v-icon>
-        </v-btn>
-      </template>
+    <v-toolbar-items align="right" class="pl-5">
 
-      <v-list>
-        <v-list-item>
-          <v-list-item-content>
-            <v-slider vertical min="0.0" max="1.0" step="0.01"
-                      @change="changeAudioCurrentVolume()"
-                      v-model="slider.audioVolume = $store.state.audio.volume">
+      <v-btn icon small @click="playPrev()" class="hidden-sm-and-down px-5">
+        <v-icon>mdi-rewind</v-icon>
+      </v-btn>
 
-              <template v-slot:prepend>
-                <v-icon @click="mute()">mdi-volume-mute</v-icon>
-              </template>
+      <v-btn class="px-5" v-if="this.$store.state.audio.isPlaying" icon @click="pause()">
+        <v-icon x-large>mdi-pause</v-icon>
+      </v-btn>
 
-              <template v-slot:append>
-                <v-icon>mdi-volume-high</v-icon>
-              </template>
+      <v-btn v-else icon @click="play()" class="px-5">
+        <v-icon x-large>mdi-play</v-icon>
+      </v-btn>
 
-            </v-slider>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
+      <v-btn icon small @click="playNext()" class="px-5">
+        <v-icon>mdi-fast-forward</v-icon>
+      </v-btn>
 
-    </v-menu>
+      <v-spacer></v-spacer>
 
-    <v-btn icon class="hidden-sm-and-down">
-      <v-icon>mdi-heart</v-icon>
-    </v-btn>
+      <v-btn icon x-small class="hidden-sm-and-down px-5">
+        <v-icon v-bind:color="$store.state.playlist.shuffle ? 'red' : 'grey darken-1'">mdi-shuffle-variant</v-icon>
+      </v-btn>
+
+      <v-btn icon x-small class="hidden-sm-and-down">
+        <v-icon>mdi-repeat</v-icon>
+      </v-btn>
+
+      <v-spacer></v-spacer>
+
+      <v-menu top :close-on-content-click="false" :offset-y="true">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn icon v-bind="attrs" v-on="on" class="hidden-sm-and-down">
+            <v-icon v-bind:color="volumeIcon.color">{{volumeIcon.name}}</v-icon>
+          </v-btn>
+        </template>
+
+        <v-list>
+          <v-list-item>
+            <v-list-item-content>
+              <v-slider vertical min="0.0" max="1.0" step="0.01"
+                        @change="changeAudioCurrentVolume()"
+                        v-model="slider.audioVolume = $store.state.audio.volume">
+
+                <template v-slot:prepend>
+                  <v-icon @click="mute()">mdi-volume-mute</v-icon>
+                </template>
+
+                <template v-slot:append>
+                  <v-icon>mdi-volume-high</v-icon>
+                </template>
+
+              </v-slider>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+
+      </v-menu>
+
+      <v-btn icon class="hidden-sm-and-down">
+        <v-icon>mdi-heart</v-icon>
+      </v-btn>
+
+
+    </v-toolbar-items>
 
   </v-app-bar>
 

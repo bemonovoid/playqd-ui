@@ -1,87 +1,68 @@
 <template>
 
   <div>
+    <v-card align="center" elevation="0">
 
-    <v-row>
-      <v-col align="left">
-        <v-breadcrumbs>
-          <v-breadcrumbs-item :to="{name: 'AlbumsView', params: {artistId: album.artist.id}}">
-            <v-icon left>mdi-arrow-left</v-icon>
-            <span>
-            {{ album.name }}
-            </span>
-          </v-breadcrumbs-item>
-        </v-breadcrumbs>
-      </v-col>
-    </v-row>
+      <v-img contain class="scoped-album-img" v-bind:src="this.album.artworkSrc"></v-img>
 
-    <v-row>
+      <v-card-title class="text-center text-body-1" style="display: inherit">{{ album.name }}</v-card-title>
 
-      <v-col align="center">
-
-        <div class="scoped-album-img-div">
-          <v-img class="scoped-album-img" v-bind:src="this.album.artworkSrc"></v-img>
-        </div>
-
-        <div class="scoped-album-name-div">
-          <h4>{{ album.name }}</h4>
-        </div>
-        <h5 class="scoped-songs-artist-name">{{ album.artist.name }}</h5>
+      <v-card-subtitle class="py-3">{{ album.artist.name }}</v-card-subtitle>
+      <v-card-subtitle class="py-0">
         <small>{{ album.genre ? album.genre + ' - ' : '' }} {{ album.year ? album.year : '' }}</small>
+      </v-card-subtitle>
+      <v-card-actions style="display: inherit">
 
-        <v-row class="py-5">
-          <v-col align="right">
-            <v-btn text outlined rounded color="red lighten-1" @click="playAlbum(songs[0].id)">
-              <v-icon left>mdi-play</v-icon>
-              <span class="text-capitalize">Play</span>
-            </v-btn>
-          </v-col>
+        <v-btn width="160" depressed rounded @click="playAlbum(songs[0].id)">
+          <v-icon left>mdi-play</v-icon>
+          <span class="text-capitalize">Play</span>
+        </v-btn>
 
-          <v-col align="left">
-            <v-btn text outlined rounded color="red lighten-1" @click="playAlbumShuffled()">
-              <v-icon left>mdi-shuffle-variant</v-icon>
-              <span class="text-capitalize">Shuffle</span>
-            </v-btn>
-          </v-col>
+        <v-btn width="160" depressed rounded @click="playAlbumShuffled()">
+          <v-icon left>mdi-shuffle-variant</v-icon>
+          <span class="text-capitalize">Shuffle</span>
+        </v-btn>
 
-        </v-row>
-      </v-col>
-    </v-row>
+      </v-card-actions>
 
-    <v-data-table
-        hide-default-header
-        hide-default-footer
-        disable-pagination
-        disable-filtering
-        :headers="headers"
-        :items="songs"
-        @click:row="playSong"
-        mobile-breakpoint="300"
-        item-key="orderId">
+      <v-card-text>
+        <v-data-table
+            hide-default-header
+            hide-default-footer
+            disable-pagination
+            disable-filtering
+            :headers="headers"
+            :items="songs"
+            @click:row="playSong"
+            mobile-breakpoint="300"
+            item-key="orderId">
 
-      <template v-slot:item.orderId="{item, index}">
-        <div v-if="isPlayingSongRow(item.id)">
-          <v-icon color="red">mdi-arrow-right-drop-circle-outline</v-icon>
-        </div>
-        <div class="text--disabled" v-else>
-          {{index + 1}}
-        </div>
-      </template>
+          <template v-slot:item.orderId="{item, index}">
+            <div v-if="isPlayingSongRow(item.id)">
+              <v-icon color="blue lighten-2">mdi-arrow-right-drop-circle-outline</v-icon>
+            </div>
+            <div class="text--disabled" v-else style="min-width: 25px">
+              {{index + 1}}
+            </div>
+          </template>
 
-      <template v-slot:item.duration="{item}">
-        <div v-if="isPlayingSongRow(item.id)" class="subtitle-2">
-          - {{convertSecondsToMinutesAndSeconds($store.state.audio.duration - $store.state.audio.currentTimeAsInt)}}
-        </div>
-        <div v-else class="body-2">
-          {{convertSecondsToMinutesAndSeconds(item.duration)}}
-        </div>
-      </template>
+          <template v-slot:item.duration="{item}">
+            <div v-if="isPlayingSongRow(item.id)" class="subtitle-2 text-no-wrap">
+              - {{convertSecondsToMinutesAndSeconds($store.state.audio.duration - $store.state.audio.currentTimeAsInt)}}
+            </div>
+            <div v-else class="body-2">
+              {{convertSecondsToMinutesAndSeconds(item.duration)}}
+            </div>
+          </template>
 
-      <template slot="footer">
-        <p class="pr-5 pb-5 text-right text--secondary font-weight-light">{{ album.totalTime }}</p>
-      </template>
+          <template slot="footer">
+            <p class="pr-4 pb-5 text-right text--secondary font-weight-light">{{ album.totalTime }}</p>
+          </template>
 
-    </v-data-table>
+        </v-data-table>
+      </v-card-text>
+
+    </v-card>
   </div>
 
 </template>
@@ -116,6 +97,14 @@ export default {
       this.album = response.data.album;
       this.album.totalTime = this.songs.length + ' songs, ' + this.album.totalTime;
       this.album.artworkSrc = this.$store.getters.getArtWorkBaseUrl + '?albumId=' + this.album.id;
+
+      eventBus.$emit('toolbar-back-route-changed', {
+        album: response.data.album,
+        toolBarParams: {
+          title: response.data.artist.name,
+          routeParams: {name: 'AlbumsView', params: {artistId: response.data.artist.id}}
+        }
+      });
     });
   },
   methods: {
@@ -168,29 +157,9 @@ export default {
 
 <style scoped>
 
-.scoped-return-link {
-  margin-top: 5px;
-}
-
-.scoped-album-img-div {
-  margin-top: 10px;
-}
-
 .scoped-album-img {
   max-height: 200px;
   max-width: 200px;
-}
-
-.scoped-album-audio-controls-row {
-  margin-top: 10px;
-}
-
-.scoped-album-audio-controls {
-  width: 150px;
-}
-
-.scoped-songs-table {
-  margin-top: 10px;
 }
 
 .scoped-album-name-div {

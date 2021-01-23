@@ -1,16 +1,17 @@
 <template>
   <v-app class="grey lighten-4">
+    <NavToolbarView/>
     <v-main>
       <v-container>
         <Audio/>
-          <v-row>
-            <v-col md="6" offset-md="3">
-              <router-view></router-view>
-            </v-col>
-          </v-row>
+        <v-row class="pt-15">
+          <v-col md="6" offset-md="3">
+            <router-view></router-view>
+          </v-col>
+        </v-row>
       </v-container>
     </v-main>
-    <MiniPlayerView/>
+    <MiniPlayerView></MiniPlayerView>
   </v-app>
 </template>
 
@@ -21,6 +22,7 @@ import Vue from 'vue'
 import VueRouter from "vue-router";
 
 import Audio from "@/components/library/Audio";
+import NavToolbarView from "@/components/vuetify/library/NavToolbarView";
 import MiniPlayerView from "@/components/vuetify/miniplayer/MiniPlayerView";
 import LibraryView from "@/components/vuetify/library/LibraryView";
 import ArtistsView from "@/components/vuetify/artists/ArtistsView";
@@ -31,10 +33,10 @@ import {PAGE_TITLE_UTILS} from "@/utils/page-title-utils";
 
 const routes = [
   { path: '/', alias: ['/home', '/index.html'], name: 'Home', component: LibraryView, meta: {title: 'Home'} },
-  { path: '/library', name: 'LibraryView', component: LibraryView, meta: {title: 'LibraryView'} },
-  { path: '/library/artists', name: 'ArtistsView', component: ArtistsView, meta: {title: 'ArtistsView'} },
-  { path: '/library/artists/:artistId', name: 'AlbumsView', component: AlbumsView, meta: {title: 'AlbumsView'} },
-  { path: '/library/artists/albums/:albumId', name: 'SongsView', component: SongsView, meta: {title: 'SongsView'} }
+  { path: '/library', name: 'LibraryView', component: LibraryView, meta: {title: 'Library'} },
+  { path: '/library/artists', name: 'ArtistsView', component: ArtistsView, meta: {title: 'Artists'} },
+  { path: '/library/artists/:artistId', name: 'AlbumsView', component: AlbumsView, meta: {title: 'Albums'} },
+  { path: '/library/artists/albums/:albumId', name: 'SongsView', component: SongsView, meta: {title: 'Songs'} }
 ]
 
 const router = new VueRouter({
@@ -53,6 +55,7 @@ export default {
   router: router,
   components: {
     Audio,
+    NavToolbarView,
     MiniPlayerView,
     LibraryView,
     ArtistsView,

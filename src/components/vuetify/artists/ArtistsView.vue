@@ -1,32 +1,20 @@
 <template>
 
   <div>
-
     <v-row>
-      <v-col align="left">
-        <v-btn depressed plain class="text-capitalize" to="/library">
-          <v-icon left>mdi-arrow-left</v-icon>
-          <span>Library</span>
-        </v-btn>
-      </v-col>
-    </v-row>
+      <v-col class="py-0">
 
-    <v-row>
-
-      <v-col>
-
-        <v-list align="left">
-
-          <v-subheader class="pl-0">
-            <h1>Artists</h1>
-          </v-subheader>
-
-          <v-text-field placeholder="Find in artists"
+        <v-item-group align="left">
+          <label for="searchArtistsInput" class="text-h6">Artists</label>
+          <v-text-field id="searchArtistsInput" placeholder="Find in artists"
                         v-model="searchFilter"
                         @input="filterArtists()"
                         prepend-inner-icon="mdi-magnify">
             <v-icon slot="append" @click="clearInput()">mdi-close</v-icon>
           </v-text-field>
+        </v-item-group>
+
+        <v-list align="left" class="py-0">
 
           <v-list-item-group color="primary">
 
@@ -52,7 +40,7 @@
 
 <script>
 
-
+import {eventBus} from "@/main";
 import {HTTP_CLIENT} from "@/http/axios-config"
 
 import {mdiArrowLeft, mdiMagnify, mdiClose} from '@mdi/js'
@@ -86,6 +74,9 @@ export default {
     }
   },
   created() {
+    eventBus.$emit('toolbar-back-route-changed', {
+      toolBarParams: {title: 'Library', routeParams: {name: 'LibraryView'}}
+    });
     if (this.$store.getters.getArtists.length === 0) {
       HTTP_CLIENT.get('/library/artists/').then(response => {
         this.$store.commit('setArtists', response.data.artists);

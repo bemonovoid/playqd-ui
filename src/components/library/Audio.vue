@@ -22,6 +22,7 @@ export default {
   mounted() {
     this.audioDOMElement = document.getElementById('audio-player');
     this.audioSourceDOMElement = document.getElementById('audio-player-source');
+    this.audioDOMElement.volume = 0.5;
   },
   created() {
     eventBus.$on('player-set-on-pause', () => {
