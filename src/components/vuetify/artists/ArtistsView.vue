@@ -2,23 +2,36 @@
 
   <div>
     <v-row>
+      <v-col class="pl-0 text-left" md="auto">
+        <v-btn depressed plain class="text-capitalize text-subtitle-1" v-bind:to="{name: 'LibraryView'}">
+          <v-icon left>mdi-arrow-left</v-icon>
+          <span>Library</span>
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
       <v-col class="py-0">
 
-        <v-item-group align="left">
-          <label for="searchArtistsInput" class="text-h6">Artists</label>
-          <v-text-field id="searchArtistsInput" placeholder="Find in artists"
-                        v-model="searchFilter"
-                        @input="filterArtists()"
-                        prepend-inner-icon="mdi-magnify">
-            <v-icon slot="append" @click="clearInput()">mdi-close</v-icon>
-          </v-text-field>
-        </v-item-group>
-
         <v-list align="left" class="py-0">
+
+          <p class="text-left text--black display-1 pt-1 pb-0 mb-0">Artists</p>
+
+          <v-item-group align="left" class="py-0">
+            <v-text-field placeholder="Find in artists"
+                          v-model="searchFilter"
+                          @input="filterArtists()"
+                          prepend-inner-icon="mdi-magnify">
+              <v-icon v-if="searchFilter.length > 0" slot="append" @click="clearInput()">mdi-close</v-icon>
+            </v-text-field>
+          </v-item-group>
 
           <v-list-item-group color="primary">
 
             <v-list-item v-for="(artist, i) in artists" :key="i" @click="onArtistSelected(artist.id)">
+
+              <v-list-item-icon class="ml-0 mr-2">
+                <v-icon left>mdi-account-music</v-icon>
+              </v-list-item-icon>
 
               <v-list-item-content>
                 <v-list-item-title v-text="artist.name"></v-list-item-title>
@@ -58,7 +71,7 @@ export default {
   },
   methods: {
     onArtistSelected(artistId) {
-      this.$router.push({name: 'AlbumsView', params: {artistId: artistId}});
+      this.$router.push({name: 'AlbumsView', query: {artistId: artistId}});
     },
     filterArtists() {
       if (this.searchFilter === '') {

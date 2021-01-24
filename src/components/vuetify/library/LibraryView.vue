@@ -2,7 +2,7 @@
 
   <v-row>
 
-    <v-col>
+    <v-col class="py-0">
 
       <v-list align="left">
 
@@ -10,7 +10,7 @@
 
         <v-list-item-group color="primary">
 
-          <v-list-item v-for="(item, i) in items" :key="i" @click="showItem('artists')">
+          <v-list-item v-for="(item, i) in items" :key="i" @click="showItem(item.viewName)">
 
             <v-list-item-icon>
               <v-icon v-text="item.icon"></v-icon>
@@ -19,6 +19,10 @@
             <v-list-item-content>
               <v-list-item-title v-text="item.title"></v-list-item-title>
             </v-list-item-content>
+
+            <v-list-item-action>
+              <v-icon>mdi-chevron-right</v-icon>
+            </v-list-item-action>
 
           </v-list-item>
 
@@ -29,17 +33,14 @@
 
   </v-row>
 
-
 </template>
 
 <script>
 
-import {mdiAccountMusic, mdiPlaylistPlay, mdiPlaylistMusic} from '@mdi/js'
-
 export default {
   name: 'LibraryView',
   components: {
-    mdiAccountMusic, mdiPlaylistPlay, mdiPlaylistMusic
+
   },
   data() {
     return {
@@ -47,24 +48,29 @@ export default {
         {
           title: "Artists",
           icon: "mdi-account-music",
-          route: ""
+          viewName: "ArtistsView"
         },
         {
           title: "Albums",
-          icon: "mdi-playlist-play",
-          route: ""
+          icon: "mdi-folder-music-outline",
+          viewName: "AlbumsView"
         },
         {
           title: "Songs",
-          icon: "mdi-playlist-music",
-          route: ""
+          icon: "mdi-music-note",
+          viewName: "SongsView"
+        },
+        {
+          title: "Genres",
+          icon: "mdi-guitar-electric",
+          viewName: "GenresView"
         }
       ]
     }
   },
   methods: {
-    showItem(name) {
-      this.$router.push("/library/" + name);
+    showItem(viewName) {
+      this.$router.push({name: viewName});
     }
   }
 }
