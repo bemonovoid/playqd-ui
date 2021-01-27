@@ -20,8 +20,9 @@
             <v-text-field placeholder="Find in artists"
                           v-model="searchFilter"
                           @input="filterArtists()"
+                          clearable
+                          @click:clear="clearInput()"
                           prepend-inner-icon="mdi-magnify">
-              <v-icon v-if="searchFilter.length > 0" slot="append" @click="clearInput()">mdi-close</v-icon>
             </v-text-field>
           </v-item-group>
 
@@ -33,7 +34,10 @@
                 <v-icon left>mdi-account-music</v-icon>
               </v-list-item-icon>
 
-              <v-list-item-content>
+              <v-list-item-content class="py-0">
+
+                <!--                <v-text-field dense class="pb-0 mb-0"-->
+<!--                    readonly outlined prepend-icon="mdi-account-music" :value="artist.name"></v-text-field>-->
                 <v-list-item-title v-text="artist.name"></v-list-item-title>
               </v-list-item-content>
 
@@ -74,7 +78,7 @@ export default {
       this.$router.push({name: 'AlbumsView', query: {artistId: artistId}});
     },
     filterArtists() {
-      if (this.searchFilter === '') {
+      if (!this.searchFilter || this.searchFilter === '') {
         this.artists = this.$store.getters.getArtists;
       } else {
         let filter = this.searchFilter.toLowerCase();

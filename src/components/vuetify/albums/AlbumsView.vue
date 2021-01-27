@@ -38,8 +38,9 @@
           <v-text-field placeholder="Find album"
                         v-model="searchFilter"
                         @input="filterAlbums()"
-                        prepend-inner-icon="mdi-magnify">
-            <v-icon v-if="searchFilter.length > 0" slot="append" @click="clearInput()">mdi-close</v-icon>
+                        prepend-inner-icon="mdi-magnify"
+                        @click:clear="clearInput()"
+                        clearable>
           </v-text-field>
         </v-item-group>
 
@@ -75,7 +76,7 @@
     <v-row>
       <v-col>
         <div class="text-center" v-if="paginationRequired()">
-          <v-pagination v-model="pagination.page"
+          <v-pagination class="pb-15" v-model="pagination.page"
                         @input="showPage"
                         :total-visible="pagination.totalVisible"
                         :length="pagination.length"></v-pagination>
@@ -143,7 +144,7 @@ export default {
       this.filterAlbums();
     },
     filterAlbums() {
-      if (this.searchFilter === '') {
+      if (!this.searchFilter || this.searchFilter === '') {
         this.albums = this.originalAlbums;
       } else {
         let filter = this.searchFilter.toLowerCase();

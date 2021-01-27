@@ -12,6 +12,7 @@
       </v-col>
 
       <v-col class="pl-0 pt-2 text-right">
+<!--        <SongsViewEditAlbum v-bind:album-id="$route.params.albumId"/>-->
         <v-bottom-sheet inset persistent v-model="songMenuOptions.enable">
 
           <template v-slot:activator="{attrs, on}">
@@ -72,7 +73,15 @@
                 <v-divider/>
 
                 <v-list-item>
-                  <v-list-item-content>Play next</v-list-item-content>
+                  <v-list-item-content>
+                    Show song title as file name
+                  </v-list-item-content>
+                  <v-list-item-action>
+                    <v-switch v-model="showSongNameAsFileName" color="info" hide-details></v-switch>
+<!--                    <v-btn icon>-->
+<!--                      <v-icon>mdi-file-replace-outline</v-icon>-->
+<!--                    </v-btn>-->
+                  </v-list-item-action>
                 </v-list-item>
 
                 <v-divider/>
@@ -95,7 +104,7 @@
       <v-col class="px-0">
         <v-card align="center" elevation="0">
 
-          <v-img contain class="scoped-album-img" v-bind:src="this.album.artworkSrc"></v-img>
+          <v-img contain class="scoped-album-img elevation-5" v-bind:src="this.album.artworkSrc"></v-img>
 
           <v-card-title class="text-center text-body-1" style="display: inherit">{{ album.name }}</v-card-title>
 
@@ -138,6 +147,10 @@
                 </div>
               </template>
 
+              <template v-slot:item.name="{item}">
+                {{ showSongNameAsFileName ? item.fileName : item.name }}
+              </template>
+
               <template v-slot:item.duration="{item}">
                 <div v-if="isPlayingSongRow(item.id)" class="subtitle-2 text-no-wrap">
                   - {{convertSecondsToMinutesAndSeconds($store.state.audio.duration - $store.state.audio.currentTimeAsInt)}}
@@ -167,12 +180,14 @@
 
 import {eventBus} from "@/main";
 import {HTTP_CLIENT} from "@/http/axios-config";
+import SongsViewEditAlbum from "@/components/vuetify/songs/SongsViewEditAlbum";
 import {mdiArrowRightDropCircleOutline} from '@mdi/js'
 // import {PAGE_TITLE_UTILS} from "@/utils/page-title-utils";
 
 export default {
   name: 'SongsView',
   components: {
+    SongsViewEditAlbum,
     mdiArrowRightDropCircleOutline
   },
   data() {
@@ -185,13 +200,14 @@ export default {
           {align: 'start', value: 'name'},
           {align: 'end', value: 'duration'}
       ],
-      album: {id: '', name: '', genre: '', year: '', totalTime: '', artist: {id: '', name: ''}, artworkSrc: ''},
+      album: {id: '', name: '', genre: '', year: '', totalTime: '', artist: {id: '', name: '', country: ''}, artworkSrc: ''},
       songs: [],
+      showSongNameAsFileName: false,
       artworkSearchInProgress: false,
       backToView: {name: 'AlbumsView', query: {artistId: ''}}
     }
   },
-  created() {
+  mounted() {
     HTTP_CLIENT.get('/library/songs/album/' + this.$route.params.albumId).then(response => {
       this.songs = response.data.songs
       this.album = response.data.album;

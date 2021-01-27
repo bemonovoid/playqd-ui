@@ -1,7 +1,7 @@
 <template>
   <v-app-bar dense color="blue-grey lighten-3" fixed flat elevation="0">
 
-    <v-app-bar-nav-icon></v-app-bar-nav-icon>
+    <v-app-bar-nav-icon @click="goHome()"></v-app-bar-nav-icon>
 
     <v-toolbar-title>Playqd</v-toolbar-title>
 
@@ -35,6 +35,9 @@ export default {
 
   },
   methods: {
+    goHome() {
+      this.$router.push({name: 'Home'})
+    }
   }
 }
 
