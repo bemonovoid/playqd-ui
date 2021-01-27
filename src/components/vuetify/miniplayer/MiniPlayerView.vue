@@ -21,21 +21,21 @@
       </div>
     </v-toolbar-title>
 
-    <v-toolbar-title class="hidden-sm-and-down text-left px-5 pt-2" style="width: 90%">
+    <v-toolbar-title class="hidden-sm-and-down text-left px-5" style="width: 90%">
 
-      <div class="body-2 px-2 text--disabled">
+      <div class="body-2 px-2 " @click="openSongsView">
         {{ this.$store.state.playlist.currentSong.artist.name + ' - ' + this.$store.state.playlist.currentSong.name }}
       </div>
 
       <div>
-        <v-slider class="toolbar-player-slider" inverse-label
+        <v-slider dense class="toolbar-player-slider" inverse-label
                   thumb-color="black"
                   track-color="grey"
                   track-fill-color="black"
-                  persistent-hint
                   min="0"
                   tick-size="1"
                   step="0.001"
+                  messages=" "
                   @change="changeAudioCurrentTime()"
                   v-bind:max="this.$store.state.audio.duration"
                   v-model="slider.audioTime = $store.state.audio.currentTime">
@@ -45,6 +45,13 @@
               {{convertSecondsToMinutesAndSeconds($store.state.audio.currentTimeAsInt) + ' / ' + convertSecondsToMinutesAndSeconds($store.state.audio.duration)}}
             </div>
           </template>
+
+          <template v-slot:message>
+            <div class="pl-2 pt-0 pb-2">
+              {{$store.state.playlist.currentSong.fileExtension}} | {{$store.state.playlist.currentSong.audioBitRate}} kbps | {{$store.state.playlist.currentSong.audioSampleRate}} Hz
+            </div>
+          </template>
+
         </v-slider>
       </div>
 
@@ -178,6 +185,9 @@ export default {
         this.volumeIcon.name = 'mdi-volume-high'
       }
       eventBus.$emit('toolbar-player-current-volume-changed', this.slider.audioVolume);
+    },
+    openSongsView() {
+
     }
   }
 }
