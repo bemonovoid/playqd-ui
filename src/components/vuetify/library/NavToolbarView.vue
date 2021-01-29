@@ -32,7 +32,9 @@ export default {
     }
   },
   created() {
-
+    eventBus.$on('playback-song-ended', (songId) => {
+        HTTP_CLIENT.put('/library/history/' + songId);
+    });
   },
   methods: {
     goHome() {

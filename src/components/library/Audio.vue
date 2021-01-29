@@ -64,6 +64,8 @@ export default {
       eventBus.$emit('audio-play-paused');
     },
     playNext() {
+      console.log("ENDED")
+      eventBus.$emit('playback-song-ended', this.$store.state.playlist.currentSong.id);
       if (this.$store.getters.hasNextSong) {
         this.$store.commit('setCurrentSongToNext')
         eventBus.$emit('player-load');
