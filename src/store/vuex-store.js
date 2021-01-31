@@ -23,6 +23,11 @@ export default new Vuex.Store({
             duration: 0
         },
         artists: [],
+        artWorkBaseUrl: HTTP_CLIENT.defaults.baseURL + "/artwork/open/?albumId=",
+        artwork: {
+            ofCurrentSong: '',
+            ofOpenedAlbum: ''
+        },
         playlist: {
             id: null,
             shuffle: false,
@@ -37,13 +42,7 @@ export default new Vuex.Store({
             return state.artists;
         },
         getArtWorkBaseUrl: (state) => {
-            return HTTP_CLIENT.defaults.baseURL + "/artwork/open/";
-        },
-        getCurrentSongArtworkSrc: (state, getters) => {
-            if (state.playlist.currentSong) {
-                return getters.getArtWorkBaseUrl + '?albumId=' + state.playlist.currentSong.album.id;
-            }
-            return null;
+            return state.artWorkBaseUrl;
         },
         hasNextSong: (state) => {
             let songItem = state.playlist.songs
@@ -77,8 +76,23 @@ export default new Vuex.Store({
             state.audio.currentTimeAsInt = parseInt(payload.currentTime, 10);
             state.audio.duration = payload.duration;
         },
+        setAudioIsPlaying: (state, payload) => {
+            state.audio.isPlaying = payload;
+        },
+        setAudioVolume: (state, payload) => {
+            state.audio.volume = payload;
+        },
         setArtists: (state, payload) => {
             state.artists = payload;
+        },
+        setArtworkOfCurrentSong: (state, payload) => {
+            state.artwork.ofCurrentSong = payload;
+        },
+        setArtworkOfOpenedAlbum: (state, payload) => {
+            if (state.playlist.currentSong && state.playlist.currentSong.album.id === payload.albumId) {
+                state.artwork.ofCurrentSong = payload.src;
+            }
+            state.artwork.ofOpenedAlbum = payload.src;
         },
         setPlaylist: (state, payload) => {
             state.playlist.id = payload.playlistId;
@@ -88,30 +102,33 @@ export default new Vuex.Store({
                 shuffleArray(songs);
                 state.playlist.currentSong = songs[0];
             } else {
-                state.playlist.currentSong = songs.filter((s, i) => s.id === payload.startFromSongId)[0];
+                state.playlist.currentSong = songs.filter((s, i) => s.id === payload.startSong.id)[0];
             }
             state.playlist.songs = songs;
-        },
-        setCurrentSongToId: (state, payload) => {
-            state.playlist.currentSong = state.playlist.songs.filter((s) => s.id === payload)[0];
+            state.artwork.ofCurrentSong = state.artWorkBaseUrl + state.playlist.currentSong.album.id;
         },
         setCurrentSongToPrev: (state) => {
             let songItem = state.playlist.songs
                 .map((song, i) => {return {id: song.id, idx: i}})
                 .filter((sItem) => sItem.id === state.playlist.currentSong.id)[0];
-            state.playlist.currentSong =  state.playlist.songs[songItem.idx - 1];
+            let prevSong = state.playlist.songs[songItem.idx - 1];
+            if (state.playlist.currentSong.album.id !== prevSong.album.id) {
+                state.artwork.ofCurrentSong = state.artWorkBaseUrl + state.playlist.currentSong.album.id;
+            }
+            state.playlist.currentSong = prevSong;
         },
         setCurrentSongToNext: (state) => {
             let songItem = state.playlist.songs
                 .map((song, i) => {return {id: song.id, idx: i}})
                 .filter((sItem) => sItem.id === state.playlist.currentSong.id)[0];
-            state.playlist.currentSong = state.playlist.songs[songItem.idx + 1];
+            let nextSong = state.playlist.songs[songItem.idx + 1];
+            if (state.playlist.currentSong.album.id !== nextSong.album.id) {
+                state.artwork.ofCurrentSong = state.artWorkBaseUrl + state.playlist.currentSong.album.id;
+            }
+            state.playlist.currentSong = nextSong;
         },
-        setAudioIsPlaying: (state, payload) => {
-            state.audio.isPlaying = payload;
-        },
-        setAudioVolume: (state, payload) => {
-            state.audio.volume = payload;
+        setCurrentSong: (state, payload) => {
+            state.playlist.currentSong = payload;
         }
     }
 });

@@ -1,6 +1,7 @@
 class PageTitleUtils {
     setPageTitle(newTitle) {
-        document.title = newTitle || 'Playqd'
+        document.title = newTitle || 'Playqd';
+
     }
 }
 

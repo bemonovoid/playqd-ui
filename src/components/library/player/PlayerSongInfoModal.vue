@@ -6,7 +6,7 @@
 
       <template #modal-title>
         <div>
-          {{currentSong.artist.name}} - {{currentSong.album.name}} ({{currentSong.album.year}})
+          {{currentSong.artist.name}} - {{currentSong.album.name}} ({{currentSong.album.date}})
         </div>
         <div>
           <p class="scoped-song-name">{{currentSong.name}}</p>

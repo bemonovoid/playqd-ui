@@ -33,7 +33,7 @@
             <v-text-field dense label="Name" required v-model="album.name"></v-text-field>
           </v-col>
           <v-col cols="2">
-            <v-text-field type="number" dense label="Year" v-model="album.year"></v-text-field>
+            <v-text-field type="number" dense label="Year" v-model="album.date"></v-text-field>
           </v-col>
         </v-row>
 
@@ -69,7 +69,7 @@ export default {
     return {
       title: 'asdsadas',
       active: false,
-      album: {id: '', name: '', genre: '', year: '', totalTime: '', artist: {id: '', name: '', country: ''}, artworkSrc: ''},
+      album: {id: '', name: '', genre: '', date: '', totalTime: '', artist: {id: '', name: '', country: ''}, artworkSrc: ''},
     }
   },
   created() {

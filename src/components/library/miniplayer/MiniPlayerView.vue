@@ -9,7 +9,7 @@
   <v-app-bar v-if="this.$store.state.playlist.currentSong" fixed bottom flat color="grey lighten-3">
 
     <div class="py-2 pr-3">
-      <v-img max-height="50px" max-width="50px" v-bind:src="this.$store.getters.getCurrentSongArtworkSrc"></v-img>
+      <v-img max-height="50px" max-width="50px" v-bind:src="this.$store.state.artwork.ofCurrentSong"></v-img>
     </div>
 
     <v-toolbar-title class="hidden-md-and-up">
@@ -69,7 +69,7 @@
         <v-icon x-large>mdi-pause</v-icon>
       </v-btn>
 
-      <v-btn v-else icon @click="play()" class="px-5">
+      <v-btn v-else icon @click="resumePlay()" class="px-5">
         <v-icon x-large>mdi-play</v-icon>
       </v-btn>
 
@@ -149,23 +149,17 @@ export default {
     }
   },
   methods: {
-    play() {
-      eventBus.$emit('player-play');
-    },
     playNext() {
-      if (this.$store.getters.hasNextSong) {
-        this.$store.commit('setCurrentSongToNext')
-        eventBus.$emit('player-load');
-      }
+      eventBus.$emit('play-next-song');
     },
     playPrev() {
-      if (this.$store.getters.hasPrevSong) {
-        this.$store.commit('setCurrentSongToPrev')
-        eventBus.$emit('player-load');
-      }
+      eventBus.$emit('play-prev-song');
+    },
+    resumePlay() {
+      eventBus.$emit('player-resume-play');
     },
     pause() {
-      eventBus.$emit('player-set-on-pause');
+      eventBus.$emit('player-pause');
     },
     mute() {
       this.slider.audioVolume = 0.0;

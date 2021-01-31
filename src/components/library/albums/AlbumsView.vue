@@ -47,11 +47,11 @@
       </v-col>
     </v-row>
 
-    <v-row class="justify-space-around">
+    <v-row class="justify-space-around pb-15">
       <v-col v-for="album in albums" :key="album.id" :cols="6" align="center" md="auto">
         <v-card max-width="200px" max-height="300px" :to="{name: 'SongsView', params: {albumId: album.id}}">
 
-          <v-img :src="$store.getters.getArtWorkBaseUrl + '?albumId=' + album.id"
+          <v-img :src="$store.getters.getArtWorkBaseUrl + album.id"
               class="white--text align-end"
               gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)">
           </v-img>
@@ -67,7 +67,7 @@
             <span>{{ album.name }}</span>
           </v-tooltip>
 
-          <v-card-subtitle class="py-0 text-left text-truncate text-caption text--disabled" v-text="album.year ? album.year : '----'"></v-card-subtitle>
+          <v-card-subtitle class="py-0 text-left text-truncate text-caption text--disabled" v-text="album.date ? album.date : '----'"></v-card-subtitle>
 
         </v-card>
       </v-col>
@@ -162,18 +162,18 @@ export default {
       let sortTypeId = this.sorting.types.filter(item => item.active)[0].id;
       if ('by-oldest' === sortTypeId) {
         albums.sort((a1, a2) => {
-          if (a1.year && a2.year) {
-            if (a1.year > a2.year) return 1;
-            if (a1.year < a2.year) return -1;
+          if (a1.date && a2.date) {
+            if (a1.date > a2.date) return 1;
+            if (a1.date < a2.date) return -1;
             return 0;
           }
           return 0;
         })
       } else if ('by-newest' === sortTypeId) {
         albums.sort((a1, a2) => {
-          if (a1.year && a2.year) {
-            if (a1.year < a2.year) return 1;
-            if (a1.year > a2.year) return -1;
+          if (a1.date && a2.date) {
+            if (a1.date < a2.date) return 1;
+            if (a1.date > a2.date) return -1;
             return 0;
           }
           return 0;

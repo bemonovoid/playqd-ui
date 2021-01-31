@@ -21,16 +21,18 @@ import store from "@/store/vuex-store";
 import Vue from 'vue'
 import VueRouter from "vue-router";
 
-import Audio from "@/components/library/Audio";
-import NavToolbarView from "@/components/vuetify/library/NavToolbarView";
-import MiniPlayerView from "@/components/vuetify/miniplayer/MiniPlayerView";
-import LibraryView from "@/components/vuetify/library/LibraryView";
-import GenresView from "@/components/vuetify/genres/GenresView";
-import ArtistsView from "@/components/vuetify/artists/ArtistsView";
-import AlbumsView from "@/components/vuetify/albums/AlbumsView"
-import SongsView from "@/components/vuetify/songs/SongsView";
+import {eventBus} from "@/main";
 
-import {PAGE_TITLE_UTILS} from "@/utils/page-title-utils";
+import Audio from "@/components/audio/Audio";
+
+import NavToolbarView from "@/components/library/library/NavToolbarView";
+import MiniPlayerView from "@/components/library/miniplayer/MiniPlayerView";
+
+import LibraryView from "@/components/library/library/LibraryView";
+import GenresView from "@/components/library/genres/GenresView";
+import ArtistsView from "@/components/library/artists/ArtistsView";
+import AlbumsView from "@/components/library/albums/AlbumsView"
+import SongsView from "@/components/library/songs/SongsView";
 
 const routes = [
   { path: '/', alias: ['/home', '/index.html'], name: 'Home', component: LibraryView, meta: {title: 'Home'} },
@@ -47,7 +49,7 @@ const router = new VueRouter({
 
 router.afterEach((to, from) => {
   Vue.nextTick(() => {
-    PAGE_TITLE_UTILS.setPageTitle(to.meta.title);
+    // PAGE_TITLE_UTILS.setPageTitle(to.meta.title);
   })
 })
 
@@ -64,6 +66,41 @@ export default {
     ArtistsView,
     AlbumsView,
     SongsView
+  },
+  created() {
+    eventBus.$on('song-is-ready-to-play', () => {
+      this.appTitle.inner = this.$store.state.playlist.currentSong.artist.name;
+      this.appTitle.complement = this.$store.state.playlist.currentSong.name;
+      // this.artwork = this.$store.state.artwork.ofCurrentSong;
+      this.$emit('updateHead');
+
+
+      var link = document.querySelector("link[rel~='icon']");
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.getElementsByTagName('head')[0].appendChild(link);
+      }
+      link.href = this.$store.state.artwork.ofCurrentSong;
+
+    });
+  },
+  data() {
+    return {
+      appTitle: {
+        inner: 'Playqd',
+        complement: 'local music player'
+      }
+    }
+  },
+  head: {
+    title() {
+      return {
+        complement: this.appTitle.complement,
+        inner: this.appTitle.inner,
+        separator: ' - '
+      }
+    }
   }
 }
 
