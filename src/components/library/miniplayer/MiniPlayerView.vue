@@ -12,7 +12,7 @@
       <v-img max-height="50px" max-width="50px" v-bind:src="this.$store.state.artwork.ofCurrentSong"></v-img>
     </div>
 
-    <v-toolbar-title class="hidden-md-and-up">
+    <v-toolbar-title class="hidden-md-and-up" @click="openPlayerView()">
       <div class="caption px-2 text-left text-truncate">
         {{this.$store.state.playlist.currentSong.name}}
       </div>
@@ -23,8 +23,11 @@
 
     <v-toolbar-title class="hidden-sm-and-down text-left px-5" style="width: 90%">
 
-      <div class="body-2 px-2 " @click="openSongsView">
-        {{ this.$store.state.playlist.currentSong.artist.name + ' - ' + this.$store.state.playlist.currentSong.name }}
+      <div class="px-2">
+        <v-btn link plain class="pl-0 pt-2 text-capitalize" @click="openPlayerView()">
+          {{ this.$store.state.playlist.currentSong.artist.name + ' - ' + this.$store.state.playlist.currentSong.name }}
+        </v-btn>
+
       </div>
 
       <div>
@@ -180,8 +183,8 @@ export default {
       }
       eventBus.$emit('toolbar-player-current-volume-changed', this.slider.audioVolume);
     },
-    openSongsView() {
-
+    openPlayerView() {
+      this.$router.push({name: 'PlayerView', params: {songId: this.$store.state.playlist.currentSong.id}})
     }
   }
 }

@@ -27,6 +27,7 @@ import Audio from "@/components/audio/Audio";
 
 import NavToolbarView from "@/components/library/library/NavToolbarView";
 import MiniPlayerView from "@/components/library/miniplayer/MiniPlayerView";
+import PlayerView from "@/components/library/player/PlayerView";
 
 import LibraryView from "@/components/library/library/LibraryView";
 import GenresView from "@/components/library/genres/GenresView";
@@ -40,7 +41,8 @@ const routes = [
   { path: '/library/artists', name: 'ArtistsView', component: ArtistsView, meta: {title: 'Artists'} },
   { path: '/library/genres', name: 'GenresView', component: GenresView, meta: {title: 'Genres'} },
   { path: '/library/albums', name: 'AlbumsView', component: AlbumsView, props: route => ({artistId: route.query.artistId, genre: route.query.genre}), meta: {title: 'Albums'} },
-  { path: '/library/artists/albums/:albumId', name: 'SongsView', component: SongsView, meta: {title: 'Songs'} }
+  { path: '/library/artists/albums/:albumId', name: 'SongsView', component: SongsView, meta: {title: 'Songs'} },
+  { path: '/library/player/:songId', name: 'PlayerView', component: PlayerView, meta: {title: 'Player'} }
 ]
 
 const router = new VueRouter({
@@ -61,6 +63,7 @@ export default {
     Audio,
     NavToolbarView,
     MiniPlayerView,
+    PlayerView,
     LibraryView,
     GenresView,
     ArtistsView,
