@@ -126,7 +126,7 @@ export default {
     HTTP_CLIENT.get('/library/songs/album/' + this.$route.params.albumId).then(response => {
       this.songs = response.data.songs
       this.album = response.data.album;
-      this.album.totalTime = this.songs.length + ' songs, ' + this.album.totalTime;
+      this.album.totalTime = this.songs.length + ' songs, ' + this.album.totalTimeHumanReadable;
       this.backToView.query.artistId = this.album.artist.id;
 
       this.$store.commit('setArtworkOfOpenedAlbum', {albumId: this.album.id, src: this.$store.getters.getArtWorkBaseUrl + this.album.id});

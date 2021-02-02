@@ -11,7 +11,11 @@
         </v-row>
       </v-container>
     </v-main>
-    <MiniPlayerView></MiniPlayerView>
+    <transition>
+      <div v-show="this.$store.state.miniPlayer.show">
+        <MiniPlayerView></MiniPlayerView>
+      </div>
+    </transition>
   </v-app>
 </template>
 

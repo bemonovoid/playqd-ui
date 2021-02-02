@@ -1,11 +1,5 @@
 <template>
 
-  <!--  <transition ...>-->
-  <!--    <div v-show="isReady">-->
-  <!--      <Slider...>-->
-  <!--    </div>-->
-  <!--  </transition>-->
-
   <v-app-bar v-if="this.$store.state.playlist.currentSong" fixed bottom flat color="grey lighten-3">
 
     <div class="py-2 pr-3">

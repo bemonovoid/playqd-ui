@@ -64,10 +64,7 @@ export default {
     },
     onAudioEnded() {
       eventBus.$emit('playback-song-ended', this.$store.state.playlist.currentSong.id);
-      if (this.$store.getters.hasNextSong) {
-        this.$store.commit('setCurrentSongToNext')
-        this.loadAudio();
-      }
+      this.loadNextSong();
     },
     onAudioTimeUpdate() {
       this.$store.commit('setAudioCurrentTime', this.audioDOMElement.currentTime);

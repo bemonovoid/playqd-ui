@@ -31,10 +31,14 @@ export default new Vuex.Store({
         playlist: {
             id: null,
             shuffle: false,
+            repeat: 'none',
             loopAll: false,
             loopCurrent:false,
             currentSong: null,
             songs: []
+        },
+        miniPlayer: {
+            show: true
         }
     },
     getters: {
@@ -48,7 +52,7 @@ export default new Vuex.Store({
             let songItem = state.playlist.songs
                 .map((song, i) => {return {id: song.id, idx: i}})
                 .filter((sItem) => sItem.id === state.playlist.currentSong.id)[0];
-            return songItem.idx + 1 < state.playlist.songs.length;
+            return songItem.idx + 1 < state.playlist.songs.length || state.playlist.repeat === 'all';
         },
         hasPrevSong: (state) => {
             let songItem = state.playlist.songs
@@ -121,7 +125,14 @@ export default new Vuex.Store({
             let songItem = state.playlist.songs
                 .map((song, i) => {return {id: song.id, idx: i}})
                 .filter((sItem) => sItem.id === state.playlist.currentSong.id)[0];
-            let nextSong = state.playlist.songs[songItem.idx + 1];
+            let nextSong = null;
+            if (songItem.idx + 1 < state.playlist.songs.length) {
+                nextSong = state.playlist.songs[songItem.idx + 1];
+            } else if (state.playlist.repeat === 'all') {
+                nextSong = state.playlist.songs[0];
+            } else {
+                return;
+            }
             if (state.playlist.currentSong.album.id !== nextSong.album.id) {
                 state.artwork.ofCurrentSong = state.artWorkBaseUrl + state.playlist.currentSong.album.id;
             }
@@ -132,6 +143,12 @@ export default new Vuex.Store({
                 state.artwork.ofCurrentSong = state.artWorkBaseUrl + payload.album.id;
             }
             state.playlist.currentSong = payload;
+        },
+        setShowMiniPlayer: (state, payload) => {
+            state.miniPlayer.show = payload;
+        },
+        setRepeatMode: (state, payload) => {
+            state.playlist.repeat = payload;
         }
     }
 });
