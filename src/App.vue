@@ -37,16 +37,18 @@ import LibraryView from "@/components/library/library/LibraryView";
 import GenresView from "@/components/library/genres/GenresView";
 import ArtistsView from "@/components/library/artists/ArtistsView";
 import AlbumsView from "@/components/library/albums/AlbumsView"
-import SongsView from "@/components/library/songs/SongsView";
+import AlbumSongsView from "@/components/library/songs/AlbumSongsView";
+import LibrarySongsView from "@/components/library/songs/LibrarySongListView";
 
 const routes = [
   { path: '/', alias: ['/home', '/index.html'], name: 'Home', component: LibraryView, meta: {title: 'Home'} },
   { path: '/library', name: 'LibraryView', component: LibraryView, meta: {title: 'Library'} },
   { path: '/library/artists', name: 'ArtistsView', component: ArtistsView, meta: {title: 'Artists'} },
   { path: '/library/genres', name: 'GenresView', component: GenresView, meta: {title: 'Genres'} },
+  { path: '/library/songs', name: 'LibrarySongsView', component: LibrarySongsView, meta: {title: 'Library songs'} },
   { path: '/library/albums', name: 'AlbumsView', component: AlbumsView, props: route => ({artistId: route.query.artistId, genre: route.query.genre}), meta: {title: 'Albums'} },
-  { path: '/library/artists/albums/:albumId', name: 'SongsView', component: SongsView, meta: {title: 'Songs'} },
-  { path: '/library/player/:songId', name: 'PlayerView', component: PlayerView, meta: {title: 'Player'} }
+  { path: '/library/artists/albums/:albumId', name: 'AlbumSongsView', component: AlbumSongsView, meta: {title: 'Album songs'}, props: true },
+  { path: '/library/player/:songId', name: 'PlayerView', component: PlayerView, meta: {title: 'Player'}, props: true }
 ]
 
 const router = new VueRouter({
@@ -72,7 +74,7 @@ export default {
     GenresView,
     ArtistsView,
     AlbumsView,
-    SongsView
+    AlbumSongsView
   },
   created() {
     eventBus.$on('song-is-ready-to-play', () => {
@@ -81,8 +83,7 @@ export default {
       // this.artwork = this.$store.state.artwork.ofCurrentSong;
       this.$emit('updateHead');
 
-
-      var link = document.querySelector("link[rel~='icon']");
+      let link = document.querySelector("link[rel~='icon']");
       if (!link) {
         link = document.createElement('link');
         link.rel = 'icon';

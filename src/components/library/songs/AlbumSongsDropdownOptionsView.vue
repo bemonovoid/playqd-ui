@@ -93,7 +93,7 @@
 import {HTTP_CLIENT} from "@/http/axios-config";
 
 export default {
-  name: 'SongDropdownOptionsView',
+  name: 'AlbumSongsDropdownOptionsView',
   props: ['album', 'showSongNameAsFileName'],
   data() {
     return {

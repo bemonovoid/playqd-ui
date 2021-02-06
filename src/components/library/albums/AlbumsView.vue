@@ -1,13 +1,13 @@
 <template>
 
-  <div>
+  <div v-if="this.originalAlbums.length > 0">
 
     <v-row>
 
       <v-col class="pl-0 text-left" md="auto">
-        <v-btn depressed plain class="text-capitalize text-subtitle-1" v-bind:to="backToView">
+        <v-btn depressed plain class="text-capitalize text-subtitle-1" v-bind:to="{name: this.$route.query.artistId ? 'ArtistsView' : 'GenresView'}">
           <v-icon left>mdi-arrow-left</v-icon>
-          <span>{{this.listTitle}}</span>
+          <span>{{this.$route.query.artistId ? 'Artists' : 'Generes'}}</span>
         </v-btn>
       </v-col>
 
@@ -21,7 +21,7 @@
 
           <v-list dense class="text-left">
             <v-subheader>Sort albums</v-subheader>
-            <v-list-item v-for="sortType in sorting.types" @click="applyNewSort(sortType)">
+            <v-list-item v-for="(sortType, i) in sorting.types" :key="i" @click="applyNewSort(sortType)">
               <v-list-item-title>{{sortType.name}}</v-list-item-title>
               <v-list-item-icon v-if="sortType.active">
                 <v-icon right>mdi-check</v-icon>
@@ -34,8 +34,14 @@
 
     <v-row>
       <v-col class="py-0">
+        <p class="text-h5">{{this.albums[0].artist.name}}</p>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col class="py-0">
         <v-item-group align="left">
-          <v-text-field placeholder="Find album"
+          <v-text-field placeholder="Find album" class="py-0"
                         v-model="searchFilter"
                         @input="filterAlbums()"
                         prepend-inner-icon="mdi-magnify"
@@ -49,7 +55,7 @@
 
     <v-row class="justify-space-around pb-15">
       <v-col v-for="album in albums" :key="album.id" :cols="6" align="center" md="auto">
-        <v-card max-width="200px" max-height="300px" :to="{name: 'SongsView', params: {albumId: album.id}}">
+        <v-card max-width="200px" max-height="300px" @click="openAlbum(album)">
 
           <v-img :src="$store.getters.getArtWorkBaseUrl + album.id"
               class="white--text align-end"
@@ -92,13 +98,11 @@
 <script>
 
 import {HTTP_CLIENT} from "@/http/axios-config"
-import {eventBus} from "@/main";
 
 const ITEMS_PER_PAGE = 12;
 
 export default {
   name: 'AlbumsView',
-  components: {},
   data() {
     return {
       sorting: {
@@ -115,10 +119,26 @@ export default {
       },
       searchFilter: '',
       originalAlbums: [],
-      albums: [],
-      listTitle: '',
-      backToView: {name: '', params: {}}
+      albums: []
     }
+  },
+  mounted() {
+    let query = '';
+    if (this.$route.query.artistId) {
+      this.backToView = {name: 'ArtistsView'}
+      query = '?artistId=' + this.$route.query.artistId;
+    } else {
+      query = '?genre=' + this.$route.query.genre;
+      this.backToView = {name: 'GenresView'}
+      this.sorting.type = 'by-title';
+    }
+
+    HTTP_CLIENT.get('/library/albums/' + query).then(response => {
+      this.originalAlbums = Array.from(response.data.albums);
+      this.sortAlbums(this.originalAlbums);
+      this.albums = this.originalAlbums.slice(0, ITEMS_PER_PAGE);
+      this.pagination.length = Math.ceil(this.originalAlbums.length / ITEMS_PER_PAGE);
+    });
   },
   methods: {
     paginationRequired() {
@@ -187,26 +207,16 @@ export default {
       } else {
 
       }
+    },
+    openAlbum(album) {
+      this.$router.push({name: 'AlbumSongsView', params:
+            {
+              albumId: album.id,
+              albumData: album,
+              albumFrom: this.$route.query.artistId ? 'artist' : 'genre'
+            }
+      });
     }
-  },
-  created() {
-    let query = '';
-    if (this.$route.query.artistId) {
-      this.backToView = {name: 'ArtistsView'}
-      query = '?artistId=' + this.$route.query.artistId;
-    } else {
-      query = '?genre=' + this.$route.query.genre;
-      this.backToView = {name: 'GenresView'}
-      this.sorting.type = 'by-title';
-    }
-
-    HTTP_CLIENT.get('/library/albums/' + query).then(response => {
-      this.originalAlbums = Array.from(response.data.albums);
-      this.sortAlbums(this.originalAlbums);
-      this.albums = this.originalAlbums.slice(0, ITEMS_PER_PAGE);
-      this.listTitle = this.$route.query.artistId ? 'Artists' : 'Genres';
-      this.pagination.length = Math.ceil(this.originalAlbums.length / ITEMS_PER_PAGE);
-    });
   }
 }
 </script>

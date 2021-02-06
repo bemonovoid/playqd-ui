@@ -1,18 +1,18 @@
 <template>
 
-  <div>
+  <div v-if="this.songs.length > 0">
 
     <v-row>
 
       <v-col class="pl-0 pt-2 text-left" md="auto">
-        <v-btn depressed plain class="text-capitalize text-subtitle-1" v-bind:to="backToView">
+        <v-btn depressed plain class="text-capitalize text-subtitle-1" @click="routerGoBack()">
           <v-icon left>mdi-arrow-left</v-icon>
-          <span>{{this.album.artist.name}}</span>
+          <span>{{this.getBackBtnDisplayName()}}</span>
         </v-btn>
       </v-col>
 
       <v-col class="pl-0 pt-2 text-right">
-        <SongDropdownOptionsView :album.sync="album"
+        <AlbumSongsDropdownOptionsView :album.sync="album"
                                  :show-song-name-as-file-name.sync="showSongNameAsFileName"/>
       </v-col>
 
@@ -45,7 +45,7 @@
           </v-card-actions>
 
           <v-card-text class="px-2">
-            <v-data-table
+            <v-data-table dense
                 hide-default-header
                 hide-default-footer
                 disable-pagination
@@ -71,10 +71,10 @@
 
               <template v-slot:item.duration="{item}">
                 <div v-if="isPlayingSongRow(item.id)" class="subtitle-2 text-no-wrap">
-                  - {{convertSecondsToMinutesAndSeconds($store.state.audio.duration - $store.state.audio.currentTimeAsInt)}}
+                  - {{SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.duration - $store.state.audio.currentTimeAsInt)}}
                 </div>
                 <div v-else class="text--secondary">
-                  {{convertSecondsToMinutesAndSeconds(item.duration)}}
+                  {{SONG_DURATION.convertSecondsToMinutesAndSeconds(item.duration)}}
                 </div>
               </template>
 
@@ -89,7 +89,6 @@
       </v-col>
     </v-row>
 
-
   </div>
 
 </template>
@@ -98,37 +97,41 @@
 
 import {eventBus} from "@/main";
 import {HTTP_CLIENT} from "@/http/axios-config";
-import SongsViewEditAlbum from "@/components/library/songs/SongsViewEditAlbum";
-import SongDropdownOptionsView from "@/components/library/songs/SongDropdownOptionsView";
+import {SONG_DURATION} from "@/utils/song-duration";
+
+import AlbumSongsDropdownOptionsView from "@/components/library/songs/AlbumSongsDropdownOptionsView";
+
 import {mdiArrowRightDropCircleOutline} from '@mdi/js'
 
 export default {
-  name: 'SongsView',
+  name: 'AlbumSongsView',
   components: {
-    SongsViewEditAlbum,
-    SongDropdownOptionsView,
+    AlbumSongsDropdownOptionsView,
     mdiArrowRightDropCircleOutline
   },
+  props: ['albumData', 'albumFrom'],
   data() {
     return {
+      SONG_DURATION,
+      backBtnDisplayName: this.backBtnLabel,
       headers: [
           {align: 'center', value: 'orderId', cellClass: 'pa-0'},
           {align: 'start', value: 'name'},
           {align: 'end', value: 'duration'}
       ],
-      album: {id: '', name: '', genre: '', date: '', totalTime: '', artist: {id: '', name: '', country: ''}},
+      album: this.albumData,
       songs: [],
       showSongNameAsFileName: false,
-      backToView: {name: 'AlbumsView', query: {artistId: ''}}
+      backToView: this.albumFrom
     }
   },
   mounted() {
     HTTP_CLIENT.get('/library/songs/album/' + this.$route.params.albumId).then(response => {
       this.songs = response.data.songs
-      this.album = response.data.album;
+      if (!this.album) {
+        this.album = response.data.album;
+      }
       this.album.totalTime = this.songs.length + ' songs, ' + this.album.totalTimeHumanReadable;
-      this.backToView.query.artistId = this.album.artist.id;
-
       this.$store.commit('setArtworkOfOpenedAlbum', {albumId: this.album.id, src: this.$store.getters.getArtWorkBaseUrl + this.album.id});
     });
   },
@@ -152,8 +155,19 @@ export default {
         eventBus.$emit('play-song', song);
       }
     },
-    convertSecondsToMinutesAndSeconds(seconds) {
-      return Math.floor(seconds / 60) + ':' + ('0' + Math.floor(seconds % 60)).slice(-2);
+    routerGoBack() {
+      if (this.backToView) {
+        this.$router.back();
+      } else {
+        this.$router.push({name: 'AlbumsView', query: {artistId: this.album.artist.id}})
+      }
+    },
+    getBackBtnDisplayName() {
+      if (this.backToView) {
+        return this.backToView === 'genre' ? this.album.genre : this.album.artist.name;
+      } else {
+        return this.album.artist.name;
+      }
     }
   }
 }

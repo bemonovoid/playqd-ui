@@ -139,7 +139,11 @@ export default new Vuex.Store({
             state.playlist.currentSong = nextSong;
         },
         setCurrentSong: (state, payload) => {
-            if (!state.playlist.currentSong) {
+            if (state.playlist.currentSong) {
+                if (state.playlist.currentSong.album.id !== payload.album.id) {
+                    state.artwork.ofCurrentSong = state.artWorkBaseUrl + payload.album.id;
+                }
+            } else {
                 state.artwork.ofCurrentSong = state.artWorkBaseUrl + payload.album.id;
             }
             state.playlist.currentSong = payload;

@@ -39,7 +39,7 @@
 
           <template v-slot:label>
             <div class="caption text--secondary">
-              {{convertSecondsToMinutesAndSeconds($store.state.audio.currentTimeAsInt) + ' / ' + convertSecondsToMinutesAndSeconds($store.state.audio.duration)}}
+              {{SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.currentTimeAsInt) + ' / ' + SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.duration)}}
             </div>
           </template>
 
@@ -129,12 +129,14 @@
 <script>
 
 import {eventBus} from "@/main";
+import {SONG_DURATION} from "@/utils/song-duration";
 
 export default {
   name: 'MiniPlayerView',
   components: {},
   data() {
     return {
+      SONG_DURATION,
       volumeIcon: {
         color: 'grey darken-1',
         name: 'mdi-volume-high'
@@ -164,9 +166,6 @@ export default {
       this.volumeIcon.name = 'mdi-volume-off'
       this.changeAudioCurrentVolume();
     },
-    convertSecondsToMinutesAndSeconds(seconds) {
-      return Math.floor(seconds / 60) + ':' + ('0' + Math.floor(seconds % 60)).slice(-2);
-    },
     changeAudioCurrentTime() {
       eventBus.$emit('toolbar-player-current-time-changed', this.slider.audioTime);
     },
@@ -178,7 +177,13 @@ export default {
       eventBus.$emit('toolbar-player-current-volume-changed', this.slider.audioVolume);
     },
     openPlayerView() {
-      this.$router.push({name: 'PlayerView', params: {songId: this.$store.state.playlist.currentSong.id}})
+      this.$router.push({name: 'PlayerView', params:
+            {
+              songId: this.$store.state.playlist.currentSong.id,
+              playerSong: this.$store.state.playlist.currentSong,
+              backBtnLabel: this.$router.currentRoute.name === 'LibrarySongsView' ? 'Songs' : this.$store.state.playlist.currentSong.album.name
+            }
+      })
     }
   }
 }

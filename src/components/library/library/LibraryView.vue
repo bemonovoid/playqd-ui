@@ -37,10 +37,12 @@
 
 <script>
 
+import LibrarySongsView from "@/components/library/songs/LibrarySongListView";
+
 export default {
   name: 'LibraryView',
   components: {
-
+    LibrarySongsView
   },
   data() {
     return {
@@ -58,7 +60,7 @@ export default {
         {
           title: "Songs",
           icon: "mdi-music-note",
-          viewName: "SongsView"
+          viewName: "LibrarySongsView"
         },
         {
           title: "Genres",

@@ -5,9 +5,9 @@
    <v-row>
 
      <v-col class="pl-0 pt-2 text-left" md="auto">
-       <v-btn depressed plain class="text-capitalize text-subtitle-1" v-bind:to="{name: 'SongsView', params: {albumId: this.$store.state.playlist.currentSong.album.id}}">
+       <v-btn depressed plain class="text-capitalize text-subtitle-1" @click="routerGoBack()">
          <v-icon left>mdi-arrow-left</v-icon>
-         <span>{{this.$store.state.playlist.currentSong.album.name}}</span>
+         <span>{{this.backBtnDisplayName}}</span>
        </v-btn>
      </v-col>
 
@@ -45,10 +45,10 @@
                  <template v-slot:message>
                     <v-row class="no-gutters">
                       <v-col cols="6" class="pt-0 px-0 text-left">
-                        <p>{{convertSecondsToMinutesAndSeconds($store.state.audio.currentTimeAsInt)}}</p>
+                        <p>{{SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.currentTimeAsInt)}}</p>
                       </v-col>
                       <v-col cols="6" class="pt-0 px-0 text-right">
-                        {{convertSecondsToMinutesAndSeconds($store.state.audio.duration)}}
+                        {{ SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.duration) }}
                       </v-col>
                     </v-row>
                  </template>
@@ -124,11 +124,15 @@
 
 import {eventBus} from "@/main";
 import {HTTP_CLIENT} from "@/http/axios-config";
+import {SONG_DURATION} from "@/utils/song-duration";
 
 export default {
   name: 'PlayerView',
+  props: ['playerSong', 'backBtnLabel'],
   data() {
     return {
+      SONG_DURATION,
+      backBtnDisplayName: this.backBtnLabel,
       slider: {
         audioTime: 0,
         audioVolume: 0.5
@@ -141,8 +145,13 @@ export default {
   },
   mounted() {
     this.$store.commit('setShowMiniPlayer', false);
-    if (!this.$store.state.playlist.currentSong) {
+    if (this.playerSong) {
+      if (!this.$store.state.playlist.currentSong || this.playerSong.id !== this.$store.state.playlist.currentSong.id) {
+        eventBus.$emit('play-song', this.playerSong);
+      }
+    } else {
       HTTP_CLIENT.get('/library/songs/' + this.$route.params.songId).then(response => {
+        this.backBtnDisplayName = response.data.album.name;
         eventBus.$emit('play-song', response.data);
       });
     }
@@ -153,9 +162,6 @@ export default {
   methods: {
     changeAudioCurrentTime() {
       eventBus.$emit('toolbar-player-current-time-changed', this.slider.audioTime);
-    },
-    convertSecondsToMinutesAndSeconds(seconds) {
-      return Math.floor(seconds / 60) + ':' + ('0' + Math.floor(seconds % 60)).slice(-2);
     },
     playNext() {
       eventBus.$emit('play-next-song');
@@ -179,6 +185,13 @@ export default {
       } else {
         this.$store.commit('setRepeatMode', 'none');
         this.repeatIcon = {name: 'mdi-repeat', color: ''}
+      }
+    },
+    routerGoBack() {
+      if (this.playerSong) {
+        this.$router.back();
+      } else {
+        this.$router.push({name: 'AlbumSongsView', params: {albumId: this.$store.state.playlist.currentSong.album.id}})
       }
     }
   }

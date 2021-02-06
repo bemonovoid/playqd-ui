@@ -18,8 +18,13 @@
           <v-list-item-title class="text-left text--black display-1 pt-1 pb-0 mb-0">Genres</v-list-item-title>
 
           <div v-for="(genre, i) in genres">
-            <v-list-item  @click="onGenreSelected(genre)">
+            <v-list-item  @click="openGenreAlbums(genre)">
               <v-list-item-content>{{genre}}</v-list-item-content>
+              <v-list-item-action>
+                <v-btn icon>
+                  <v-icon color="grey lighten-1">mdi-chevron-right</v-icon>
+                </v-btn>
+              </v-list-item-action>
             </v-list-item>
             <v-divider/>
           </div>
@@ -50,7 +55,7 @@ export default {
     })
   },
   methods: {
-    onGenreSelected(genre) {
+    openGenreAlbums(genre) {
       this.$router.push({name: 'AlbumsView', query: {genre: genre}});
     }
   }

@@ -20,7 +20,7 @@
 
           <v-list dense class="text-left">
             <v-subheader>Sort artists</v-subheader>
-            <v-list-item v-for="sortType in sorting.types" @click="sortArtists(sortType.id)">
+            <v-list-item v-for="(sortType, i) in sorting.types" :key="i" @click="sortArtists(sortType.id)">
               <v-list-item-title>{{sortType.name}}</v-list-item-title>
               <v-list-item-icon>
                 <v-icon right>{{sortType.icon}}</v-icon>
@@ -35,8 +35,10 @@
       <v-col class="py-0">
 
         <v-list align="left" class="py-0">
-
-          <p class="text-left text--black display-1 pt-1 pb-0 mb-0">Artists</p>
+          <v-subheader class="text-left display-1 pl-0">Artists</v-subheader>
+          <v-list-item-subtitle class="text-caption text--disabled">
+            Total: {{artists.length}}, songs: {{this.totalSongsCount}}
+          </v-list-item-subtitle>
 
           <v-item-group align="left" class="py-0">
             <v-text-field placeholder="Find in artists"
@@ -57,11 +59,18 @@
               </v-list-item-icon>
 
               <v-list-item-content class="py-0">
-
-                <!--                <v-text-field dense class="pb-0 mb-0"-->
-<!--                    readonly outlined prepend-icon="mdi-account-music" :value="artist.name"></v-text-field>-->
                 <v-list-item-title v-text="artist.name"></v-list-item-title>
+                <v-list-item-subtitle class="text-caption">
+                  albums: {{artist.albumCount}}, songs: {{artist.songCount}}
+<!--                  played: {{artist.playbackHistory.playCount}}, last: {{artist.playbackHistory.lastTimePlayed.substr(0, 10 )}}, albums: {{artist.albumCount}}-->
+                </v-list-item-subtitle>
               </v-list-item-content>
+
+              <v-list-item-action>
+                <v-btn icon>
+                  <v-icon color="grey lighten-1">mdi-chevron-right</v-icon>
+                </v-btn>
+              </v-list-item-action>
 
             </v-list-item>
 
@@ -93,11 +102,14 @@ export default {
     return {
       searchFilter: '',
       artists: [],
+      totalSongsCount: 0,
       sorting: {
         types: [
-          {id: 'name', name: 'By Name', icon: 'mdi-sort-alphabetical-ascending'},
-          {id: 'play-last-date', name: 'Recently Played', icon: 'mdi-sort-clock-ascending-outline'},
-          {id: 'play-count', name: 'Most Played', icon: 'mdi-sort-descending'}
+          {id: 'name',            name: 'By Name',         icon: 'mdi-sort-alphabetical-ascending'},
+          {id: 'play-last-date',  name: 'Recently Played', icon: 'mdi-sort-clock-ascending-outline'},
+          {id: 'play-count',      name: 'Most Played',     icon: 'mdi-sort-descending'},
+          {id: 'album-count',     name: 'Total Albums',    icon: 'mdi-sort-descending'},
+          {id: 'song-count',      name: 'Total Songs',     icon: 'mdi-sort-descending'}
         ]
       }
     }
@@ -131,13 +143,22 @@ export default {
           if (a1.playbackHistory.lastTimePlayed < a2.playbackHistory.lastTimePlayed) return 1;
           if (a1.playbackHistory.lastTimePlayed > a2.playbackHistory.lastTimePlayed) return -1;
           return 0;
-          return 0;
-        })
+        });
       }
       if (sortType === 'play-count') {
         this.artists.sort((a1, a2) => {
           return a2.playbackHistory.playCount - a1.playbackHistory.playCount;
-        })
+        });
+      }
+      if (sortType === 'album-count') {
+        this.artists.sort((a1, a2) => {
+          return a2.albumCount - a1.albumCount;
+        });
+      }
+      if (sortType === 'song-count') {
+        this.artists.sort((a1, a2) => {
+          return a2.songCount - a1.songCount;
+        });
       }
     }
   },
@@ -149,12 +170,14 @@ export default {
       HTTP_CLIENT.get('/library/artists/').then(response => {
         this.$store.commit('setArtists', response.data.artists);
         this.artists = this.$store.getters.getArtists;
+        this.totalSongsCount = this.$store.getters.getArtists.map(a => a.songCount).reduce((a1, a2) => a1 + a2, 0);
         this.sortArtists('play-last-date');
       }).catch(error => {
         alert(error.toString())
       });
     } else {
       this.artists = this.$store.getters.getArtists;
+      this.totalSongsCount = this.$store.getters.getArtists.map(a => a.songCount).reduce((a1, a2) => a1 + a2, 0);
     }
   }
 }
