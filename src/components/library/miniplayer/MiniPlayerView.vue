@@ -180,8 +180,7 @@ export default {
       this.$router.push({name: 'PlayerView', params:
             {
               songId: this.$store.state.playlist.currentSong.id,
-              playerSong: this.$store.state.playlist.currentSong,
-              backBtnLabel: this.$router.currentRoute.name === 'LibrarySongsView' ? 'Songs' : this.$store.state.playlist.currentSong.album.name
+              playerSong: this.$store.state.playlist.currentSong
             }
       })
     }

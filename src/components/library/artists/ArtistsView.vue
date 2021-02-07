@@ -3,42 +3,43 @@
   <div>
     <v-row>
 
-      <v-col class="pl-0 text-left" md="auto">
-        <v-btn depressed plain class="text-capitalize text-subtitle-1" v-bind:to="{name: 'LibraryView'}">
-          <v-icon left>mdi-arrow-left</v-icon>
-          <span>Library</span>
-        </v-btn>
+      <v-col class="py-0 pl-0 text-left">
+        <v-list-item>
+
+          <v-list-item-content>
+            <v-list-item-title class="display-1">Artists</v-list-item-title>
+            <v-list-item-subtitle class="text-caption text--disabled">
+              Total: {{artists.length}}, songs: {{this.totalSongsCount}}
+            </v-list-item-subtitle>
+          </v-list-item-content>
+
+          <v-list-item-action>
+            <v-menu offset-y left>
+              <template v-slot:activator="{ attrs, on}">
+                <v-btn fab small icon v-bind="attrs" v-on="on">
+                  <v-icon>mdi-dots-horizontal</v-icon>
+                </v-btn>
+              </template>
+
+              <v-list dense class="text-left">
+                <v-subheader>Sort artists</v-subheader>
+                <v-list-item v-for="(sortType, i) in sorting.types" :key="i" @click="sortArtists(sortType.id)">
+                  <v-list-item-title>{{sortType.name}}</v-list-item-title>
+                  <v-list-item-icon>
+                    <v-icon right>{{sortType.icon}}</v-icon>
+                  </v-list-item-icon>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-list-item-action>
+        </v-list-item>
       </v-col>
-
-      <v-col class="text-right">
-        <v-menu offset-y left>
-          <template v-slot:activator="{ attrs, on}">
-            <v-btn fab small icon v-bind="attrs" v-on="on">
-              <v-icon>mdi-dots-horizontal</v-icon>
-            </v-btn>
-          </template>
-
-          <v-list dense class="text-left">
-            <v-subheader>Sort artists</v-subheader>
-            <v-list-item v-for="(sortType, i) in sorting.types" :key="i" @click="sortArtists(sortType.id)">
-              <v-list-item-title>{{sortType.name}}</v-list-item-title>
-              <v-list-item-icon>
-                <v-icon right>{{sortType.icon}}</v-icon>
-              </v-list-item-icon>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </v-col>
-
     </v-row>
+
     <v-row>
       <v-col class="py-0">
 
         <v-list align="left" class="py-0">
-          <v-subheader class="text-left display-1 pl-0">Artists</v-subheader>
-          <v-list-item-subtitle class="text-caption text--disabled">
-            Total: {{artists.length}}, songs: {{this.totalSongsCount}}
-          </v-list-item-subtitle>
 
           <v-item-group align="left" class="py-0">
             <v-text-field placeholder="Find in artists"
@@ -52,7 +53,7 @@
 
           <v-list-item-group color="primary">
 
-            <v-list-item v-for="(artist, i) in artists" :key="i" @click="onArtistSelected(artist.id)">
+            <v-list-item v-for="(artist, i) in artists" :key="i" :to="{name: 'AlbumsView', query: {artistId: artist.id}}">
 
               <v-list-item-icon class="ml-0 mr-2">
                 <v-icon left>mdi-account-music</v-icon>
@@ -67,9 +68,7 @@
               </v-list-item-content>
 
               <v-list-item-action>
-                <v-btn icon>
-                  <v-icon color="grey lighten-1">mdi-chevron-right</v-icon>
-                </v-btn>
+                <v-icon right>mdi-chevron-right</v-icon>
               </v-list-item-action>
 
             </v-list-item>
@@ -88,7 +87,6 @@
 
 <script>
 
-import {eventBus} from "@/main";
 import {HTTP_CLIENT} from "@/http/axios-config"
 
 import {mdiArrowLeft, mdiMagnify, mdiClose} from '@mdi/js'
@@ -114,10 +112,22 @@ export default {
       }
     }
   },
+  mounted() {
+    if (this.$store.getters.getArtists.length === 0) {
+      HTTP_CLIENT.get('/library/artists/').then(response => {
+        this.$store.commit('setArtists', response.data.artists);
+        this.artists = this.$store.getters.getArtists;
+        this.totalSongsCount = this.$store.getters.getArtists.map(a => a.songCount).reduce((a1, a2) => a1 + a2, 0);
+        this.sortArtists('play-last-date');
+      }).catch(error => {
+        alert(error.toString())
+      });
+    } else {
+      this.artists = this.$store.getters.getArtists;
+      this.totalSongsCount = this.$store.getters.getArtists.map(a => a.songCount).reduce((a1, a2) => a1 + a2, 0);
+    }
+  },
   methods: {
-    onArtistSelected(artistId) {
-      this.$router.push({name: 'AlbumsView', query: {artistId: artistId}});
-    },
     filterArtists() {
       if (!this.searchFilter || this.searchFilter === '') {
         this.artists = this.$store.getters.getArtists;
@@ -160,24 +170,6 @@ export default {
           return a2.songCount - a1.songCount;
         });
       }
-    }
-  },
-  created() {
-    eventBus.$emit('toolbar-back-route-changed', {
-      toolBarParams: {title: 'Library', routeParams: {name: 'LibraryView'}}
-    });
-    if (this.$store.getters.getArtists.length === 0) {
-      HTTP_CLIENT.get('/library/artists/').then(response => {
-        this.$store.commit('setArtists', response.data.artists);
-        this.artists = this.$store.getters.getArtists;
-        this.totalSongsCount = this.$store.getters.getArtists.map(a => a.songCount).reduce((a1, a2) => a1 + a2, 0);
-        this.sortArtists('play-last-date');
-      }).catch(error => {
-        alert(error.toString())
-      });
-    } else {
-      this.artists = this.$store.getters.getArtists;
-      this.totalSongsCount = this.$store.getters.getArtists.map(a => a.songCount).reduce((a1, a2) => a1 + a2, 0);
     }
   }
 }

@@ -4,17 +4,6 @@
 
    <v-row>
 
-     <v-col class="pl-0 pt-2 text-left" md="auto">
-       <v-btn depressed plain class="text-capitalize text-subtitle-1" @click="routerGoBack()">
-         <v-icon left>mdi-arrow-left</v-icon>
-         <span>{{this.backBtnDisplayName}}</span>
-       </v-btn>
-     </v-col>
-
-   </v-row>
-
-   <v-row>
-
      <v-col>
 
        <v-card align="center" elevation="0">
@@ -128,11 +117,10 @@ import {SONG_DURATION} from "@/utils/song-duration";
 
 export default {
   name: 'PlayerView',
-  props: ['playerSong', 'backBtnLabel'],
+  props: ['playerSong'],
   data() {
     return {
       SONG_DURATION,
-      backBtnDisplayName: this.backBtnLabel,
       slider: {
         audioTime: 0,
         audioVolume: 0.5
@@ -151,7 +139,6 @@ export default {
       }
     } else {
       HTTP_CLIENT.get('/library/songs/' + this.$route.params.songId).then(response => {
-        this.backBtnDisplayName = response.data.album.name;
         eventBus.$emit('play-song', response.data);
       });
     }

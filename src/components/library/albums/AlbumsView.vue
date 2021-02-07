@@ -4,37 +4,35 @@
 
     <v-row>
 
-      <v-col class="pl-0 text-left" md="auto">
-        <v-btn depressed plain class="text-capitalize text-subtitle-1" v-bind:to="{name: this.$route.query.artistId ? 'ArtistsView' : 'GenresView'}">
-          <v-icon left>mdi-arrow-left</v-icon>
-          <span>{{this.$route.query.artistId ? 'Artists' : 'Generes'}}</span>
-        </v-btn>
-      </v-col>
+      <v-col class="pl-0 py-0 text-left">
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title class="display-1">{{this.$route.query.artistId ? this.albums[0].artist.name : this.$route.query.genre}}</v-list-item-title>
+            <v-list-item-subtitle>{{this.$route.query.artistId ? '(artist albums)' : '(genre albums)'}}</v-list-item-subtitle>
+          </v-list-item-content>
 
-      <v-col class="text-right">
-        <v-menu offset-y left>
-          <template v-slot:activator="{ attrs, on}">
-            <v-btn fab small icon v-bind="attrs" v-on="on">
-              <v-icon>mdi-dots-horizontal</v-icon>
-            </v-btn>
-          </template>
+          <v-list-item-action>
+            <v-menu offset-y left>
 
-          <v-list dense class="text-left">
-            <v-subheader>Sort albums</v-subheader>
-            <v-list-item v-for="(sortType, i) in sorting.types" :key="i" @click="applyNewSort(sortType)">
-              <v-list-item-title>{{sortType.name}}</v-list-item-title>
-              <v-list-item-icon v-if="sortType.active">
-                <v-icon right>mdi-check</v-icon>
-              </v-list-item-icon>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </v-col>
-    </v-row>
+              <template v-slot:activator="{ attrs, on}">
+                <v-btn fab small icon v-bind="attrs" v-on="on">
+                  <v-icon>mdi-dots-horizontal</v-icon>
+                </v-btn>
+              </template>
 
-    <v-row>
-      <v-col class="py-0">
-        <p class="text-h5">{{this.albums[0].artist.name}}</p>
+              <v-list dense class="text-left">
+                <v-subheader>Sort albums</v-subheader>
+                <v-list-item v-for="(sortType, i) in sorting.types" :key="i" @click="applyNewSort(sortType)">
+                  <v-list-item-title>{{sortType.name}}</v-list-item-title>
+                  <v-list-item-icon v-if="sortType.active">
+                    <v-icon right>mdi-check</v-icon>
+                  </v-list-item-icon>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-list-item-action>
+
+        </v-list-item>
       </v-col>
     </v-row>
 
@@ -125,14 +123,11 @@ export default {
   mounted() {
     let query = '';
     if (this.$route.query.artistId) {
-      this.backToView = {name: 'ArtistsView'}
       query = '?artistId=' + this.$route.query.artistId;
     } else {
       query = '?genre=' + this.$route.query.genre;
-      this.backToView = {name: 'GenresView'}
       this.sorting.type = 'by-title';
     }
-
     HTTP_CLIENT.get('/library/albums/' + query).then(response => {
       this.originalAlbums = Array.from(response.data.albums);
       this.sortAlbums(this.originalAlbums);
