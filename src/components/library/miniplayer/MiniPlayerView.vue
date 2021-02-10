@@ -115,8 +115,9 @@
 
       </v-menu>
 
-      <v-btn icon class="hidden-sm-and-down">
-        <v-icon>mdi-heart</v-icon>
+      <v-btn icon class="hidden-sm-and-down" @click="updateFavoriteStatus()">
+        <v-icon  v-if="this.$store.state.playlist.currentSong.favorite" color="yellow darken-3">mdi-star</v-icon>
+        <v-icon v-else>mdi-star-outline</v-icon>
       </v-btn>
 
 
@@ -130,6 +131,7 @@
 
 import {eventBus} from "@/main";
 import {SONG_DURATION} from "@/utils/song-duration";
+import {HTTP_CLIENT} from "@/http/axios-config";
 
 export default {
   name: 'MiniPlayerView',
@@ -175,6 +177,11 @@ export default {
         this.volumeIcon.name = 'mdi-volume-high'
       }
       eventBus.$emit('toolbar-player-current-volume-changed', this.slider.audioVolume);
+    },
+    updateFavoriteStatus() {
+      HTTP_CLIENT.post('/library/songs/' + this.$store.state.playlist.currentSong.id).then(response => {
+        this.$store.commit('setCurrentSongFavoriteStatus');
+      });
     },
     openPlayerView() {
       this.$router.push({name: 'PlayerView', params:

@@ -3,8 +3,8 @@
   <v-bottom-sheet inset persistent v-model="songMenuOptions.enable">
 
     <template v-slot:activator="{attrs, on}">
-      <v-btn icon small v-bind="attrs" v-on="on">
-        <v-icon>mdi-dots-vertical</v-icon>
+      <v-btn fab icon small v-bind="attrs" v-on="on">
+        <v-icon>mdi-dots-horizontal</v-icon>
       </v-btn>
     </template>
 

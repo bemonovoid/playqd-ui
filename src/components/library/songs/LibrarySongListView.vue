@@ -62,7 +62,8 @@
                       {{SONG_DURATION.convertSecondsToMinutesAndSeconds(song.duration)}}
                     </div>
                   </v-list-item-action-text>
-                  <v-icon color="grey lighten-1">mdi-star-outline</v-icon>
+                  <v-icon v-if="song.favorite" color="yellow darken-3">mdi-star</v-icon>
+                  <v-icon v-else>mdi-star-outline</v-icon>
                 </v-list-item-action>
 
               </v-list-item>
@@ -106,7 +107,8 @@ export default {
       sorting: {
         types: [
           {id: 'PLAY_COUNT',  name: 'Top played'},
-          {id: 'LAST_PLAYED', name: 'Recently Played'}
+          {id: 'LAST_PLAYED', name: 'Recently Played'},
+          {id: 'FAVORITES', name: 'Favorites'}
         ]
       },
       pagination: {

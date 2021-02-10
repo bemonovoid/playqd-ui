@@ -1,9 +1,6 @@
 <template>
 
   <div v-if="this.songs.length > 0">
-    <div class="py-0 text-right">
-      <AlbumSongsDropdownOptionsView :album.sync="album" :show-song-name-as-file-name.sync="showSongNameAsFileName"/>
-    </div>
     <v-row>
       <v-col class="px-0">
         <v-card align="center" elevation="0">
@@ -38,6 +35,17 @@
 
           </v-card-actions>
 
+          <v-row>
+            <v-col class="pl-6 pt-5 text-left" md="auto">
+              <div class="text--secondary">
+                {{ album.totalTime }}
+              </div>
+            </v-col>
+            <v-col class=" text-right">
+              <AlbumSongsDropdownOptionsView :album.sync="album" :show-song-name-as-file-name.sync="showSongNameAsFileName"/>
+            </v-col>
+          </v-row>
+
           <v-card-text class="px-2 pt-0">
             <v-list>
               <template v-for="(song, i) in songs">
@@ -47,7 +55,6 @@
                         <span>{{i + 1}}</span>
                       </div>
                     </v-list-item-icon>
-
                     <v-list-item-content class="text-left">
                       <v-list-item-title>
                         {{ song.name }}
@@ -65,7 +72,6 @@
                 <v-divider></v-divider>
               </template>
             </v-list>
-            <p class="pr-4 pb-5 text-right text--secondary font-weight-light">{{ album.totalTime }}</p>
           </v-card-text>
 
         </v-card>

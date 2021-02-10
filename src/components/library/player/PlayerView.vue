@@ -7,12 +7,26 @@
      <v-col>
 
        <v-card align="center" elevation="0">
+          <router-link :to="{name: 'AlbumSongsView', params: {albumId: this.$store.state.playlist.currentSong.album.id}}">
+            <v-img max-width="200px" max-height="200px" contain class="elevation-5"
+                   v-bind:src="this.$store.state.artwork.ofCurrentSong">
+            </v-img>
+          </router-link>
+         <v-card-title class="pt-2 text-h5" style="display: inherit">{{ this.$store.state.playlist.currentSong.name }}</v-card-title>
 
-         <v-img max-width="200px" max-height="200px" contain class="elevation-5" v-bind:src="this.$store.state.artwork.ofCurrentSong"></v-img>
-
-         <v-card-title class="text-body-1" style="display: inherit">{{ this.$store.state.playlist.currentSong.name }}</v-card-title>
-
-         <v-card-subtitle class="py-0">{{ this.$store.state.playlist.currentSong.artist.name }}</v-card-subtitle>
+         <v-card-subtitle class="pt-0 pb-1">
+           <v-btn class="text-capitalize text-body-1" plain height="0" :to="{name: 'AlbumsView', query: {artistId: this.$store.state.playlist.currentSong.artist.id}}">
+             {{ this.$store.state.playlist.currentSong.artist.name }}
+           </v-btn>
+           <v-row>
+             <v-col class="pt-3 pb-0 text-left">
+               <small>{{$store.state.playlist.currentSong.fileExtension}} | {{$store.state.playlist.currentSong.audioBitRate}} kbps | {{$store.state.playlist.currentSong.audioSampleRate}} Hz</small>
+             </v-col>
+             <v-col class="text-right">
+               <small>Played: {{$store.state.playlist.currentSong.playbackHistory.playCount}}</small>
+             </v-col>
+           </v-row>
+         </v-card-subtitle>
 
          <v-card-text class="px-2">
            <v-row class="no-gutters">
@@ -33,11 +47,12 @@
 
                  <template v-slot:message>
                     <v-row class="no-gutters">
-                      <v-col cols="6" class="pt-0 px-0 text-left">
-                        <p>{{SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.currentTimeAsInt)}}</p>
+                      <v-col cols="6" class="py-0 px-1 red--text text-left">
+                        {{SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.currentTimeAsInt)}}
                       </v-col>
-                      <v-col cols="6" class="pt-0 px-0 text-right">
-                        {{ SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.duration) }}
+                      <v-col cols="6" class="py-0 px-1 red--text text-right">
+                        - {{SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.duration - $store.state.audio.currentTimeAsInt)}}
+<!--                        {{ SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.duration) }}-->
                       </v-col>
                     </v-row>
                  </template>
@@ -49,27 +64,31 @@
 
          </v-card-text>
 
-         <v-card-actions style="display: inherit">
+         <v-card-actions class="pt-0" style="display: inherit">
 
            <v-row>
-             <v-col>
-               <v-btn fab large elevation="3" @click="playPrev()">
+             <v-col class="pt-0">
+               <v-btn x-small fab elevation="3" class="mr-10" @click="rewind()">
+                 <v-icon>mdi-rewind-10</v-icon>
+               </v-btn>
+
+               <v-btn small fab elevation="3" @click="playPrev()">
                  <v-icon large>mdi-skip-backward-outline</v-icon>
                </v-btn>
-             </v-col>
 
-             <v-col>
-               <v-btn class="text-center" v-if="this.$store.state.audio.isPlaying" fab large @click="pause()">
+               <v-btn class="mx-5" v-if="this.$store.state.audio.isPlaying" fab @click="pause()">
                  <v-icon large>mdi-pause</v-icon >
                </v-btn>
-               <v-btn v-else fab large @click="resumePlay">
-                 <v-icon class="pl-1" large>mdi-play-outline</v-icon>
+               <v-btn class="mx-5" v-else fab @click="resumePlay">
+                 <v-icon large class="pl-1">mdi-play-outline</v-icon>
                </v-btn>
-             </v-col>
 
-             <v-col>
-               <v-btn fab large elevation="3" @click="playNext">
+               <v-btn fab small elevation="3" @click="playNext">
                  <v-icon large>mdi-fast-forward-outline</v-icon>
+               </v-btn>
+
+               <v-btn x-small fab elevation="3" class="ml-10" @click="fastForward()">
+                 <v-icon>mdi-fast-forward-10</v-icon>
                </v-btn>
              </v-col>
 
@@ -79,23 +98,20 @@
 
          <v-divider/>
 
-         <v-row>
-           <v-col class="text-left">
-             <v-btn small icon @click="setRepeat()">
+         <v-row class="px-3">
+           <v-col class="pt-5 text-left">
+             <v-btn small icon elevation="1" @click="setRepeat()">
                <v-icon v-bind:color="repeatIcon.color">{{repeatIcon.name}}</v-icon>
              </v-btn>
+             <v-btn small icon elevation="1" class="mx-5">
+               <v-icon>mdi-shuffle-variant</v-icon>
+             </v-btn>
            </v-col>
-         </v-row>
-
-         <v-row>
-           <v-col class="text-left" md="auto">
-             <small>Format: {{$store.state.playlist.currentSong.fileExtension}}</small>
-           </v-col>
-           <v-col class="text-left" md="auto">
-             <small>Bitrate: {{$store.state.playlist.currentSong.audioBitRate}} kbps</small>
-           </v-col>
-           <v-col class="text-left" md="auto">
-             <small>Sample rate: {{$store.state.playlist.currentSong.audioSampleRate}} Hz</small>
+           <v-col class="pt-5 text-right">
+             <v-btn small icon elevation="1" @click="updateFavoriteStatus()">
+               <v-icon v-if="this.$store.state.playlist.currentSong.favorite" color="yellow darken-3">mdi-star</v-icon>
+               <v-icon v-else>mdi-star-outline</v-icon>
+             </v-btn>
            </v-col>
          </v-row>
 
@@ -147,8 +163,8 @@ export default {
     this.$store.commit('setShowMiniPlayer', true);
   },
   methods: {
-    changeAudioCurrentTime() {
-      eventBus.$emit('toolbar-player-current-time-changed', this.slider.audioTime);
+    changeAudioCurrentTime(newAudioTime) {
+      eventBus.$emit('toolbar-player-current-time-changed', newAudioTime ? newAudioTime : this.slider.audioTime);
     },
     playNext() {
       eventBus.$emit('play-next-song');
@@ -162,6 +178,12 @@ export default {
     pause() {
       eventBus.$emit('player-pause');
     },
+    rewind() {
+      this.changeAudioCurrentTime(this.slider.audioTime - 10);
+    },
+    fastForward() {
+      this.changeAudioCurrentTime(this.slider.audioTime + 10);
+    },
     setRepeat() {
       if (this.$store.state.playlist.repeat === 'none') {
         this.$store.commit('setRepeatMode', 'all');
@@ -174,12 +196,13 @@ export default {
         this.repeatIcon = {name: 'mdi-repeat', color: ''}
       }
     },
-    routerGoBack() {
-      if (this.playerSong) {
-        this.$router.back();
-      } else {
-        this.$router.push({name: 'AlbumSongsView', params: {albumId: this.$store.state.playlist.currentSong.album.id}})
-      }
+    updateFavoriteStatus() {
+      HTTP_CLIENT.post('/library/songs/' + this.$store.state.playlist.currentSong.id).then(response => {
+        this.$store.commit('setCurrentSongFavoriteStatus');
+      });
+    },
+    openAlbum() {
+      this.$router.push({name: 'AlbumSongsView', params: {albumId: this.$store.state.playlist.currentSong.album.id}})
     }
   }
 }
