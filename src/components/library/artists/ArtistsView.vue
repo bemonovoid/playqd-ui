@@ -105,9 +105,9 @@ export default {
         types: [
           {id: 'name',            name: 'By Name',         icon: 'mdi-sort-alphabetical-ascending'},
           {id: 'play-last-date',  name: 'Recently Played', icon: 'mdi-sort-clock-ascending-outline'},
-          {id: 'play-count',      name: 'Most Played',     icon: 'mdi-sort-descending'},
-          {id: 'album-count',     name: 'Total Albums',    icon: 'mdi-sort-descending'},
-          {id: 'song-count',      name: 'Total Songs',     icon: 'mdi-sort-descending'}
+          {id: 'play-count',      name: 'Most Played',     icon: 'mdi-sort-ascending'},
+          {id: 'album-count',     name: 'Total Albums',    icon: 'mdi-folder-music-outline'},
+          {id: 'song-count',      name: 'Total Songs',     icon: 'mdi-music-box-multiple-outline'}
         ]
       }
     }

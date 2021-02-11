@@ -20,8 +20,8 @@
                 <v-subheader>Filter songs</v-subheader>
                 <v-list-item v-for="(sortType, i) in sorting.types" :key="i" @click="getSongsFiltered(10, sortType.id)">
                   <v-list-item-title>{{sortType.name}}</v-list-item-title>
-                  <v-list-item-icon v-if="sortType.active">
-                    <v-icon right>mdi-check</v-icon>
+                  <v-list-item-icon>
+                    <v-icon right>{{sortType.icon}}</v-icon>
                   </v-list-item-icon>
                 </v-list-item>
               </v-list>
@@ -39,7 +39,7 @@
           <v-list-item-group color="primary">
 
             <template v-for="(song, i) in songs">
-              <v-list-item :key="i" @click="playSong(song)" three-line class="pl-0">
+              <v-list-item :key="i" @click="playLibrarySongs(i)" three-line class="pl-0">
 
                 <v-list-item-avatar tile class="text-left">
                   <v-img v-bind:src="$store.getters.getArtWorkBaseUrl + song.album.id">
@@ -96,19 +96,19 @@
 <script>
 
 import {HTTP_CLIENT} from "@/http/axios-config";
-import {SONG_DURATION} from "@/utils/song-duration";
+import {SONG_HELPER} from "@/utils/songs-helper";
 import {eventBus} from "@/main";
 
 export default {
   name: "LibrarySongsView",
   data() {
     return {
-      SONG_DURATION,
+      SONG_DURATION: SONG_HELPER,
       sorting: {
         types: [
-          {id: 'PLAY_COUNT',  name: 'Top played'},
-          {id: 'LAST_PLAYED', name: 'Recently Played'},
-          {id: 'FAVORITES', name: 'Favorites'}
+          {id: 'PLAY_COUNT',  name: 'Top played',      icon: 'mdi-sort-ascending'},
+          {id: 'LAST_PLAYED', name: 'Recently Played', icon: 'mdi-sort-clock-ascending-outline'},
+          {id: 'FAVORITES',   name: 'Favorites',       icon: 'mdi-star-outline'}
         ]
       },
       pagination: {
@@ -123,8 +123,8 @@ export default {
     this.getSongsFiltered(10, 'PLAY_COUNT');
   },
   methods: {
-    playSong(song) {
-      eventBus.$emit('play-song', song);
+    playLibrarySongs(songIdx) {
+      eventBus.$emit('play-playlist', {songs: this.songs, startSongIdx: songIdx, shuffle: false});
     },
     getSongsFiltered(pageSize, filterType) {
       HTTP_CLIENT.get('/library/songs/?pageSize=' + pageSize + '&filter=' + filterType).then(response => {

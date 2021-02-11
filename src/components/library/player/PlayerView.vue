@@ -20,10 +20,10 @@
            </v-btn>
            <v-row>
              <v-col class="pt-3 pb-0 text-left">
-               <small>{{$store.state.playlist.currentSong.fileExtension}} | {{$store.state.playlist.currentSong.audioBitRate}} kbps | {{$store.state.playlist.currentSong.audioSampleRate}} Hz</small>
+               <small>Played: {{$store.state.playlist.currentSong.playbackHistory.playCount}}</small>
              </v-col>
              <v-col class="text-right">
-               <small>Played: {{$store.state.playlist.currentSong.playbackHistory.playCount}}</small>
+               <small>{{$store.state.playlist.currentSong.fileExtension}} | {{$store.state.playlist.currentSong.audioBitRate}} kbps | {{$store.state.playlist.currentSong.audioSampleRate}} Hz</small>
              </v-col>
            </v-row>
          </v-card-subtitle>
@@ -72,7 +72,7 @@
                  <v-icon>mdi-rewind-10</v-icon>
                </v-btn>
 
-               <v-btn small fab elevation="3" @click="playPrev()">
+               <v-btn small fab elevation="3" :disabled="!this.$store.getters.hasPrevSong" @click="playPrev()">
                  <v-icon large>mdi-skip-backward-outline</v-icon>
                </v-btn>
 
@@ -83,7 +83,7 @@
                  <v-icon large class="pl-1">mdi-play-outline</v-icon>
                </v-btn>
 
-               <v-btn fab small elevation="3" @click="playNext">
+               <v-btn fab small elevation="3" :disabled="!this.$store.getters.hasNextSong" @click="playNext">
                  <v-icon large>mdi-fast-forward-outline</v-icon>
                </v-btn>
 
@@ -95,6 +95,21 @@
            </v-row>
 
          </v-card-actions>
+
+         <v-row>
+           <v-col class="pb-0 text-left text-caption text-truncate">
+             <div v-if="this.$store.getters.getPrevSong">
+               <small>Just played: </small>
+               <p class="grey--text">{{this.$store.getters.getPrevSong.name}}</p>
+             </div>
+           </v-col>
+           <v-col class="pb-0 text-right text-caption">
+             <div v-if="this.$store.getters.getNextSong">
+               <small>Playing next: </small>
+               <p class="grey--text">{{this.$store.getters.getNextSong.name}}</p>
+             </div>
+           </v-col>
+         </v-row>
 
          <v-divider/>
 
@@ -129,14 +144,14 @@
 
 import {eventBus} from "@/main";
 import {HTTP_CLIENT} from "@/http/axios-config";
-import {SONG_DURATION} from "@/utils/song-duration";
+import {SONG_HELPER} from "@/utils/songs-helper";
 
 export default {
   name: 'PlayerView',
   props: ['playerSong'],
   data() {
     return {
-      SONG_DURATION,
+      SONG_DURATION: SONG_HELPER,
       slider: {
         audioTime: 0,
         audioVolume: 0.5
@@ -149,13 +164,10 @@ export default {
   },
   mounted() {
     this.$store.commit('setShowMiniPlayer', false);
-    if (this.playerSong) {
-      if (!this.$store.state.playlist.currentSong || this.playerSong.id !== this.$store.state.playlist.currentSong.id) {
-        eventBus.$emit('play-song', this.playerSong);
-      }
-    } else {
+    if (!this.playerSong) {
       HTTP_CLIENT.get('/library/songs/' + this.$route.params.songId).then(response => {
-        eventBus.$emit('play-song', response.data);
+        let songs = [response.data];
+        eventBus.$emit('play-playlist', {songs: songs, startSongIdx: 0, shuffle: false});
       });
     }
   },

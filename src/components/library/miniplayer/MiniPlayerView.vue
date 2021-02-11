@@ -120,7 +120,6 @@
         <v-icon v-else>mdi-star-outline</v-icon>
       </v-btn>
 
-
     </v-toolbar-items>
 
   </v-app-bar>
@@ -130,7 +129,7 @@
 <script>
 
 import {eventBus} from "@/main";
-import {SONG_DURATION} from "@/utils/song-duration";
+import {SONG_HELPER} from "@/utils/songs-helper";
 import {HTTP_CLIENT} from "@/http/axios-config";
 
 export default {
@@ -138,7 +137,7 @@ export default {
   components: {},
   data() {
     return {
-      SONG_DURATION,
+      SONG_DURATION: SONG_HELPER,
       volumeIcon: {
         color: 'grey darken-1',
         name: 'mdi-volume-high'

@@ -53,8 +53,8 @@ export default {
           viewName: "ArtistsView"
         },
         {
-          title: "Albums",
-          icon: "mdi-folder-music-outline",
+          title: "Playlists",
+          icon: "mdi-playlist-music-outline",
           viewName: "AlbumsView"
         },
         {

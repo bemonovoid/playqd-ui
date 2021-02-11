@@ -23,7 +23,7 @@
 
           <v-card-actions style="display: inherit">
 
-            <v-btn width="160" depressed rounded @click="playAlbum(songs[0])">
+            <v-btn width="160" depressed rounded @click="playAlbum(0)">
               <v-icon left>mdi-play</v-icon>
               <span class="text-capitalize">Play</span>
             </v-btn>
@@ -49,7 +49,7 @@
           <v-card-text class="px-2 pt-0">
             <v-list>
               <template v-for="(song, i) in songs">
-                <v-list-item :key="i" @click="playSong(song)">
+                <v-list-item :key="i" @click="playSong(i)">
                     <v-list-item-icon class="py-0 mr-1">
                       <div class="text--disabled text-right">
                         <span>{{i + 1}}</span>
@@ -86,7 +86,7 @@
 
 import {eventBus} from "@/main";
 import {HTTP_CLIENT} from "@/http/axios-config";
-import {SONG_DURATION} from "@/utils/song-duration";
+import {SONG_HELPER} from "@/utils/songs-helper";
 
 import AlbumSongsDropdownOptionsView from "@/components/library/songs/AlbumSongsDropdownOptionsView";
 
@@ -101,7 +101,7 @@ export default {
   props: ['albumData', 'albumFrom'],
   data() {
     return {
-      SONG_DURATION,
+      SONG_DURATION: SONG_HELPER,
       backBtnDisplayName: this.backBtnLabel,
       headers: [
           {align: 'center', value: 'orderId', cellClass: 'pa-0'},
@@ -138,17 +138,18 @@ export default {
       }
       return false;
     },
-    playAlbum(startSong) {
-      eventBus.$emit('play-album', {startSong: startSong, songs: this.songs});
+    playAlbum(songIdx) {
+      eventBus.$emit('play-playlist', {songs: this.songs, startSongIdx: songIdx, shuffle: false});
     },
     playAlbumShuffled() {
-      eventBus.$emit('play-album-shuffled', {songs: this.songs});
+      SONG_HELPER.shufflePlaylist(this.songs);
+      eventBus.$emit('play-playlist', {songs: this.songs, startSongIdx: 0, shuffle: true});
     },
-    playSong(song) {
+    playSong(songIdx) {
       if (this.$store.state.playlist.id === null || this.$store.state.playlist.id !== this.album.id) {
-        this.playAlbum(song);
+        this.playAlbum(songIdx);
       } else {
-        eventBus.$emit('play-song', song);
+        eventBus.$emit('play-song', songIdx);
       }
     }
   }

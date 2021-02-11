@@ -4,15 +4,6 @@ import {HTTP_CLIENT} from "@/http/axios-config";
 
 Vue.use(Vuex)
 
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1));
-        let temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
-}
-
 export default new Vuex.Store({
     state: {
         audio: {
@@ -35,6 +26,7 @@ export default new Vuex.Store({
             loopAll: false,
             loopCurrent:false,
             currentSong: null,
+            currentSongIdx: -1,
             songs: []
         },
         miniPlayer: {
@@ -48,17 +40,29 @@ export default new Vuex.Store({
         getArtWorkBaseUrl: (state) => {
             return state.artWorkBaseUrl;
         },
-        hasNextSong: (state) => {
-            let songItem = state.playlist.songs
-                .map((song, i) => {return {id: song.id, idx: i}})
-                .filter((sItem) => sItem.id === state.playlist.currentSong.id)[0];
-            return songItem.idx + 1 < state.playlist.songs.length || state.playlist.repeat === 'all';
+        repeatAll: (state) => {
+            return state.playlist.repeat === 'all';
+        },
+        hasNextSong: (state, getters) => {
+           return getters.repeatAll || state.playlist.currentSongIdx + 1 < state.playlist.songs.length;
         },
         hasPrevSong: (state) => {
-            let songItem = state.playlist.songs
-                .map((song, i) => {return {id: song.id, idx: i}})
-                .filter((sItem) => sItem.id === state.playlist.currentSong.id)[0];
-            return songItem.idx - 1 >= 0;
+            return state.playlist.currentSongIdx - 1 >= 0;
+        },
+        getNextSong: (state, getters) => {
+            if (getters.hasNextSong) {
+                if (state.playlist.currentSongIdx + 1 === state.playlist.songs.length && getters.repeatAll) {
+                    return state.playlist.songs[0];
+                }
+                return state.playlist.songs[state.playlist.currentSongIdx + 1];
+            }
+            return null;
+        },
+        getPrevSong: (state, getters) => {
+            if (getters.hasPrevSong) {
+                return state.playlist.songs[state.playlist.currentSongIdx - 1]
+            }
+            return null;
         },
         getCurrentSongDurationInMinutesAndSeconds: (state) => {
             let seconds = state.audio.duration;
@@ -101,52 +105,48 @@ export default new Vuex.Store({
         setPlaylist: (state, payload) => {
             state.playlist.id = payload.playlistId;
             state.playlist.shuffle = payload.shuffle;
-            let songs = Array.from(payload.songs)
-            if (state.playlist.shuffle) {
-                shuffleArray(songs);
-                state.playlist.currentSong = songs[0];
-            } else {
-                state.playlist.currentSong = songs.filter((s, i) => s.id === payload.startSong.id)[0];
-            }
-            state.playlist.songs = songs;
+            state.playlist.currentSong = payload.songs[payload.startSongIdx];
+            state.playlist.currentSongIdx = payload.startSongIdx;
+            state.playlist.songs = payload.songs;
             state.artwork.ofCurrentSong = state.artWorkBaseUrl + state.playlist.currentSong.album.id;
         },
         setCurrentSongToPrev: (state) => {
-            let songItem = state.playlist.songs
-                .map((song, i) => {return {id: song.id, idx: i}})
-                .filter((sItem) => sItem.id === state.playlist.currentSong.id)[0];
-            let prevSong = state.playlist.songs[songItem.idx - 1];
-            if (state.playlist.currentSong.album.id !== prevSong.album.id) {
-                state.artwork.ofCurrentSong = state.artWorkBaseUrl + state.playlist.currentSong.album.id;
+            if (state.playlist.currentSongIdx - 1 >= 0) {
+                let prevSong = state.playlist.songs[--state.playlist.currentSongIdx];
+                if (prevSong.album.id !== state.playlist.currentSong.album.id) {
+                    state.artwork.ofCurrentSong = state.artWorkBaseUrl + state.playlist.currentSong.album.id;
+                }
+                state.playlist.currentSong = prevSong;
             }
-            state.playlist.currentSong = prevSong;
         },
         setCurrentSongToNext: (state) => {
-            let songItem = state.playlist.songs
-                .map((song, i) => {return {id: song.id, idx: i}})
-                .filter((sItem) => sItem.id === state.playlist.currentSong.id)[0];
             let nextSong = null;
-            if (songItem.idx + 1 < state.playlist.songs.length) {
-                nextSong = state.playlist.songs[songItem.idx + 1];
+            if (state.playlist.currentSongIdx + 1 < state.playlist.songs.length) {
+                nextSong = state.playlist.songs[++state.playlist.currentSongIdx];
             } else if (state.playlist.repeat === 'all') {
                 nextSong = state.playlist.songs[0];
             } else {
                 return;
             }
-            if (state.playlist.currentSong.album.id !== nextSong.album.id) {
+            if (nextSong.album.id !== state.playlist.currentSong.album.id) {
                 state.artwork.ofCurrentSong = state.artWorkBaseUrl + state.playlist.currentSong.album.id;
             }
             state.playlist.currentSong = nextSong;
         },
         setCurrentSong: (state, payload) => {
+            let song = state.playlist.songs[payload];
             if (state.playlist.currentSong) {
-                if (state.playlist.currentSong.album.id !== payload.album.id) {
-                    state.artwork.ofCurrentSong = state.artWorkBaseUrl + payload.album.id;
+                if (song.album.id !== state.playlist.currentSong.album.id) {
+                    state.artwork.ofCurrentSong = state.artWorkBaseUrl + song.album.id;
                 }
             } else {
-                state.artwork.ofCurrentSong = state.artWorkBaseUrl + payload.album.id;
+                state.artwork.ofCurrentSong = state.artWorkBaseUrl + song.album.id;
             }
-            state.playlist.currentSong = payload;
+            state.playlist.currentSong = song;
+            state.playlist.currentSongIdx = payload;
+            if (state.playlist.songs.length === 0) {
+                state.playlist.songs[0] = state.playlist.currentSong;
+            }
         },
         setCurrentSongFavoriteStatus: (state) => {
             state.playlist.currentSong.favorite = !state.playlist.currentSong.favorite;

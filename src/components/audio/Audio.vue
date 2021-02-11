@@ -48,11 +48,8 @@ export default {
     eventBus.$on('play-song', (payload) => {
       this.loadSingleSong(payload);
     })
-    eventBus.$on('play-album', payload => {
-      this.loadAlbum(payload.songs, payload.startSong, false);
-    });
-    eventBus.$on('play-album-shuffled', payload => {
-      this.loadAlbum(payload.songs, null, true);
+    eventBus.$on('play-playlist', payload => {
+      this.loadPlaylist(payload.songs, payload.startSongIdx, payload.shuffle);
     });
   },
   methods: {
@@ -72,15 +69,14 @@ export default {
     onAudioLoadedMetadata() {
       this.$store.commit('setAudioProperties', this.getMetadata());
     },
-    loadAlbum(songs, startSong, shuffle) {
-      let albumId = shuffle ? songs[0].album.id : startSong.album.id;
+    loadPlaylist(songs, startSongIdx, shuffle) {
       this.$store.commit('setPlaylist', {
-        playlistId: albumId, shuffle: shuffle, songs: songs, startSong: startSong
+        playlistId: songs[startSongIdx].album.id, shuffle: shuffle, songs: songs, startSongIdx: startSongIdx
       });
       this.loadAudio();
     },
-    loadSingleSong(song) {
-      this.$store.commit('setCurrentSong', song);
+    loadSingleSong(songIdx) {
+      this.$store.commit('setCurrentSong', songIdx);
       this.loadAudio();
     },
     loadNextSong() {
