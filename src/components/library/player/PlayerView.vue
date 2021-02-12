@@ -24,9 +24,7 @@
                {{ this.replaceSongNameWithFileName ? this.$store.state.playlist.currentSong.fileName : this.$store.state.playlist.currentSong.name }}
              </v-col>
              <v-col cols="1" class="text-right">
-               <v-btn fab small icon>
-                 <v-icon>mdi-dots-horizontal</v-icon>
-               </v-btn>
+               <EditPlayerSongView v-bind:song-data="this.$store.state.playlist.currentSong"></EditPlayerSongView>
              </v-col>
            </v-row>
          </v-card-title>
@@ -142,9 +140,11 @@
 import {eventBus} from "@/main";
 import {HTTP_CLIENT} from "@/http/axios-config";
 import {SONG_HELPER} from "@/utils/songs-helper";
+import EditPlayerSongView from "@/components/library/player/EditPlayerSongView";
 
 export default {
   name: 'PlayerView',
+  components: {EditPlayerSongView},
   props: ['playerSong'],
   data() {
     return {
@@ -216,5 +216,4 @@ export default {
     }
   }
 }
-
 </script>

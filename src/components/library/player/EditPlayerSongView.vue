@@ -10,36 +10,40 @@
 
     <v-card>
       <v-card-title>
-        <span class="headline">Edit Album</span>
+        <span class="headline">Edit Song</span>
       </v-card-title>
       <v-card-text>
-
         <v-form v-model="editForm.valid" class="pt-5">
           <v-text-field dense label="Name"
                         persistent-hint
-                        :hint="albumData.name"
-                        v-model="album.name">
+                        :hint="songData.name"
+                        v-model="song.name">
           </v-text-field>
 
-          <v-text-field dense label="Genre" class="pt-5"
-                        persistent-hint
-                        :hint="albumData.genre"
-                        v-model="album.genre">
-          </v-text-field>
+          <v-textarea
+              clearable
+              rows="1"
+              clear-icon="mdi-close-circle"
+              v-model="song.comment"
+              label="Comment">
+          </v-textarea>
 
-          <v-text-field dense label="Year" class="pt-5"
-                        persistent-hint
-                        :hint="albumData.date"
-                        v-model="album.date">
-          </v-text-field>
+          <v-textarea
+              clearable
+              rows="3"
+              clear-icon="mdi-close-circle"
+              v-model="song.lyrics"
+              label="Lyrics">
+          </v-textarea>
 
           <v-text-field dense label="Artwork url" class="pt-5"
                         persistent-hint
                         hint="URL"
-                        v-model="album.artworkSrc">
+                        v-model="song.artworkSrc">
           </v-text-field>
 
-          <v-checkbox label="Override song name with file name" color="red" v-model="album.overrideSongNameWithFileName"></v-checkbox>
+          <v-checkbox label="Override song name with file name" color="red" v-model="song.overrideSongNameWithFileName"></v-checkbox>
+
         </v-form>
 
       </v-card-text>
@@ -62,19 +66,19 @@
 import {HTTP_CLIENT} from "@/http/axios-config";
 
 export default {
-  name: 'EditAlbumView',
-  props: ['albumData'],
+  name: 'EditPlayerSongView',
+  props: ['songData'],
   data() {
     return {
       active: false,
       editForm: {
-        valid: false
+        valid: false,
       },
-      album: {
-        name: this.albumData.name,
-        genre: this.albumData.genre,
-        date: this.albumData.date,
-        overrideSongNameWithFileName: false,
+      song: {
+        name: this.songData.name,
+        comment: this.songData.comment,
+        lyrics: this.songData.lyrics,
+        overrideSongNameWithFileName: this.songData.showFileNameAsSongName,
         artworkSrc: ''
       },
     }
@@ -82,9 +86,8 @@ export default {
   methods: {
     saveChanges() {
       if (this.editForm.valid) {
-        console.log(this.album)
-        HTTP_CLIENT.put('/library/albums/' + this.albumData.id, this.album).then(response => {
-            this.active = false;
+        HTTP_CLIENT.put('/library/songs/' + this.songData.id, this.song).then(response => {
+          this.active = false;
         });
       }
     }

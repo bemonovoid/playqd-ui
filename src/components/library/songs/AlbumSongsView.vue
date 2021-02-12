@@ -17,7 +17,7 @@
           <v-card-subtitle class="py-0">
             <v-btn class="text-capitalize" plain height="0"
               :to="{name: 'AlbumsView', query: {genre: album.genre}}">
-              <small>{{ album.genre ? album.genre + ' - ' : '' }} {{ album.date ? album.date : '' }}</small>
+              <small>{{ album.genre ? album.genre : ''}} {{ album.date ? ' - '+ album.date : '' }}</small>
             </v-btn>
           </v-card-subtitle>
 
@@ -41,7 +41,7 @@
                 {{ album.totalTime }}
               </div>
             </v-col>
-            <v-col class=" text-right">
+            <v-col class="text-right">
               <EditAlbumView v-bind:album-data="album"></EditAlbumView>
               <AlbumSongsDropdownOptionsView :album.sync="album" :show-song-name-as-file-name.sync="replaceSongNameWithFileName"/>
             </v-col>
@@ -58,7 +58,7 @@
                     </v-list-item-icon>
                     <v-list-item-content class="text-left">
                       <v-list-item-title>
-                        {{ replaceSongNameWithFileName || song.showFileNameAsSongName ? song.fileName : song.name }}
+                        {{ replaceSongNameWithFileName ? song.fileName : song.name }}
                       </v-list-item-title>
                     </v-list-item-content>
                     <v-list-item-action>

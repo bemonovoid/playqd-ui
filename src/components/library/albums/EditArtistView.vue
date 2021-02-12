@@ -14,7 +14,7 @@
       </v-card-title>
       <v-card-text>
 
-        <v-form v-model="editForm.valid">
+        <v-form v-model="editForm.valid" class="pt-5">
           <v-text-field dense label="Name"
                         required
                         persistent-hint
