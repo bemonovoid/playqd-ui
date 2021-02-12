@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "axios": "0.21.1",
+    "country-code-lookup": "0.0.18",
     "vue": "2.6.12",
     "vue-axios": "3.2.0",
     "vue-head": "^2.2.0",

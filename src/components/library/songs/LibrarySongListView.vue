@@ -63,7 +63,6 @@
                     </div>
                   </v-list-item-action-text>
                   <v-icon v-if="song.favorite" color="yellow darken-3">mdi-star</v-icon>
-                  <v-icon v-else>mdi-star-outline</v-icon>
                 </v-list-item-action>
 
               </v-list-item>

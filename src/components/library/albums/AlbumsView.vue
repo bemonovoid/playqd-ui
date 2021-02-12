@@ -10,8 +10,10 @@
             <v-list-item-title class="display-1">{{this.$route.query.artistId ? this.albums[0].artist.name : this.$route.query.genre}}</v-list-item-title>
             <v-list-item-subtitle>{{this.$route.query.artistId ? '(artist albums)' : '(genre albums)'}}</v-list-item-subtitle>
           </v-list-item-content>
-
-          <v-list-item-action>
+          <v-list-item-action class="mx-0">
+            <EditAlbumsArtistView v-on:close="" v-bind:artist-data="originalAlbums[0].artist"></EditAlbumsArtistView>
+          </v-list-item-action>
+          <v-list-item-action class="mx-0">
             <v-menu offset-y left>
 
               <template v-slot:activator="{ attrs, on}">
@@ -96,11 +98,13 @@
 <script>
 
 import {HTTP_CLIENT} from "@/http/axios-config"
+import EditAlbumsArtistView from "@/components/library/albums/EditArtistView";
 
 const ITEMS_PER_PAGE = 12;
 
 export default {
   name: 'AlbumsView',
+  components: {EditAlbumsArtistView},
   data() {
     return {
       sorting: {

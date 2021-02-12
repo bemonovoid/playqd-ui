@@ -12,10 +12,27 @@
                    v-bind:src="this.$store.state.artwork.ofCurrentSong">
             </v-img>
           </router-link>
-         <v-card-title class="pt-2 text-h5" style="display: inherit">{{ this.$store.state.playlist.currentSong.name }}</v-card-title>
+         <v-card-title class="pt-2 text-h5" style="display: inherit">
+           <v-row>
+             <v-col cols="1" class="text-left">
+               <v-btn small icon elevation="1" @click="updateFavoriteStatus()">
+                 <v-icon v-if="this.$store.state.playlist.currentSong.favorite" color="yellow darken-3">mdi-star</v-icon>
+                 <v-icon v-else>mdi-star-outline</v-icon>
+               </v-btn>
+             </v-col>
+             <v-col @click="replaceSongNameWithFileName = !replaceSongNameWithFileName">
+               {{ this.replaceSongNameWithFileName ? this.$store.state.playlist.currentSong.fileName : this.$store.state.playlist.currentSong.name }}
+             </v-col>
+             <v-col cols="1" class="text-right">
+               <v-btn fab small icon>
+                 <v-icon>mdi-dots-horizontal</v-icon>
+               </v-btn>
+             </v-col>
+           </v-row>
+         </v-card-title>
 
          <v-card-subtitle class="pt-0 pb-1">
-           <v-btn class="text-capitalize text-body-1" plain height="0" :to="{name: 'AlbumsView', query: {artistId: this.$store.state.playlist.currentSong.artist.id}}">
+           <v-btn class="text-capitalize text-body-1 red--text" plain height="0" :to="{name: 'AlbumsView', query: {artistId: this.$store.state.playlist.currentSong.artist.id}}">
              {{ this.$store.state.playlist.currentSong.artist.name }}
            </v-btn>
            <v-row>
@@ -52,7 +69,6 @@
                       </v-col>
                       <v-col cols="6" class="py-0 px-1 red--text text-right">
                         - {{SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.duration - $store.state.audio.currentTimeAsInt)}}
-<!--                        {{ SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.duration) }}-->
                       </v-col>
                     </v-row>
                  </template>
@@ -68,8 +84,8 @@
 
            <v-row>
              <v-col class="pt-0">
-               <v-btn x-small fab elevation="3" class="mr-10" @click="rewind()">
-                 <v-icon>mdi-rewind-10</v-icon>
+               <v-btn x-small fab elevation="3" class="mr-10" @click="setRepeat()">
+                 <v-icon v-bind:color="repeatIcon.color">{{repeatIcon.name}}</v-icon>
                </v-btn>
 
                <v-btn small fab elevation="3" :disabled="!this.$store.getters.hasPrevSong" @click="playPrev()">
@@ -97,38 +113,19 @@
          </v-card-actions>
 
          <v-row>
-           <v-col class="pb-0 text-left text-caption text-truncate">
-             <div v-if="this.$store.getters.getPrevSong">
-               <small>Just played: </small>
-               <p class="grey--text">{{this.$store.getters.getPrevSong.name}}</p>
-             </div>
+           <v-col class="pb-2 text-left text-caption text-truncate">
+             <small><i>Just played: </i></small>
+             <p v-if="this.$store.getters.getPrevSong" class="grey--text">{{this.$store.getters.getPrevSong.name}}</p>
+             <p v-else class="grey--text"> - - - </p>
            </v-col>
-           <v-col class="pb-0 text-right text-caption">
-             <div v-if="this.$store.getters.getNextSong">
-               <small>Playing next: </small>
-               <p class="grey--text">{{this.$store.getters.getNextSong.name}}</p>
-             </div>
+           <v-col class="pb-2 text-right text-caption">
+             <small><i>Playing next: </i></small>
+             <p v-if="this.$store.getters.getNextSong" class="grey--text">{{this.$store.getters.getNextSong.name}}</p>
+             <p v-else class="grey--text"> - - - </p>
            </v-col>
          </v-row>
 
          <v-divider/>
-
-         <v-row class="px-3">
-           <v-col class="pt-5 text-left">
-             <v-btn small icon elevation="1" @click="setRepeat()">
-               <v-icon v-bind:color="repeatIcon.color">{{repeatIcon.name}}</v-icon>
-             </v-btn>
-             <v-btn small icon elevation="1" class="mx-5">
-               <v-icon>mdi-shuffle-variant</v-icon>
-             </v-btn>
-           </v-col>
-           <v-col class="pt-5 text-right">
-             <v-btn small icon elevation="1" @click="updateFavoriteStatus()">
-               <v-icon v-if="this.$store.state.playlist.currentSong.favorite" color="yellow darken-3">mdi-star</v-icon>
-               <v-icon v-else>mdi-star-outline</v-icon>
-             </v-btn>
-           </v-col>
-         </v-row>
 
        </v-card>
 
@@ -159,7 +156,8 @@ export default {
       repeatIcon: {
         name: 'mdi-repeat',
         color: ''
-      }
+      },
+      replaceSongNameWithFileName: false
     }
   },
   mounted() {
