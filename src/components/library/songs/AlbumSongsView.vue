@@ -133,6 +133,14 @@ export default {
       this.album.totalTime = this.songs.length + ' songs, ' + this.album.totalTimeHumanReadable;
       this.$store.commit('setArtworkOfOpenedAlbum', {albumId: this.album.id, src: this.$store.getters.getArtWorkBaseUrl + this.album.id});
     });
+    eventBus.$on('album-data-updated', newAlbumData => {
+      this.album.name = newAlbumData.name;
+      this.album.genre = newAlbumData.genre;
+      this.album.date = newAlbumData.date;
+      if (newAlbumData.artworkSrc.length > 0) {
+        this.$store.commit('setArtworkOfOpenedAlbum', {albumId: this.album.id, src: newAlbumData.artworkSrc});
+      }
+    })
   },
   methods: {
     isPlayingSongRow(songId) {
