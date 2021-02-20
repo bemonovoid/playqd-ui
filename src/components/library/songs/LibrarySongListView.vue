@@ -42,7 +42,7 @@
               <v-list-item :key="i" @click="playLibrarySongs(i)" three-line class="pl-0">
 
                 <v-list-item-avatar tile class="text-left">
-                  <v-img v-bind:src="$store.getters.getArtWorkBaseUrl + song.album.id">
+                  <v-img v-bind:src="$store.state.albumsBaseUrl + song.album.id + '/image'">
                   </v-img>
                 </v-list-item-avatar>
 
@@ -94,7 +94,7 @@
 
 <script>
 
-import {HTTP_CLIENT} from "@/http/axios-config";
+import PLAYQD_API from "@/http/playqdAPI"
 import {SONG_HELPER} from "@/utils/songs-helper";
 import {eventBus} from "@/main";
 
@@ -126,7 +126,7 @@ export default {
       eventBus.$emit('play-playlist', {songs: this.songs, startSongIdx: songIdx, shuffle: false});
     },
     getSongsFiltered(pageSize, filterType) {
-      HTTP_CLIENT.get('/library/songs/?pageSize=' + pageSize + '&filter=' + filterType).then(response => {
+      PLAYQD_API.getSongsFiltered(pageSize, filterType).then(response => {
         this.songs = response.data
       });
     },

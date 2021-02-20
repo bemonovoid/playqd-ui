@@ -138,7 +138,7 @@
 <script>
 
 import {eventBus} from "@/main";
-import {HTTP_CLIENT} from "@/http/axios-config";
+import PLAYQD_API from "@/http/playqdAPI"
 import {SONG_HELPER} from "@/utils/songs-helper";
 import EditPlayerSongView from "@/components/library/player/EditPlayerSongView";
 
@@ -163,7 +163,7 @@ export default {
   mounted() {
     this.$store.commit('setShowMiniPlayer', false);
     if (!this.playerSong) {
-      HTTP_CLIENT.get('/library/songs/' + this.$route.params.songId).then(response => {
+      PLAYQD_API.getSong(this.$route.params.songId).then(response => {
         let songs = [response.data];
         eventBus.$emit('play-playlist', {songs: songs, startSongIdx: 0, shuffle: false});
       });
@@ -207,7 +207,7 @@ export default {
       }
     },
     updateFavoriteStatus() {
-      HTTP_CLIENT.post('/library/songs/' + this.$store.state.playlist.currentSong.id).then(response => {
+      PLAYQD_API.setSongFavoriteStatus(this.$store.state.playlist.currentSong.id).then(response => {
         this.$store.commit('setCurrentSongFavoriteStatus');
       });
     },

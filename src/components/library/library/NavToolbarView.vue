@@ -27,7 +27,7 @@
 <script>
 
 import {eventBus} from "@/main";
-import {HTTP_CLIENT} from "@/http/axios-config";
+import PLAYQD_API from "@/http/playqdAPI"
 
 export default {
   name: 'NavToolbarView',
@@ -41,7 +41,7 @@ export default {
   },
   mounted() {
     eventBus.$on('playback-song-ended', (songId) => {
-        HTTP_CLIENT.put('/library/history/' + songId);
+      PLAYQD_API.updateSongHistory(songId);
     });
   },
   methods: {

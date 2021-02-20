@@ -86,7 +86,7 @@
 <script>
 
 import {eventBus} from "@/main";
-import {HTTP_CLIENT} from "@/http/axios-config";
+import PLAYQD_API from "@/http/playqdAPI"
 import {SONG_HELPER} from "@/utils/songs-helper";
 
 import AlbumSongsDropdownOptionsView from "@/components/library/songs/AlbumSongsDropdownOptionsView";
@@ -125,13 +125,13 @@ export default {
     }
   },
   mounted() {
-    HTTP_CLIENT.get('/library/songs/album/' + this.$route.params.albumId).then(response => {
+    PLAYQD_API.getAlbumSongs(this.$route.params.albumId).then(response => {
       this.songs = response.data.songs
       if (!this.album) {
         this.album = response.data.album;
       }
       this.album.totalTime = this.songs.length + ' songs, ' + this.album.totalTimeHumanReadable;
-      this.$store.commit('setArtworkOfOpenedAlbum', {albumId: this.album.id, src: this.$store.getters.getArtWorkBaseUrl + this.album.id});
+      this.$store.commit('setArtworkOfOpenedAlbum', {albumId: this.album.id, src: this.$store.state.albumsBaseUrl + this.album.id + '/image'});
     });
     eventBus.$on('album-data-updated', newAlbumData => {
       this.album.name = newAlbumData.name;
@@ -157,7 +157,7 @@ export default {
       eventBus.$emit('play-playlist', {songs: this.songs, startSongIdx: 0, shuffle: true});
     },
     playSong(songIdx) {
-      if (this.$store.state.playlist.id === null || this.$store.state.playlist.id !== this.album.id) {
+      if (this.$store.state.playlist.id === null || this.$store.state.playlist.id !== this.album.id || this.$store.state.playlist.songs.length !== this.songs.length) {
         this.playAlbum(songIdx);
       } else {
         eventBus.$emit('play-song', songIdx);

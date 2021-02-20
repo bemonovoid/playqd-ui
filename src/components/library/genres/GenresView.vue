@@ -33,7 +33,7 @@
 
 <script>
 
-import {HTTP_CLIENT} from "@/http/axios-config";
+import PLAYQD_API from "@/http/playqdAPI"
 
 export default {
   name: 'GenresView',
@@ -43,7 +43,7 @@ export default {
     }
   },
   mounted() {
-    HTTP_CLIENT.get('/library/genres/').then(response => {
+    PLAYQD_API.getGenres().then(response => {
       this.genres = response.data.genres;
     })
   },

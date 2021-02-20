@@ -53,11 +53,11 @@
 
           <v-list-item-group color="primary">
 
-            <v-list-item v-for="(artist, i) in artists" :key="i" :to="{name: 'AlbumsView', query: {artistId: artist.id}}">
+            <v-list-item v-for="(artist, i) in artists" :key="i" class="pl-0" :to="{name: 'AlbumsView', query: {artistId: artist.id}}">
 
-              <v-list-item-icon class="ml-0 mr-2">
-                <v-icon left>mdi-account-music</v-icon>
-              </v-list-item-icon>
+              <v-list-item-avatar class="ml-0 mr-2">
+                <v-img :src="$store.state.artistsBaseUrl + artist.id + '/image'"></v-img>
+              </v-list-item-avatar>
 
               <v-list-item-content class="py-0">
                 <v-list-item-title v-text="artist.name"></v-list-item-title>
@@ -80,6 +80,7 @@
       </v-col>
 
     </v-row>
+
   </div>
 
 
@@ -87,14 +88,12 @@
 
 <script>
 
-import {HTTP_CLIENT} from "@/http/axios-config"
-
-import {mdiArrowLeft, mdiMagnify, mdiClose} from '@mdi/js'
+import PLAYQD_API from "@/http/playqdAPI"
 
 export default {
   name: 'ArtistsView',
   components: {
-    mdiArrowLeft, mdiMagnify, mdiClose
+
   },
   data() {
     return {
@@ -114,7 +113,7 @@ export default {
   },
   mounted() {
     if (this.$store.getters.getArtists.length === 0) {
-      HTTP_CLIENT.get('/library/artists/').then(response => {
+      PLAYQD_API.getArtists().then(response => {
         this.$store.commit('setArtists', response.data.artists);
         this.artists = this.$store.getters.getArtists;
         this.totalSongsCount = this.$store.getters.getArtists.map(a => a.songCount).reduce((a1, a2) => a1 + a2, 0);

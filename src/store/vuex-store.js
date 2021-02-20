@@ -14,7 +14,8 @@ export default new Vuex.Store({
             duration: 0
         },
         artists: [],
-        artWorkBaseUrl: HTTP_CLIENT.defaults.baseURL + "/artwork/open/?albumId=",
+        artistsBaseUrl: HTTP_CLIENT.defaults.baseURL + "/library/artists/",
+        albumsBaseUrl: HTTP_CLIENT.defaults.baseURL + "/library/albums/",
         artwork: {
             ofCurrentSong: '',
             ofOpenedAlbum: ''
@@ -36,9 +37,6 @@ export default new Vuex.Store({
     getters: {
         getArtists: (state) => {
             return state.artists;
-        },
-        getArtWorkBaseUrl: (state) => {
-            return state.artWorkBaseUrl;
         },
         repeatAll: (state) => {
             return state.playlist.repeat === 'all';
@@ -108,13 +106,13 @@ export default new Vuex.Store({
             state.playlist.currentSong = payload.songs[payload.startSongIdx];
             state.playlist.currentSongIdx = payload.startSongIdx;
             state.playlist.songs = payload.songs;
-            state.artwork.ofCurrentSong = state.artWorkBaseUrl + state.playlist.currentSong.album.id;
+            state.artwork.ofCurrentSong = state.albumsBaseUrl + state.playlist.currentSong.album.id + '/image';
         },
         setCurrentSongToPrev: (state) => {
             if (state.playlist.currentSongIdx - 1 >= 0) {
                 let prevSong = state.playlist.songs[--state.playlist.currentSongIdx];
                 if (prevSong.album.id !== state.playlist.currentSong.album.id) {
-                    state.artwork.ofCurrentSong = state.artWorkBaseUrl + state.playlist.currentSong.album.id;
+                    state.artwork.ofCurrentSong = state.albumsBaseUrl + state.playlist.currentSong.album.id + '/image';
                 }
                 state.playlist.currentSong = prevSong;
             }
@@ -129,7 +127,7 @@ export default new Vuex.Store({
                 return;
             }
             if (nextSong.album.id !== state.playlist.currentSong.album.id) {
-                state.artwork.ofCurrentSong = state.artWorkBaseUrl + state.playlist.currentSong.album.id;
+                state.artwork.ofCurrentSong = state.albumsBaseUrl + state.playlist.currentSong.album.id + '/image';
             }
             state.playlist.currentSong = nextSong;
         },
@@ -137,10 +135,10 @@ export default new Vuex.Store({
             let song = state.playlist.songs[payload];
             if (state.playlist.currentSong) {
                 if (song.album.id !== state.playlist.currentSong.album.id) {
-                    state.artwork.ofCurrentSong = state.artWorkBaseUrl + song.album.id;
+                    state.artwork.ofCurrentSong = state.albumsBaseUrl + song.album.id + '/image';
                 }
             } else {
-                state.artwork.ofCurrentSong = state.artWorkBaseUrl + song.album.id;
+                state.artwork.ofCurrentSong = state.albumsBaseUrl + song.album.id + '/image';
             }
             state.playlist.currentSong = song;
             state.playlist.currentSongIdx = payload;

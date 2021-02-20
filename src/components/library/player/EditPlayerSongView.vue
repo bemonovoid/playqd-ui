@@ -3,7 +3,7 @@
   <v-dialog v-model="active" persistent max-width="500px">
 
     <template v-slot:activator="{ on, attrs }">
-      <v-btn small fab icon v-bind="attrs" v-on="on">
+      <v-btn small fab icon v-bind="attrs" v-on="on" class="pr-5">
         <v-icon small>mdi-file-document-edit-outline</v-icon>
       </v-btn>
     </template>
@@ -63,7 +63,7 @@
 
 <script>
 
-import {HTTP_CLIENT} from "@/http/axios-config";
+import PLAYQD_API from "@/http/playqdAPI"
 
 export default {
   name: 'EditPlayerSongView',
@@ -75,6 +75,7 @@ export default {
         valid: false,
       },
       song: {
+        id: this.songData.id,
         name: this.songData.name,
         comment: this.songData.comment,
         lyrics: this.songData.lyrics,
@@ -86,7 +87,7 @@ export default {
   methods: {
     saveChanges() {
       if (this.editForm.valid) {
-        HTTP_CLIENT.put('/library/songs/' + this.songData.id, this.song).then(response => {
+        PLAYQD_API.updateSong(this.song).then(response => {
           this.active = false;
         });
       }

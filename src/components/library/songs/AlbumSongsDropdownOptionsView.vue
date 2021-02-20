@@ -90,7 +90,7 @@
 
 <script>
 
-import {HTTP_CLIENT} from "@/http/axios-config";
+import PLAYQD_API from "@/http/playqdAPI"
 
 export default {
   name: 'AlbumSongsDropdownOptionsView',
@@ -109,13 +109,13 @@ export default {
     resolveArtworkOnline() {
       if (!this.artworkNotFound) {
         this.artworkSearchInProgress = true;
-        HTTP_CLIENT.get('/artwork/search/?albumId=' + this.album.id).then(response => {
-          this.artworkSearchInProgress = false;
-          this.$store.commit('setArtworkOfOpenedAlbum', {albumId: this.album.id, src: response.data.url});
-        }).catch((error) => {
-          this.artworkSearchInProgress = false;
-          this.artworkNotFound = true;
-        });
+        // HTTP_CLIENT.get('/artwork/search/?albumId=' + this.album.id).then(response => {
+        //   this.artworkSearchInProgress = false;
+        //   this.$store.commit('setArtworkOfOpenedAlbum', {albumId: this.album.id, src: response.data.url});
+        // }).catch((error) => {
+        //   this.artworkSearchInProgress = false;
+        //   this.artworkNotFound = true;
+        // });
       }
     }
   }

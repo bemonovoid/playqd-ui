@@ -82,7 +82,7 @@
 <script>
 
 import {eventBus} from "@/main";
-import {HTTP_CLIENT} from "@/http/axios-config";
+import PLAYQD_API from "@/http/playqdAPI"
 
 export default {
   name: 'EditAlbumView',
@@ -97,6 +97,7 @@ export default {
       artistAlbums: [],
       album: {
         id: this.albumData.id,
+        moveToAlbumId: null,
         name: this.albumData.name,
         genre: this.albumData.genre,
         date: this.albumData.date,
@@ -106,17 +107,17 @@ export default {
     }
   },
   mounted() {
-    HTTP_CLIENT.get('/library/albums/?artistId=' + this.albumData.artist.id).then(response => {
+    PLAYQD_API.getArtistAlbums(this.albumData.artist.id).then(response => {
       this.artistAlbums = response.data.albums.filter(alb => alb.id !== this.albumData.id);
     });
   },
   methods: {
     saveChanges() {
       if (this.editForm.valid) {
-        HTTP_CLIENT.put('/library/albums/' + this.albumData.id, this.album).then(response => {
+        PLAYQD_API.updateAlbum(this.album).then(response => {
           eventBus.$emit('album-data-updated', this.album)
           this.active = false;
-          if (this.albumData.id !== this.album.id) {
+          if (this.album.moveToAlbumId) {
             this.$router.push({name: 'AlbumsView', query: {artistId: this.albumData.artist.id}})
           }
         });

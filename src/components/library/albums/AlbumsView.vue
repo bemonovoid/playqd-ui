@@ -6,13 +6,35 @@
 
       <v-col class="pl-0 py-0 text-left">
         <v-list-item>
+
+          <v-dialog v-if="$route.query.artistId && showArtistImage" max-width="500">
+            <template v-slot:activator="{on, attrs}">
+              <v-list-item-avatar class="ml-0 mr-2 mb-5" v-on="on" v-bind="attrs">
+                <v-img :src="$store.state.artistsBaseUrl + $route.query.artistId + '/image'" @error="imageError"></v-img>
+              </v-list-item-avatar>
+            </template>
+            <v-card align="center" elevation="5">
+              <v-img class="white--text align-end"
+                     :src="$store.state.artistsBaseUrl + $route.query.artistId + '/image?size=LARGE'">
+                <v-card-title>{{this.albums[0].artist.name}}</v-card-title>
+              </v-img>
+
+            </v-card>
+          </v-dialog>
+
+          <div v-else class="ml-0 mr-2 mb-5">
+            <v-icon @click="findArtistImage()">mdi-image-search-outline</v-icon>
+          </div>
+
           <v-list-item-content>
             <v-list-item-title class="display-1">{{this.$route.query.artistId ? this.albums[0].artist.name : this.$route.query.genre}}</v-list-item-title>
             <v-list-item-subtitle>{{this.$route.query.artistId ? '(artist albums)' : '(genre albums)'}}</v-list-item-subtitle>
           </v-list-item-content>
+
           <v-list-item-action class="mx-0">
             <EditAlbumsArtistView v-on:close="" v-bind:artist-data="originalAlbums[0].artist"></EditAlbumsArtistView>
           </v-list-item-action>
+
           <v-list-item-action class="mx-0">
             <v-menu offset-y left>
 
@@ -57,7 +79,7 @@
       <v-col v-for="album in albums" :key="album.id" :cols="6" align="center" md="auto">
         <v-card max-width="200px" max-height="300px" @click="openAlbum(album)">
 
-          <v-img :src="$store.getters.getArtWorkBaseUrl + album.id"
+          <v-img :src="$store.state.albumsBaseUrl + album.id + '/image'"
               class="white--text align-end"
               gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)">
           </v-img>
@@ -97,7 +119,7 @@
 
 <script>
 
-import {HTTP_CLIENT} from "@/http/axios-config"
+import PLAYQD_API from "@/http/playqdAPI"
 import EditAlbumsArtistView from "@/components/library/albums/EditArtistView";
 
 const ITEMS_PER_PAGE = 12;
@@ -107,6 +129,7 @@ export default {
   components: {EditAlbumsArtistView},
   data() {
     return {
+      showArtistImage: true,
       sorting: {
         types: [
           {id: 'by-title', name: 'Title', active: false},
@@ -132,7 +155,7 @@ export default {
       query = '?genre=' + this.$route.query.genre;
       this.sorting.type = 'by-title';
     }
-    HTTP_CLIENT.get('/library/albums/' + query).then(response => {
+    PLAYQD_API.getAlbums(query).then(response => {
       this.originalAlbums = Array.from(response.data.albums);
       this.sortAlbums(this.originalAlbums);
       this.albums = this.originalAlbums.slice(0, ITEMS_PER_PAGE);
@@ -140,14 +163,16 @@ export default {
     });
   },
   methods: {
+    imageError(error) {
+      this.showArtistImage = false;
+    },
+    findArtistImage() {
+      PLAYQD_API.getArtistImageSrc(this.$route.query.artistId).then(response => {
+        this.showArtistImage = true;
+      })
+    },
     paginationRequired() {
       return this.originalAlbums.length > ITEMS_PER_PAGE;
-    },
-    showNextPage() {
-      this.showPage(this.pagination.page);
-    },
-    showPrevPage() {
-      this.showPage(this.pagination.page);
     },
     showPage(pageId) {
       let startIdx = 0;

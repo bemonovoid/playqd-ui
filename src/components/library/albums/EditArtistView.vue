@@ -31,7 +31,7 @@
                         :rules="editForm.artistCountryRules">
           </v-text-field>
 
-          <v-row align="center" class="pt-5">
+          <v-row align="center" class="pl-3 pt-5">
             <v-checkbox hide-details class="mt-0" v-model="moveToExistingArtist"></v-checkbox>
             <v-autocomplete dense label="Move to existing artist" class="pt-5 pr-3"
                             clearable
@@ -40,7 +40,7 @@
                             :hint="artistData.name"
                             item-text="name"
                             item-value="id"
-                            v-model="artist.id"
+                            v-model="artist.moveToArtistId"
                             :items="this.$store.state.artists">
             </v-autocomplete>
           </v-row>
@@ -64,7 +64,7 @@
 
 <script>
 
-import {HTTP_CLIENT} from "@/http/axios-config";
+import PLAYQD_API from "@/http/playqdAPI"
 import countryCodes from 'country-code-lookup';
 
 export default {
@@ -86,6 +86,7 @@ export default {
       },
       artist: {
         id: this.artistData.id,
+        moveToArtistId: null,
         name: this.artistData.name,
         country: this.artistData.country
       },
@@ -94,7 +95,7 @@ export default {
   mounted() {
     if (this.$store.state.artists > 0) {
     } else {
-      HTTP_CLIENT.get('/library/artists/').then(response => {
+      PLAYQD_API.getArtists().then(response => {
         this.$store.commit('setArtists', response.data.artists);
       });
     }
@@ -102,9 +103,9 @@ export default {
   methods: {
     saveChanges() {
       if (this.editForm.valid) {
-        HTTP_CLIENT.put('/library/artists/' + this.artistData.id, this.artist).then(response => {
+        PLAYQD_API.updateArtist(this.artist).then(response => {
             this.active = false;
-            if (this.artistData.id !== this.artist.id) {
+            if (this.artist.moveToArtistId) {
               this.$router.push({name: 'ArtistsView'})
             }
         });
