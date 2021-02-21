@@ -12,6 +12,10 @@ export default {
         return HTTP_CLIENT.get('/library/artists/' + artistId + '/image/src')
     },
 
+    getAlbumImageSrc(albumId) {
+        return HTTP_CLIENT.get('/library/albums/' + albumId + '/image/src')
+    },
+
     getGenres() {
         return HTTP_CLIENT.get('/library/genres/');
     },

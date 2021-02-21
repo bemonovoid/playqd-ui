@@ -5,7 +5,26 @@
       <v-col class="px-0">
         <v-card align="center" elevation="0">
 
-          <v-img contain class="scoped-album-img elevation-5" v-bind:src="this.$store.state.artwork.ofOpenedAlbum"></v-img>
+          <v-dialog v-if="showAlbumImage" max-width="500">
+            <template v-slot:activator="{on, attrs}">
+              <v-img contain class="scoped-album-img elevation-5"
+                     v-on="on" v-bind="attrs"
+                     v-bind:src="$store.state.artwork.ofOpenedAlbum"
+                     @error="imageError"></v-img>
+            </template>
+            <v-card align="center" elevation="5">
+              <v-img class="white--text align-end" :src="this.$store.state.artwork.ofOpenedAlbum">
+                <v-card-title>{{this.album.name}}</v-card-title>
+              </v-img>
+            </v-card>
+          </v-dialog>
+
+<!--          <div v-if="showAlbumImage">-->
+<!--            <v-img contain class="scoped-album-img elevation-5" v-bind:src="this.$store.state.artwork.ofOpenedAlbum" @error="imageError"></v-img>-->
+<!--          </div>-->
+          <div v-else>
+            <v-img class="scoped-album-img elevation-5" src="@/assets/default-album-cover.png" @click="findAlbumImage()"></v-img>
+          </div>
 
           <v-card-title class="text-center text-body-1" style="display: inherit">{{ album.name }}</v-card-title>
 
@@ -105,7 +124,7 @@ export default {
   data() {
     return {
       SONG_DURATION: SONG_HELPER,
-      backBtnDisplayName: this.backBtnLabel,
+      showAlbumImage: true,
       headers: [
           {align: 'center', value: 'orderId', cellClass: 'pa-0'},
           {align: 'start', value: 'name'},
@@ -143,6 +162,15 @@ export default {
     })
   },
   methods: {
+    imageError(error) {
+      this.showAlbumImage = false;
+    },
+    findAlbumImage() {
+      PLAYQD_API.getAlbumImageSrc(this.album.id).then(response => {
+        this.$store.commit('setArtworkOfOpenedAlbum', {albumId: this.album.id, src: response.data});
+        this.showAlbumImage = true;
+      })
+    },
     isPlayingSongRow(songId) {
       if (this.$store.state.audio.isPlaying && this.$store.state.playlist.currentSong) {
         return this.$store.state.playlist.currentSong.id === songId;

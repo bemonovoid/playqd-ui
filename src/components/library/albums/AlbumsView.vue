@@ -10,7 +10,7 @@
           <v-dialog v-if="$route.query.artistId && showArtistImage" max-width="500">
             <template v-slot:activator="{on, attrs}">
               <v-list-item-avatar class="ml-0 mr-2 mb-5" v-on="on" v-bind="attrs">
-                <v-img :src="$store.state.artistsBaseUrl + $route.query.artistId + '/image'" @error="imageError"></v-img>
+                <v-img :src="$store.state.artistsBaseUrl + $route.query.artistId + '/image'" @error="imageError()"></v-img>
               </v-list-item-avatar>
             </template>
             <v-card align="center" elevation="5">
@@ -38,7 +38,7 @@
           <v-list-item-action class="mx-0">
             <v-menu offset-y left>
 
-              <template v-slot:activator="{ attrs, on}">
+              <template v-slot:activator="{attrs, on}">
                 <v-btn fab small icon v-bind="attrs" v-on="on">
                   <v-icon>mdi-dots-horizontal</v-icon>
                 </v-btn>
@@ -79,10 +79,16 @@
       <v-col v-for="album in albums" :key="album.id" :cols="6" align="center" md="auto">
         <v-card max-width="200px" max-height="300px" @click="openAlbum(album)">
 
-          <v-img :src="$store.state.albumsBaseUrl + album.id + '/image'"
-              class="white--text align-end"
-              gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)">
-          </v-img>
+          <div v-if="albumsWithoutImage.includes(album.id)">
+            <v-img src="@/assets/default-album-cover.png"></v-img>
+          </div>
+          <div v-else>
+            <v-img :src="$store.state.albumsBaseUrl + album.id + '/image'"
+                   @error="imageError(album.id)"
+                   class="white--text align-end"
+                   gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)">
+            </v-img>
+          </div>
 
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
@@ -130,6 +136,7 @@ export default {
   data() {
     return {
       showArtistImage: true,
+      albumsWithoutImage: [],
       sorting: {
         types: [
           {id: 'by-title', name: 'Title', active: false},
@@ -163,8 +170,12 @@ export default {
     });
   },
   methods: {
-    imageError(error) {
-      this.showArtistImage = false;
+    imageError(albumId) {
+      if (albumId) {
+        this.albumsWithoutImage.push(albumId);
+      } else {
+        this.showArtistImage = false;
+      }
     },
     findArtistImage() {
       PLAYQD_API.getArtistImageSrc(this.$route.query.artistId).then(response => {
