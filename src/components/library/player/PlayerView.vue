@@ -35,7 +35,7 @@
            </v-btn>
            <v-row>
              <v-col class="pt-3 pb-0 text-left">
-               <small>Played: {{$store.state.playlist.currentSong.playbackHistory.playCount}}</small>
+               <small>Played: {{$store.state.playlist.currentSong.playbackHistory ? $store.state.playlist.currentSong.playbackHistory.playCount : 0}}</small>
              </v-col>
              <v-col class="text-right">
                <small>{{$store.state.playlist.currentSong.fileExtension}} | {{$store.state.playlist.currentSong.audioBitRate}} kbps | {{$store.state.playlist.currentSong.audioSampleRate}} Hz</small>

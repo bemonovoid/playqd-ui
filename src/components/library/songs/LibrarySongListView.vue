@@ -52,7 +52,7 @@
                     {{song.artist.name}}
                   </v-list-item-subtitle>
                   <v-list-item-subtitle class="text-caption">
-                    play count: {{song.playbackHistory.playCount}}, last: {{song.playbackHistory.lastTimePlayed}}
+                    <i>play count: {{song.playbackHistory ? song.playbackHistory.playCount : 0}}, last: {{song.playbackHistory ? song.playbackHistory.lastTimePlayed : ''}}</i>
                   </v-list-item-subtitle>
                 </v-list-item-content>
 
@@ -105,9 +105,10 @@ export default {
       SONG_DURATION: SONG_HELPER,
       sorting: {
         types: [
-          {id: 'PLAY_COUNT',  name: 'Top played',      icon: 'mdi-sort-ascending'},
-          {id: 'LAST_PLAYED', name: 'Recently Played', icon: 'mdi-sort-clock-ascending-outline'},
-          {id: 'FAVORITES',   name: 'Favorites',       icon: 'mdi-star-outline'}
+          {id: 'FAVORITES',       name: 'Favorites',       icon: 'mdi-star-outline'},
+          {id: 'RECENTLY_ADDED',  name: 'Recently Added',  icon: 'mdi-sort-clock-ascending-outline'},
+          {id: 'RECENTLY_PLAYED', name: 'Recently Played', icon: 'mdi-sort-clock-ascending-outline'},
+          {id: 'PLAY_COUNT',      name: 'Top played',      icon: 'mdi-sort-ascending'}
         ]
       },
       pagination: {
@@ -119,7 +120,7 @@ export default {
     }
   },
   mounted() {
-    this.getSongsFiltered(10, 'PLAY_COUNT');
+    this.getSongsFiltered(10, 'RECENTLY_ADDED');
   },
   methods: {
     playLibrarySongs(songIdx) {

@@ -7,23 +7,26 @@
       <v-col class="pl-0 py-0 text-left">
         <v-list-item>
 
-          <v-dialog v-if="$route.query.artistId && showArtistImage" max-width="500">
-            <template v-slot:activator="{on, attrs}">
-              <v-list-item-avatar class="ml-0 mr-2 mb-5" v-on="on" v-bind="attrs">
-                <v-img :src="$store.state.artistsBaseUrl + $route.query.artistId + '/image'" @error="imageError()"></v-img>
-              </v-list-item-avatar>
-            </template>
-            <v-card align="center" elevation="5">
-              <v-img class="white--text align-end"
-                     :src="$store.state.artistsBaseUrl + $route.query.artistId + '/image?size=LARGE'">
-                <v-card-title>{{this.albums[0].artist.name}}</v-card-title>
-              </v-img>
+          <div v-if="$route.query.artistId">
+            <v-dialog v-if="showArtistImage" max-width="500">
+              <template v-slot:activator="{on, attrs}">
+                <v-list-item-avatar class="ml-0 mr-2 mb-5" v-on="on" v-bind="attrs">
+                  <v-img :src="$store.state.artistsBaseUrl + $route.query.artistId + '/image'" @error="imageError()"></v-img>
+                </v-list-item-avatar>
+              </template>
+              <v-card align="center" elevation="5">
+                <v-img class="white--text align-end"
+                       :src="$store.state.artistsBaseUrl + $route.query.artistId + '/image?size=LARGE'">
+                  <v-card-title>{{this.albums[0].artist.name}}</v-card-title>
+                </v-img>
 
-            </v-card>
-          </v-dialog>
+              </v-card>
+            </v-dialog>
 
-          <div v-else class="ml-0 mr-2 mb-5">
-            <v-icon @click="findArtistImage()">mdi-image-search-outline</v-icon>
+            <div v-else class="ml-0 mr-2 mb-5">
+              <v-icon @click="findArtistImage()">mdi-image-search-outline</v-icon>
+            </div>
+
           </div>
 
           <v-list-item-content>
@@ -31,7 +34,7 @@
             <v-list-item-subtitle>{{this.$route.query.artistId ? '(artist albums)' : '(genre albums)'}}</v-list-item-subtitle>
           </v-list-item-content>
 
-          <v-list-item-action class="mx-0">
+          <v-list-item-action v-if="$route.query.artistId" class="mx-0">
             <EditAlbumsArtistView v-on:close="" v-bind:artist-data="originalAlbums[0].artist"></EditAlbumsArtistView>
           </v-list-item-action>
 
@@ -126,7 +129,7 @@
 <script>
 
 import PLAYQD_API from "@/http/playqdAPI"
-import EditAlbumsArtistView from "@/components/library/albums/EditArtistView";
+import EditAlbumsArtistView from "@/components/library/artists/EditArtistView";
 
 const ITEMS_PER_PAGE = 12;
 

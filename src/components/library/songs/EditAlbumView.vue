@@ -2,7 +2,7 @@
 
   <v-dialog v-model="active" persistent max-width="500px">
 
-    <template v-slot:activator="{ on, attrs }">
+    <template v-slot:activator="{on, attrs}">
       <v-btn small fab icon v-bind="attrs" v-on="on">
         <v-icon small>mdi-file-document-edit-outline</v-icon>
       </v-btn>
