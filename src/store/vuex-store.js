@@ -1,11 +1,16 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import {HTTP_CLIENT} from "@/http/axios-config";
+import api from "@/http/playqdAPI";
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
+        loginSuccess: false,
+        principal: {
+            username: null,
+            password: null
+        },
         audio: {
             isPlaying: false,
             volume: 0.5,
@@ -14,8 +19,8 @@ export default new Vuex.Store({
             duration: 0
         },
         artists: [],
-        artistsBaseUrl: HTTP_CLIENT.defaults.baseURL + "/library/artists/",
-        albumsBaseUrl: HTTP_CLIENT.defaults.baseURL + "/library/albums/",
+        artistsBaseUrl: api.getBaseUrl() + "/library/artists/",
+        albumsBaseUrl: api.getBaseUrl() + "/library/albums/",
         artwork: {
             ofCurrentSong: '',
             ofOpenedAlbum: ''
@@ -35,6 +40,9 @@ export default new Vuex.Store({
         }
     },
     getters: {
+        isLoggedIn: (state) => {
+            return state.loginSuccess;
+        },
         getArtists: (state) => {
             return state.artists;
         },
@@ -71,6 +79,13 @@ export default new Vuex.Store({
         }
     },
     mutations: {
+        setLoginSuccess: (state, payload) => {
+          state.loginSuccess = true;
+          state.principal = {
+              username: payload.username,
+              password: payload.password
+          };
+        },
         setAudioCurrentTime: (state, payload) => {
             state.audio.currentTime = payload;
             state.audio.currentTimeAsInt = parseInt(payload, 10);

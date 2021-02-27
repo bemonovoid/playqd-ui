@@ -105,7 +105,7 @@
 <script>
 
 import {eventBus} from "@/main";
-import PLAYQD_API from "@/http/playqdAPI"
+import api from "@/http/playqdAPI"
 import {SONG_HELPER} from "@/utils/songs-helper";
 
 import AlbumSongsDropdownOptionsView from "@/components/library/songs/AlbumSongsDropdownOptionsView";
@@ -144,7 +144,7 @@ export default {
     }
   },
   mounted() {
-    PLAYQD_API.getAlbumSongs(this.$route.params.albumId).then(response => {
+    api.getAlbumSongs(this.$route.params.albumId).then(response => {
       this.songs = response.data.songs
       if (!this.album) {
         this.album = response.data.album;
@@ -166,7 +166,7 @@ export default {
       this.showAlbumImage = false;
     },
     findAlbumImage() {
-      PLAYQD_API.getAlbumImageSrc(this.album.id).then(response => {
+      api.getAlbumImageSrc(this.album.id).then(response => {
         this.$store.commit('setArtworkOfOpenedAlbum', {albumId: this.album.id, src: response.data});
         this.showAlbumImage = true;
       })

@@ -15,7 +15,7 @@
 <script>
 
 import {eventBus} from "@/main";
-import {HTTP_CLIENT} from "@/http/axios-config";
+import api from "@/http/playqdAPI";
 
 export default {
   name: 'Audio',
@@ -93,7 +93,7 @@ export default {
     },
     loadAudio() {
       let currentSong = this.$store.state.playlist.currentSong;
-      this.audioSourceDOMElement.src = HTTP_CLIENT.defaults.baseURL + "/audio/open/?songId=" + currentSong.id;
+      this.audioSourceDOMElement.src = api.defaults.baseURL + "/audio/open/?songId=" + currentSong.id;
       this.audioDOMElement.load();
       eventBus.$emit('song-is-ready-to-play');
     },

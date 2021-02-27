@@ -22,8 +22,6 @@
 <script>
 
 import store from "@/store/vuex-store";
-import Vue from 'vue'
-import VueRouter from "vue-router";
 
 import {eventBus} from "@/main";
 
@@ -31,56 +29,19 @@ import Audio from "@/components/audio/Audio";
 
 import NavToolbarView from "@/components/library/library/NavToolbarView";
 import MiniPlayerView from "@/components/library/miniplayer/MiniPlayerView";
-import PlayerView from "@/components/library/player/PlayerView";
-
-import LibraryView from "@/components/library/library/LibraryView";
-import GenresView from "@/components/library/genres/GenresView";
-import ArtistsView from "@/components/library/artists/ArtistsView";
-import AlbumsView from "@/components/library/albums/AlbumsView"
-import AlbumSongsView from "@/components/library/songs/AlbumSongsView";
-import LibrarySongsView from "@/components/library/songs/LibrarySongListView";
-
-const routes = [
-  { path: '/', alias: ['/home', '/index.html'], name: 'Home', component: LibraryView, meta: {title: 'Home'} },
-  { path: '/library', name: 'LibraryView', component: LibraryView, meta: {title: 'Library'} },
-  { path: '/library/artists', name: 'ArtistsView', component: ArtistsView, meta: {title: 'Artists'} },
-  { path: '/library/genres', name: 'GenresView', component: GenresView, meta: {title: 'Genres'} },
-  { path: '/library/songs', name: 'LibrarySongsView', component: LibrarySongsView, meta: {title: 'Library songs'} },
-  { path: '/library/albums', name: 'AlbumsView', component: AlbumsView, props: route => ({artistId: route.query.artistId, genre: route.query.genre}), meta: {title: 'Albums'} },
-  { path: '/library/artists/albums/:albumId', name: 'AlbumSongsView', component: AlbumSongsView, meta: {title: 'Album songs'}, props: true },
-  { path: '/library/player/:songId', name: 'PlayerView', component: PlayerView, meta: {title: 'Player'}, props: true }
-]
-
-const router = new VueRouter({
-  routes
-});
-
-router.afterEach((to, from) => {
-  Vue.nextTick(() => {
-    // PAGE_TITLE_UTILS.setPageTitle(to.meta.title);
-  })
-})
 
 export default {
   name: 'App',
   store: store,
-  router: router,
   components: {
     Audio,
     NavToolbarView,
-    MiniPlayerView,
-    PlayerView,
-    LibraryView,
-    GenresView,
-    ArtistsView,
-    AlbumsView,
-    AlbumSongsView
+    MiniPlayerView
   },
   created() {
     eventBus.$on('song-is-ready-to-play', () => {
       this.appTitle.inner = this.$store.state.playlist.currentSong.artist.name;
       this.appTitle.complement = this.$store.state.playlist.currentSong.name;
-      // this.artwork = this.$store.state.artwork.ofCurrentSong;
       this.$emit('updateHead');
 
       let link = document.querySelector("link[rel~='icon']");

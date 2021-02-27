@@ -82,7 +82,7 @@
 <script>
 
 import {eventBus} from "@/main";
-import PLAYQD_API from "@/http/playqdAPI"
+import api from "@/http/playqdAPI"
 
 export default {
   name: 'EditAlbumView',
@@ -107,14 +107,14 @@ export default {
     }
   },
   mounted() {
-    PLAYQD_API.getArtistAlbums(this.albumData.artist.id).then(response => {
+    api.getArtistAlbums(this.albumData.artist.id).then(response => {
       this.artistAlbums = response.data.albums.filter(alb => alb.id !== this.albumData.id);
     });
   },
   methods: {
     saveChanges() {
       if (this.editForm.valid) {
-        PLAYQD_API.updateAlbum(this.album).then(response => {
+        api.updateAlbum(this.album).then(response => {
           eventBus.$emit('album-data-updated', this.album)
           this.active = false;
           if (this.album.moveToAlbumId) {

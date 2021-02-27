@@ -94,7 +94,7 @@
 
 <script>
 
-import PLAYQD_API from "@/http/playqdAPI"
+import api from "@/http/playqdAPI"
 import {SONG_HELPER} from "@/utils/songs-helper";
 import {eventBus} from "@/main";
 
@@ -127,7 +127,7 @@ export default {
       eventBus.$emit('play-playlist', {songs: this.songs, startSongIdx: songIdx, shuffle: false});
     },
     getSongsFiltered(pageSize, filterType) {
-      PLAYQD_API.getSongsFiltered(pageSize, filterType).then(response => {
+      api.getSongsFiltered(pageSize, filterType).then(response => {
         this.songs = response.data
       });
     },

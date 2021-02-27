@@ -128,7 +128,7 @@
 
 <script>
 
-import PLAYQD_API from "@/http/playqdAPI"
+import api from "@/http/playqdAPI"
 import EditAlbumsArtistView from "@/components/library/artists/EditArtistView";
 
 const ITEMS_PER_PAGE = 12;
@@ -165,7 +165,7 @@ export default {
       query = '?genre=' + this.$route.query.genre;
       this.sorting.type = 'by-title';
     }
-    PLAYQD_API.getAlbums(query).then(response => {
+    api.getAlbums(query).then(response => {
       this.originalAlbums = Array.from(response.data.albums);
       this.sortAlbums(this.originalAlbums);
       this.albums = this.originalAlbums.slice(0, ITEMS_PER_PAGE);
@@ -181,7 +181,7 @@ export default {
       }
     },
     findArtistImage() {
-      PLAYQD_API.getArtistImageSrc(this.$route.query.artistId).then(response => {
+      api.getArtistImageSrc(this.$route.query.artistId).then(response => {
         this.showArtistImage = true;
       })
     },

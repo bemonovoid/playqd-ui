@@ -63,7 +63,7 @@
 
 <script>
 
-import PLAYQD_API from "@/http/playqdAPI"
+import api from "@/http/playqdAPI"
 
 export default {
   name: 'EditPlayerSongView',
@@ -87,7 +87,7 @@ export default {
   methods: {
     saveChanges() {
       if (this.editForm.valid) {
-        PLAYQD_API.updateSong(this.song).then(response => {
+        api.updateSong(this.song).then(response => {
           this.active = false;
         });
       }

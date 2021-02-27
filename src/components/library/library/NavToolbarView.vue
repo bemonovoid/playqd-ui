@@ -31,14 +31,6 @@ import PLAYQD_API from "@/http/playqdAPI"
 
 export default {
   name: 'NavToolbarView',
-  components: {
-
-  },
-  data() {
-    return {
-
-    }
-  },
   mounted() {
     eventBus.$on('playback-song-ended', (songId) => {
       PLAYQD_API.updateSongHistory(songId);

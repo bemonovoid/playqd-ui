@@ -33,7 +33,7 @@
 
 <script>
 
-import PLAYQD_API from "@/http/playqdAPI"
+import api from "@/http/playqdAPI"
 
 export default {
   name: 'GenresView',
@@ -43,7 +43,7 @@ export default {
     }
   },
   mounted() {
-    PLAYQD_API.getGenres().then(response => {
+    api.getGenres().then(response => {
       this.genres = response.data.genres;
     })
   },

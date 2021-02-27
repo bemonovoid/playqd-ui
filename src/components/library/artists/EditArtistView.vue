@@ -64,7 +64,7 @@
 
 <script>
 
-import PLAYQD_API from "@/http/playqdAPI"
+import api from "@/http/playqdAPI"
 import countryCodes from 'country-code-lookup';
 
 export default {
@@ -95,7 +95,7 @@ export default {
   mounted() {
     if (this.$store.state.artists > 0) {
     } else {
-      PLAYQD_API.getArtists().then(response => {
+      api.getArtists().then(response => {
         this.$store.commit('setArtists', response.data.artists);
       });
     }
@@ -103,7 +103,7 @@ export default {
   methods: {
     saveChanges() {
       if (this.editForm.valid) {
-        PLAYQD_API.updateArtist(this.artist).then(response => {
+        api.updateArtist(this.artist).then(response => {
             this.active = false;
             if (this.artist.moveToArtistId) {
               this.$router.push({name: 'ArtistsView'})

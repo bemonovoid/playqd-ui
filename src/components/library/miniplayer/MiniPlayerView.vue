@@ -130,7 +130,7 @@
 
 import {eventBus} from "@/main";
 import {SONG_HELPER} from "@/utils/songs-helper";
-import PLAYQD_API from "@/http/playqdAPI"
+import api from "@/http/playqdAPI"
 
 export default {
   name: 'MiniPlayerView',
@@ -178,7 +178,7 @@ export default {
       eventBus.$emit('toolbar-player-current-volume-changed', this.slider.audioVolume);
     },
     updateFavoriteStatus() {
-      PLAYQD_API.setSongFavoriteStatus(this.$store.state.playlist.currentSong.id).then(response => {
+      api.setSongFavoriteStatus(this.$store.state.playlist.currentSong.id).then(response => {
         this.$store.commit('setCurrentSongFavoriteStatus');
       });
     },
