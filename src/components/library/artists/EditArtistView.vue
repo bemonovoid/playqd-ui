@@ -11,6 +11,10 @@
     <v-card>
       <v-card-title>
         <span class="headline">Edit Artist</span>
+        <v-spacer></v-spacer>
+        <v-btn icon @click="active = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </v-card-title>
       <v-card-text>
 
@@ -49,13 +53,15 @@
 
       </v-card-text>
       <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="active = false">
-          Close
-        </v-btn>
         <v-btn color="blue darken-1" text @click="saveChanges()">
           Save
         </v-btn>
+        <v-spacer></v-spacer>
+        <div v-if="!artistImageFound">
+          <v-btn color="blue darken-1" class="text-capitalize" text @click="findArtistImage()">
+            Find artist image
+          </v-btn>
+        </div>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -69,7 +75,7 @@ import countryCodes from 'country-code-lookup';
 
 export default {
   name: 'EditAlbumsArtistView',
-  props: ['artistData'],
+  props: ['artistData', 'artistImageFound'],
   components: {countryCodes},
   data() {
     return {
@@ -110,6 +116,13 @@ export default {
             }
         });
       }
+    },
+    findArtistImage() {
+      api.getArtistImageSrc(this.artistData.id).then(response => {
+        this.$emit('update:artistImageFound', true)
+        this.active = false;
+      })
+
     }
   }
 }

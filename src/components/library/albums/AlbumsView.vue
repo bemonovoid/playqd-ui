@@ -19,14 +19,8 @@
                        :src="$store.state.artistsBaseUrl + $route.query.artistId + '/image?size=LARGE'">
                   <v-card-title>{{this.albums[0].artist.name}}</v-card-title>
                 </v-img>
-
               </v-card>
             </v-dialog>
-
-            <div v-else class="ml-0 mr-2 mb-5">
-              <v-icon @click="findArtistImage()">mdi-image-search-outline</v-icon>
-            </div>
-
           </div>
 
           <v-list-item-content>
@@ -35,7 +29,7 @@
           </v-list-item-content>
 
           <v-list-item-action v-if="$route.query.artistId" class="mx-0">
-            <EditAlbumsArtistView v-on:close="" v-bind:artist-data="originalAlbums[0].artist"></EditAlbumsArtistView>
+            <EditAlbumsArtistView v-on:close="" v-bind:artist-data="originalAlbums[0].artist" :artist-image-found.sync="showArtistImage"></EditAlbumsArtistView>
           </v-list-item-action>
 
           <v-list-item-action class="mx-0">
@@ -83,13 +77,13 @@
         <v-card max-width="200px" max-height="300px" @click="openAlbum(album)">
 
           <div v-if="albumsWithoutImage.includes(album.id)">
-            <v-img src="@/assets/default-album-cover.png"></v-img>
+            <v-img src="@/assets/default-album-cover.png"
+                   gradient="to bottom, rgba(0, 0, 0, .1), rgba(0, 0, 0 ,.5)"></v-img>
           </div>
           <div v-else>
             <v-img :src="$store.state.albumsBaseUrl + album.id + '/image'"
                    @error="imageError(album.id)"
-                   class="white--text align-end"
-                   gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)">
+                   class="white--text align-end">
             </v-img>
           </div>
 
@@ -179,11 +173,6 @@ export default {
       } else {
         this.showArtistImage = false;
       }
-    },
-    findArtistImage() {
-      api.getArtistImageSrc(this.$route.query.artistId).then(response => {
-        this.showArtistImage = true;
-      })
     },
     paginationRequired() {
       return this.originalAlbums.length > ITEMS_PER_PAGE;

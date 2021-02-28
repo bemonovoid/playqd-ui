@@ -26,7 +26,7 @@
                 <v-list-item v-for="(sortType, i) in sorting.types" :key="i" @click="sortArtists(sortType.id)">
                   <v-list-item-title>{{sortType.name}}</v-list-item-title>
                   <v-list-item-icon>
-                    <v-icon right>{{sortType.icon}}</v-icon>
+                    <v-icon right small>{{sortType.icon}}</v-icon>
                   </v-list-item-icon>
                 </v-list-item>
               </v-list>
@@ -62,8 +62,7 @@
               <v-list-item-content class="py-0">
                 <v-list-item-title v-text="artist.name"></v-list-item-title>
                 <v-list-item-subtitle class="text-caption">
-                  albums: {{artist.albumCount}}, songs: {{artist.songCount}}
-<!--                  played: {{artist.playbackHistory.playCount}}, last: {{artist.playbackHistory.lastTimePlayed.substr(0, 10 )}}, albums: {{artist.albumCount}}-->
+                  {{albumsCountString(artist) + ', ' + albumSongsCountString(artist)}}
                 </v-list-item-subtitle>
               </v-list-item-content>
 
@@ -125,6 +124,12 @@ export default {
     }
   },
   methods: {
+    albumsCountString(artist) {
+      return artist.albumCount > 1 ? artist.albumCount + ' albums' : artist.albumCount + ' album';
+    },
+    albumSongsCountString(artist) {
+      return artist.songCount > 1 ? artist.songCount + ' songs' : artist.songCount + ' song';
+    },
     filterArtists() {
       if (!this.searchFilter || this.searchFilter === '') {
         this.artists = this.$store.getters.getArtists;

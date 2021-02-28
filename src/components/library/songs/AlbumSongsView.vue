@@ -62,35 +62,40 @@
             </v-col>
             <v-col class="text-right">
               <EditAlbumView v-bind:album-data="album"></EditAlbumView>
-              <AlbumSongsDropdownOptionsView :album.sync="album" :show-song-name-as-file-name.sync="replaceSongNameWithFileName"/>
+<!--              <AlbumSongsDropdownOptionsView :album.sync="album" :show-song-name-as-file-name.sync="replaceSongNameWithFileName"/>-->
             </v-col>
           </v-row>
 
           <v-card-text class="px-2 pt-0">
             <v-list>
-              <template v-for="(song, i) in songs">
-                <v-list-item :key="i" @click="playSong(i)">
-                    <v-list-item-icon class="py-0 mr-1">
-                      <div class="text--disabled text-right">
-                        <span>{{i + 1}}</span>
-                      </div>
-                    </v-list-item-icon>
-                    <v-list-item-content class="text-left">
-                      <v-list-item-title>
-                        {{ replaceSongNameWithFileName ? song.fileName : song.name }}
-                      </v-list-item-title>
-                    </v-list-item-content>
-                    <v-list-item-action>
-                      <div v-if="isPlayingSongRow(song.id)" class="subtitle-2 text-no-wrap">
-                        - {{SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.duration - $store.state.audio.currentTimeAsInt)}}
-                      </div>
-                      <div v-else class="text--secondary">
-                        {{SONG_DURATION.convertSecondsToMinutesAndSeconds(song.duration)}}
-                      </div>
-                    </v-list-item-action>
-                </v-list-item>
-                <v-divider></v-divider>
-              </template>
+              <v-list-item-group color="error" v-model="selectedSongIdx">
+                <template v-for="(song, i) in songs">
+                  <v-list-item :key="i" @click="playSong(i)">
+                      <v-list-item-icon class="py-0 mr-1">
+                        <div v-if="isPlayingSongRow(i)">
+                          <v-icon small>mdi-music-circle-outline mdi-spin</v-icon>
+                        </div>
+                        <div v-else class="text--disabled text-right">
+                          <span>{{i + 1}}</span>
+                        </div>
+                      </v-list-item-icon>
+                      <v-list-item-content class="text-left">
+                        <v-list-item-title>
+                          {{ replaceSongNameWithFileName ? song.fileName : song.name }}
+                        </v-list-item-title>
+                      </v-list-item-content>
+                      <v-list-item-action>
+                        <div v-if="isPlayingSongRow(i)" class="subtitle-2 text-no-wrap">
+                          - {{SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.duration - $store.state.audio.currentTimeAsInt)}}
+                        </div>
+                        <div v-else class="text--secondary">
+                          {{SONG_DURATION.convertSecondsToMinutesAndSeconds(song.duration)}}
+                        </div>
+                      </v-list-item-action>
+                  </v-list-item>
+                  <v-divider></v-divider>
+                </template>
+              </v-list-item-group>
             </v-list>
           </v-card-text>
 
@@ -109,20 +114,18 @@ import api from "@/http/playqdAPI"
 import {SONG_HELPER} from "@/utils/songs-helper";
 
 import AlbumSongsDropdownOptionsView from "@/components/library/songs/AlbumSongsDropdownOptionsView";
-
-import {mdiArrowRightDropCircleOutline} from '@mdi/js'
 import EditAlbumView from "@/components/library/songs/EditAlbumView";
 
 export default {
   name: 'AlbumSongsView',
   components: {
     EditAlbumView,
-    AlbumSongsDropdownOptionsView,
-    mdiArrowRightDropCircleOutline
+    AlbumSongsDropdownOptionsView
   },
   props: ['albumData', 'albumFrom'],
   data() {
     return {
+      selectedSongIdx: null,
       SONG_DURATION: SONG_HELPER,
       showAlbumImage: true,
       headers: [
@@ -159,7 +162,12 @@ export default {
       if (newAlbumData.artworkSrc.length > 0) {
         this.$store.commit('setArtworkOfOpenedAlbum', {albumId: this.album.id, src: newAlbumData.artworkSrc});
       }
-    })
+    });
+    eventBus.$on('audio-is-playing', () => {
+      if (this.album.id === this.$store.state.playlist.currentSong.album.id) {
+        this.selectedSongIdx = this.$store.state.playlist.currentSongIdx;
+      }
+    });
   },
   methods: {
     imageError(error) {
@@ -171,11 +179,16 @@ export default {
         this.showAlbumImage = true;
       })
     },
-    isPlayingSongRow(songId) {
-      if (this.$store.state.audio.isPlaying && this.$store.state.playlist.currentSong) {
-        return this.$store.state.playlist.currentSong.id === songId;
-      }
-      return false;
+    isPlayingSongRow(idx) {
+      return idx === this.selectedSongIdx && this.album.id === this.$store.state.playlist.currentSong.album.id;
+      // if (this.$store.state.audio.isPlaying && this.$store.state.playlist.currentSong) {
+      //   let isPlayingRow = this.$store.state.playlist.currentSong.id === songId;
+      //   if (isPlayingRow) {
+      //     this.selectedSongIdx = idx;
+      //   }
+      //   return isPlayingRow;
+      // }
+      // return false;
     },
     playAlbum(songIdx) {
       eventBus.$emit('play-playlist', {songs: this.songs, startSongIdx: songIdx, shuffle: false});

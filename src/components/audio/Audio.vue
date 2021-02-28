@@ -54,7 +54,8 @@ export default {
   },
   methods: {
     onAudioPlay() {
-      this.$store.commit('setAudioIsPlaying', true)
+      this.$store.commit('setAudioIsPlaying', true);
+      eventBus.$emit('audio-is-playing');
     },
     onAudioPause() {
       this.$store.commit('setAudioIsPlaying', false)
@@ -93,7 +94,7 @@ export default {
     },
     loadAudio() {
       let currentSong = this.$store.state.playlist.currentSong;
-      this.audioSourceDOMElement.src = api.defaults.baseURL + "/audio/open/?songId=" + currentSong.id;
+      this.audioSourceDOMElement.src = api.getBaseUrl() + "/audio/open/?songId=" + currentSong.id;
       this.audioDOMElement.load();
       eventBus.$emit('song-is-ready-to-play');
     },
