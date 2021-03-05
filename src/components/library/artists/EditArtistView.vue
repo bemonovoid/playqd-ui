@@ -10,7 +10,13 @@
 
     <v-card>
       <v-card-title>
+
+        <v-list-item-avatar>
+          <v-img :src="$store.getters.getArtistBaseUrl + artist.id + '/image'" @error="imageError"></v-img>
+        </v-list-item-avatar>
+
         <span class="headline">Edit Artist</span>
+
         <v-spacer></v-spacer>
         <v-btn icon @click="active = false">
           <v-icon>mdi-close</v-icon>
@@ -18,51 +24,106 @@
       </v-card-title>
       <v-card-text>
 
-        <v-form v-model="editForm.valid" class="pt-5">
+        <v-expansion-panels focusable accordion>
 
-          <v-text-field dense label="Name"
-                        persistent-hint
-                        :disabled="moveToExistingArtist"
-                        :hint="artistData.name"
-                        v-model="artist.name">
-          </v-text-field>
+          <v-expansion-panel>
 
-          <v-text-field dense label="Country code" class="pt-5"
-                        persistent-hint
-                        :disabled="moveToExistingArtist"
-                        :hint="artistData.country"
-                        v-model="artist.country"
-                        :rules="editForm.artistCountryRules">
-          </v-text-field>
+            <v-expansion-panel-header>
+              Properties
+            </v-expansion-panel-header>
 
-          <v-row align="center" class="pl-3 pt-5">
-            <v-checkbox hide-details class="mt-0" v-model="moveToExistingArtist"></v-checkbox>
-            <v-autocomplete dense label="Move to existing artist" class="pt-5 pr-3"
-                            clearable
-                            persistent-hint
-                            :disabled="!moveToExistingArtist"
-                            :hint="artistData.name"
-                            item-text="name"
-                            item-value="id"
-                            v-model="artist.moveToArtistId"
-                            :items="this.$store.state.artists">
-            </v-autocomplete>
-          </v-row>
+            <v-expansion-panel-content>
 
-        </v-form>
+              <v-form v-model="editForm.valid" class="pt-5">
+
+              <v-row>
+                <v-text-field dense label="Name" class="pt-5" persistent-hint :hint="artistData.name" v-model="artist.name"></v-text-field>
+              </v-row>
+
+              <v-row>
+                <v-text-field dense label="Country code" class="pt-5" persistent-hint :hint="artistData.country" v-model="artist.country" :rules="editForm.artistCountryRules"></v-text-field>
+              </v-row>
+
+              <v-row>
+                <v-list-item>
+                  <v-list-item-title class="text-left">Update audio file tags</v-list-item-title>
+                  <v-list-item-action>
+                    <v-switch dense color="info" hide-details v-model="artist.updateAudioTags"></v-switch>
+                  </v-list-item-action>
+                </v-list-item>
+              </v-row>
+
+              <v-row>
+                <v-col>
+                  <v-btn small depressed block color="primary" class="text-capitalize" @click="updateArtistProperties()">
+                    Save properties
+                  </v-btn>
+                </v-col>
+              </v-row>
+
+              </v-form>
+
+            </v-expansion-panel-content>
+
+          </v-expansion-panel>
+
+          <v-expansion-panel @change="prepareMoveArtistForm()">
+
+            <v-expansion-panel-header>
+              Miscellaneous
+            </v-expansion-panel-header>
+
+            <v-expansion-panel-content>
+
+              <v-row align="center" class="pl-3 pt-5">
+                <v-autocomplete dense label="Move to existing artist" class="pt-5 pr-3"
+                                clearable
+                                persistent-hint
+                                :hint="artistData.name"
+                                item-text="name"
+                                item-value="id"
+                                v-model="artist.id"
+                                :items="this.$store.state.artists">
+                </v-autocomplete>
+              </v-row>
+
+              <v-row>
+                <v-list-item>
+                  <v-list-item-title class="text-left">Update audio file tags</v-list-item-title>
+                  <v-list-item-action>
+                    <v-switch dense color="info" hide-details v-model="artist.updateAudioTags"></v-switch>
+                  </v-list-item-action>
+                </v-list-item>
+              </v-row>
+
+              <v-row>
+                <v-col>
+                  <v-btn small depressed block color="primary" class="text-capitalize">Move</v-btn>
+                </v-col>
+              </v-row>
+
+            </v-expansion-panel-content>
+
+          </v-expansion-panel>
+
+          <v-expansion-panel v-if="!showArtistImage">
+            <v-expansion-panel-header>
+              Image
+            </v-expansion-panel-header>
+
+            <v-expansion-panel-content>
+              <v-row>
+                <v-col>
+                  <v-btn link @click="findArtistImage()">Find artist image</v-btn>
+                </v-col>
+              </v-row>
+            </v-expansion-panel-content>
+
+          </v-expansion-panel>
+
+        </v-expansion-panels>
 
       </v-card-text>
-      <v-card-actions>
-        <v-btn color="blue darken-1" text @click="saveChanges()">
-          Save
-        </v-btn>
-        <v-spacer></v-spacer>
-        <div v-if="!artistImageFound">
-          <v-btn color="blue darken-1" class="text-capitalize" text @click="findArtistImage()">
-            Find artist image
-          </v-btn>
-        </div>
-      </v-card-actions>
     </v-card>
   </v-dialog>
 
@@ -80,7 +141,6 @@ export default {
   data() {
     return {
       active: false,
-      moveToExistingArtist: false,
       editForm: {
         valid: false,
         artistNameRules: [
@@ -90,30 +150,33 @@ export default {
             v => v.length < 3 || 'Country code length must be equal 2'
         ]
       },
+      showArtistImage: true,
       artist: {
         id: this.artistData.id,
-        moveToArtistId: null,
         name: this.artistData.name,
-        country: this.artistData.country
+        country: this.artistData.country,
+        updateAudioTags: true
       },
     }
   },
-  mounted() {
-    if (this.$store.state.artists > 0) {
-    } else {
-      api.getArtists().then(response => {
-        this.$store.commit('setArtists', response.data.artists);
-      });
-    }
-  },
   methods: {
-    saveChanges() {
+    prepareMoveArtistForm() {
+      if (this.$store.state.artists.length === 0) {
+        api.getArtists().then(response => {
+          this.$store.commit('setArtists', response.data.artists);
+        });
+      }
+    },
+    imageError() {
+      this.showArtistImage = false;
+    },
+    updateArtistProperties() {
       if (this.editForm.valid) {
         api.updateArtist(this.artist).then(response => {
             this.active = false;
-            if (this.artist.moveToArtistId) {
-              this.$router.push({name: 'ArtistsView'})
-            }
+            // if (this.artist.moveToArtistId) {
+            //   this.$router.push({name: 'ArtistsView'})
+            // }
         });
       }
     },

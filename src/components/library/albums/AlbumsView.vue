@@ -15,8 +15,7 @@
                 </v-list-item-avatar>
               </template>
               <v-card align="center" elevation="5">
-                <v-img class="white--text align-end"
-                       :src="$store.getters.getArtistBaseUrl + $route.query.artistId + '/image?size=LARGE'">
+                <v-img class="white--text align-end" :src="$store.getters.getArtistBaseUrl + $route.query.artistId + '/image?size=LARGE'">
                   <v-card-title>{{this.albums[0].artist.name}}</v-card-title>
                 </v-img>
               </v-card>

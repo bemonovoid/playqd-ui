@@ -19,11 +19,15 @@
       <v-card-text>
 
         <v-expansion-panels focusable accordion>
+
           <v-expansion-panel>
+
             <v-expansion-panel-header>
               Properties
             </v-expansion-panel-header>
+
             <v-expansion-panel-content>
+
               <v-form v-model="editForm.valid" class="pt-5">
 
                 <v-row>

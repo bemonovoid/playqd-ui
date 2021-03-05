@@ -152,14 +152,26 @@ export default {
       }
       if (sortType === 'play-last-date') {
         this.artists.sort((a1, a2) => {
-          if (a1.playbackInfo.lastPlayedTime < a2.playbackInfo.lastPlayedTime) return 1;
-          if (a1.playbackInfo.lastPlayedTime > a2.playbackInfo.lastPlayedTime) return -1;
-          return 0;
+          if (a1.playbackInfo) {
+            if (a2.playbackInfo) {
+              if (a1.playbackInfo.lastPlayedTime < a2.playbackInfo.lastPlayedTime) return 1;
+              if (a1.playbackInfo.lastPlayedTime > a2.playbackInfo.lastPlayedTime) return -1;
+            } else {
+              return 1;
+            }
+          } else if (a2.playbackInfo) {
+            return 1;
+          } else {
+            return -1;
+          }
         });
       }
       if (sortType === 'play-count') {
         this.artists.sort((a1, a2) => {
-          return a2.playbackInfo.playCount - a1.playbackInfo.playCount;
+          if (a1.playbackInfo && a2.playbackInfo) {
+            return a2.playbackInfo.playCount - a1.playbackInfo.playCount;
+          }
+          return 0;
         });
       }
       if (sortType === 'album-count') {
