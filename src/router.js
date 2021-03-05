@@ -6,12 +6,10 @@ import LoginView from "@/components/account/LoginView";
 import SignInView from "@/components/account/SignInView";
 import ArtistsView from "@/components/library/artists/ArtistsView";
 import GenresView from "@/components/library/genres/GenresView";
-import LibrarySongsView from "@/components/library/songs/LibrarySongListView";
+import LibrarySongsView from "@/components/library/songs/LibrarySongsView.vue";
 import AlbumsView from "@/components/library/albums/AlbumsView";
 import AlbumSongsView from "@/components/library/songs/AlbumSongsView";
 import PlayerView from "@/components/library/player/PlayerView";
-
-import store from "@/store/vuex-store"
 
 Vue.use(Router);
 

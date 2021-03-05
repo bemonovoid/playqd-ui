@@ -42,7 +42,7 @@
               <v-list-item :key="i" @click="playLibrarySongs(i)" three-line class="pl-0">
 
                 <v-list-item-avatar tile class="text-left">
-                  <v-img v-bind:src="$store.state.albumsBaseUrl + song.album.id + '/image'">
+                  <v-img v-bind:src="$store.getters.getAlbumBaseUrl + song.album.id + '/image'">
                   </v-img>
                 </v-list-item-avatar>
 
@@ -52,7 +52,7 @@
                     {{song.artist.name}}
                   </v-list-item-subtitle>
                   <v-list-item-subtitle class="text-caption">
-                    <i>play count: {{song.playbackHistory ? song.playbackHistory.playCount : 0}}, last: {{song.playbackHistory ? song.playbackHistory.lastTimePlayed : ''}}</i>
+                    <i>play count: {{song.playbackInfo ? song.playbackInfo.playCount : 0}}, last: {{song.playbackInfo ? song.playbackInfo.lastPlayedTime : ''}}</i>
                   </v-list-item-subtitle>
                 </v-list-item-content>
 
@@ -62,7 +62,7 @@
                       {{SONG_DURATION.convertSecondsToMinutesAndSeconds(song.duration)}}
                     </div>
                   </v-list-item-action-text>
-                  <v-icon v-if="song.favorite" color="yellow darken-3">mdi-star</v-icon>
+                  <v-icon v-if="song.playbackInfo && song.playbackInfo.favorite" color="yellow darken-3">mdi-star</v-icon>
                 </v-list-item-action>
 
               </v-list-item>
@@ -94,7 +94,7 @@
 
 <script>
 
-import api from "@/http/playqdAPI"
+import api from "@/http/playqdAPI";
 import {SONG_HELPER} from "@/utils/songs-helper";
 import {eventBus} from "@/main";
 

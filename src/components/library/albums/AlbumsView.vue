@@ -11,12 +11,12 @@
             <v-dialog v-if="showArtistImage" max-width="500">
               <template v-slot:activator="{on, attrs}">
                 <v-list-item-avatar class="ml-0 mr-2 mb-5" v-on="on" v-bind="attrs">
-                  <v-img :src="$store.state.artistsBaseUrl + $route.query.artistId + '/image'" @error="imageError()"></v-img>
+                  <v-img :src="$store.getters.getArtistBaseUrl + $route.query.artistId + '/image'" @error="imageError()"></v-img>
                 </v-list-item-avatar>
               </template>
               <v-card align="center" elevation="5">
                 <v-img class="white--text align-end"
-                       :src="$store.state.artistsBaseUrl + $route.query.artistId + '/image?size=LARGE'">
+                       :src="$store.getters.getArtistBaseUrl + $route.query.artistId + '/image?size=LARGE'">
                   <v-card-title>{{this.albums[0].artist.name}}</v-card-title>
                 </v-img>
               </v-card>
@@ -81,7 +81,7 @@
                    gradient="to bottom, rgba(0, 0, 0, .1), rgba(0, 0, 0 ,.5)"></v-img>
           </div>
           <div v-else>
-            <v-img :src="$store.state.albumsBaseUrl + album.id + '/image'"
+            <v-img :src="$store.getters.getAlbumBaseUrl + album.id + '/image'"
                    @error="imageError(album.id)"
                    class="white--text align-end">
             </v-img>

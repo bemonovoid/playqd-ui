@@ -46,7 +46,7 @@ export default {
     login() {
       api.login(this.account).then(response => {
           this.$store.commit('setLoginSuccess', this.account);
-          this.$router.push({name: 'Home'});
+          this.$router.push({name: 'LibraryView'});
       });
     },
     createAccount() {

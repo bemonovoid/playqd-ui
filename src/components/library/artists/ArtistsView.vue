@@ -56,7 +56,7 @@
             <v-list-item v-for="(artist, i) in artists" :key="i" class="pl-0" :to="{name: 'AlbumsView', query: {artistId: artist.id}}">
 
               <v-list-item-avatar class="ml-0 mr-2">
-                <v-img :src="$store.state.artistsBaseUrl + artist.id + '/image'" alt="alt"></v-img>
+                <v-img :src="$store.getters.getArtistBaseUrl + artist.id + '/image'" alt="alt"></v-img>
               </v-list-item-avatar>
 
               <v-list-item-content class="py-0">
@@ -152,14 +152,14 @@ export default {
       }
       if (sortType === 'play-last-date') {
         this.artists.sort((a1, a2) => {
-          if (a1.playbackHistory.lastTimePlayed < a2.playbackHistory.lastTimePlayed) return 1;
-          if (a1.playbackHistory.lastTimePlayed > a2.playbackHistory.lastTimePlayed) return -1;
+          if (a1.playbackInfo.lastPlayedTime < a2.playbackInfo.lastPlayedTime) return 1;
+          if (a1.playbackInfo.lastPlayedTime > a2.playbackInfo.lastPlayedTime) return -1;
           return 0;
         });
       }
       if (sortType === 'play-count') {
         this.artists.sort((a1, a2) => {
-          return a2.playbackHistory.playCount - a1.playbackHistory.playCount;
+          return a2.playbackInfo.playCount - a1.playbackInfo.playCount;
         });
       }
       if (sortType === 'album-count') {

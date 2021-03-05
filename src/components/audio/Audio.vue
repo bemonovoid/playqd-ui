@@ -94,7 +94,7 @@ export default {
     },
     loadAudio() {
       let currentSong = this.$store.state.playlist.currentSong;
-      this.audioSourceDOMElement.src = api.getBaseUrl() + "/audio/open/?songId=" + currentSong.id;
+      this.audioSourceDOMElement.src = api.getSongSrcUrl(currentSong.id);
       this.audioDOMElement.load();
       eventBus.$emit('song-is-ready-to-play');
     },

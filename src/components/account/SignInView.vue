@@ -44,7 +44,7 @@ export default {
   methods: {
     createAccount() {
       api.createAccount(this.account).then(response => {
-          this.$router.push({name: 'Home'})
+          this.$router.push({name: 'LibraryView'})
       });
     }
   }

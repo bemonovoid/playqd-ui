@@ -11,69 +11,116 @@
     <v-card>
       <v-card-title>
         <span class="headline">Edit Album</span>
+        <v-spacer></v-spacer>
+        <v-btn icon @click="active = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </v-card-title>
       <v-card-text>
 
-        <v-form v-model="editForm.valid" class="pt-5">
-          <v-text-field dense label="Album Name"
-                        persistent-hint
-                        :disabled="moveToExistingAlbum"
-                        :hint="albumData.name"
-                        v-model="album.name">
-          </v-text-field>
+        <v-expansion-panels focusable accordion>
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              Properties
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-form v-model="editForm.valid" class="pt-5">
 
-          <v-text-field dense label="Genre" class="pt-5"
-                        persistent-hint
-                        :disabled="moveToExistingAlbum"
-                        :hint="albumData.genre"
-                        v-model="album.genre">
-          </v-text-field>
+                <v-row>
+                  <v-col>
+                    <v-text-field dense label="Album Name" persistent-hint :hint="albumData.name" v-model="album.name"></v-text-field>
+                  </v-col>
+                </v-row>
 
-          <v-text-field dense label="Year" class="pt-5"
-                        persistent-hint
-                        :disabled="moveToExistingAlbum"
-                        :hint="albumData.date"
-                        v-model="album.date">
-          </v-text-field>
+                <v-row>
+                  <v-col>
+                    <v-text-field dense label="Genre" class="pt-5" persistent-hint :hint="albumData.genre" v-model="album.genre"></v-text-field>
+                  </v-col>
+                  <v-col>
+                    <v-text-field dense label="Year" class="pt-5" persistent-hint :hint="albumData.date" v-model="album.date">
+                    </v-text-field>
+                  </v-col>
+                </v-row>
 
-          <v-text-field dense label="Artwork url" class="pt-5"
-                        persistent-hint
-                        :disabled="moveToExistingAlbum"
-                        hint="URL"
-                        v-model="album.artworkSrc">
-          </v-text-field>
+                <v-row>
+                  <v-list-item>
+                    <v-list-item-title class="text-left">Update audio file tags</v-list-item-title>
+                    <v-list-item-action>
+                      <v-switch dense color="info" hide-details v-model="album.updateAudioTags"></v-switch>
+                    </v-list-item-action>
+                  </v-list-item>
+                </v-row>
 
-          <v-checkbox label="Override song name with file name" color="red"
-                      :disabled="moveToExistingAlbum"
-                      v-model="album.overrideSongNameWithFileName">
-          </v-checkbox>
+                <v-row>
+                  <v-col>
+                    <v-btn small depressed block color="primary" class="text-capitalize" @click="updateAlbumProperties()">
+                      Save properties
+                    </v-btn>
+                  </v-col>
+                </v-row>
 
-          <v-row align="center" class="pt-5">
-            <v-checkbox hide-details class="mt-0" v-model="moveToExistingAlbum"></v-checkbox>
-            <v-autocomplete dense label="Move to existing album" class="pt-5 pr-3 text-left"
-                            clearable
-                            persistent-hint
-                            :disabled="!moveToExistingAlbum"
-                            :hint="albumData.name"
-                            item-text="name"
-                            item-value="id"
-                            v-model="album.id"
-                            :items="artistAlbums">
-            </v-autocomplete>
-          </v-row>
+              </v-form>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
 
-        </v-form>
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              Preferences
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-row>
+                <v-list-item class="pt-5">
+                  <v-list-item-title class="text-left">Song name as file name</v-list-item-title>
+                  <v-list-item-action>
+                    <v-switch dense color="info" hide-details v-model="album.preferences.songNameAsFileName" @change="updateAlbumPreferences()"></v-switch>
+                  </v-list-item-action>
+                </v-list-item>
+              </v-row>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              Miscellaneous
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-row align="center" class="pt-5">
+                <v-autocomplete dense label="Move to existing album" class="pt-5 pr-3 text-left"
+                                clearable
+                                persistent-hint
+                                :hint="albumData.name"
+                                item-text="name"
+                                item-value="id"
+                                v-model="album.id"
+                                :items="artistAlbums">
+                </v-autocomplete>
+              </v-row>
+              <v-row>
+                <v-list-item>
+                  <v-list-item-title class="text-left">Update audio file tags</v-list-item-title>
+                  <v-list-item-action>
+                    <v-switch dense color="info" hide-details v-model="album.updateAudioTags"></v-switch>
+                  </v-list-item-action>
+                </v-list-item>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-btn small depressed block color="primary" class="text-capitalize">Move</v-btn>
+                </v-col>
+              </v-row>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+
+        </v-expansion-panels>
+
+<!--          <v-text-field dense label="Artwork url" class="pt-5"-->
+<!--                        persistent-hint-->
+<!--                        :disabled="moveToExistingAlbum"-->
+<!--                        hint="URL"-->
+<!--                        v-model="album.artworkSrc">-->
+<!--          </v-text-field>-->
 
       </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="active = false">
-          Close
-        </v-btn>
-        <v-btn color="blue darken-1" text @click="saveChanges()">
-          Save
-        </v-btn>
-      </v-card-actions>
     </v-card>
   </v-dialog>
 
@@ -90,19 +137,21 @@ export default {
   data() {
     return {
       active: false,
-      moveToExistingAlbum: false,
       editForm: {
         valid: false
       },
       artistAlbums: [],
       album: {
         id: this.albumData.id,
-        moveToAlbumId: null,
         name: this.albumData.name,
         genre: this.albumData.genre,
         date: this.albumData.date,
-        overrideSongNameWithFileName: false,
-        artworkSrc: ''
+        updateAudioTags: true,
+        preferences: {
+          albumId: this.albumData.id,
+          songNameAsFileName: this.albumData.preferences ? this.albumData.preferences.songNameAsFileName : false,
+        },
+        artworkSrc: null
       },
     }
   },
@@ -112,16 +161,22 @@ export default {
     });
   },
   methods: {
-    saveChanges() {
+    updateAlbumProperties() {
       if (this.editForm.valid) {
-        api.updateAlbum(this.album).then(response => {
+        api.updateAlbumProperties(this.album).then(response => {
           eventBus.$emit('album-data-updated', this.album)
           this.active = false;
-          if (this.album.moveToAlbumId) {
-            this.$router.push({name: 'AlbumsView', query: {artistId: this.albumData.artist.id}})
-          }
+          // if (this.album.moveToAlbumId) {
+          //   this.$router.push({name: 'AlbumsView', query: {artistId: this.albumData.artist.id}})
+          // }
         });
       }
+    },
+    updateAlbumPreferences() {
+      api.updateAlbumPreferences(this.album.preferences).then(response => {
+        eventBus.$emit('album-preferences-updated', this.album.preferences)
+        this.active = false;
+      });
     }
   }
 }

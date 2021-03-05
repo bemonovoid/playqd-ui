@@ -1,90 +1,72 @@
 <template>
 
-  <v-app-bar v-if="this.$store.state.playlist.currentSong" fixed bottom flat color="grey lighten-3">
+  <div v-if="this.$store.state.playlist.currentSong">
 
-    <div class="py-2 pr-3">
-      <v-img max-height="50px" max-width="50px" v-bind:src="this.$store.state.artwork.ofCurrentSong"></v-img>
-    </div>
+    <v-bottom-navigation fixed horizontal class="hidden-sm-and-down pl-2" height="60">
 
-    <v-toolbar-title class="hidden-md-and-up" @click="openPlayerView()">
-      <div class="caption px-2 text-left text-truncate">
-        {{this.$store.state.playlist.currentSong.name}}
-      </div>
-      <div class="caption px-2 text-left text-truncate text--disabled">
-        <small>{{ this.$store.state.playlist.currentSong.artist.name}}</small>
-      </div>
-    </v-toolbar-title>
+      <v-row>
 
-    <v-toolbar-title class="hidden-sm-and-down text-left px-5" style="width: 90%">
+        <v-col md="auto">
+          <v-img v-if="showAlbumImage" max-height="50px" max-width="50px" class="mr-1 mt-1 elevation-1"
+                 v-bind:src="$store.state.artwork.ofCurrentSong"
+                 @error="imageError"></v-img>
 
-      <div class="px-2">
-        <v-btn link plain class="pl-0 pt-2 text-capitalize" @click="openPlayerView()">
-          {{ this.$store.state.playlist.currentSong.artist.name + ' - ' + this.$store.state.playlist.currentSong.name }}
-        </v-btn>
+          <v-img v-else max-height="50px" max-width="50px" class="mr-1 mt-1 elevation-1" src="@/assets/default-album-cover.png"></v-img>
+        </v-col>
 
-      </div>
-
-      <div>
-        <v-slider dense class="toolbar-player-slider" inverse-label
-                  thumb-color="black"
-                  track-color="grey"
-                  track-fill-color="black"
-                  min="0"
-                  tick-size="1"
-                  step="0.001"
-                  messages=" "
-                  @change="changeAudioCurrentTime()"
-                  v-bind:max="this.$store.state.audio.duration"
-                  v-model="slider.audioTime = $store.state.audio.currentTime">
-
-          <template v-slot:label>
-            <div class="caption text--secondary">
-              {{SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.currentTimeAsInt) + ' / ' + SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.duration)}}
-            </div>
-          </template>
-
-          <template v-slot:message>
-            <div class="pl-2 pt-0 pb-2">
+        <v-col class="text-left">
+          <v-row>
+            <v-col class="pl-5 text-start d-inline-block">
+              <a class="text-body-2 red--text" @click="openPlayerView()">{{this.$store.state.playlist.currentSong.artist.name + ' - ' + this.$store.state.playlist.currentSong.name}}</a>
+            </v-col>
+            <v-col class="text-right text-caption grey--text">
               {{$store.state.playlist.currentSong.fileExtension}} | {{$store.state.playlist.currentSong.audioBitRate}} kbps | {{$store.state.playlist.currentSong.audioSampleRate}} Hz
-            </div>
-          </template>
+            </v-col>
+            <v-col class="pr-5 text-right text-body-2 red--text" md="auto">
+              {{SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.currentTimeAsInt) + ' / ' + SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.duration)}}
+            </v-col>
+          </v-row>
+          <v-slider
+                    dense inverse-label
+                    hide-details
+                    thumb-color="black"
+                    track-color="grey"
+                    track-fill-color="black"
+                    min="0"
+                    tick-size="1"
+                    step="0.001"
+                    @change="changeAudioCurrentTime()"
+                    v-bind:max="this.$store.state.audio.duration"
+                    v-model="slider.audioTime = $store.state.audio.currentTime">
+          </v-slider>
+        </v-col>
+      </v-row>
 
-        </v-slider>
-      </div>
-
-    </v-toolbar-title>
-
-    <v-spacer></v-spacer>
-
-    <v-toolbar-items align="right" class="pl-5">
-
-      <v-btn icon small @click="playPrev()" class="hidden-sm-and-down px-5">
+      <v-btn icon small @click="playPrev()">
         <v-icon>mdi-rewind</v-icon>
       </v-btn>
 
-      <v-btn class="px-5" v-if="this.$store.state.audio.isPlaying" icon @click="pause()">
+      <v-btn v-if="this.$store.state.audio.isPlaying" @click="pause()">
         <v-icon x-large>mdi-pause</v-icon>
       </v-btn>
 
-      <v-btn v-else icon @click="resumePlay()" class="px-5">
+      <v-btn v-else icon @click="resumePlay()">
         <v-icon x-large>mdi-play</v-icon>
       </v-btn>
 
-      <v-btn icon small @click="playNext()" class="px-5">
+      <v-btn small @click="playNext()">
         <v-icon>mdi-fast-forward</v-icon>
       </v-btn>
 
-      <v-spacer></v-spacer>
-
-      <v-btn icon x-small class="hidden-sm-and-down px-5">
+      <v-btn icon x-small>
         <v-icon v-bind:color="$store.state.playlist.shuffle ? 'red' : 'grey darken-1'">mdi-shuffle-variant</v-icon>
       </v-btn>
 
-      <v-btn icon x-small class="hidden-sm-and-down">
+      <v-btn icon x-small>
         <v-icon>mdi-repeat</v-icon>
       </v-btn>
 
-      <v-spacer></v-spacer>
+      <v-divider vertical/>
 
       <v-menu top :close-on-content-click="false" :offset-y="true">
         <template v-slot:activator="{ on, attrs }">
@@ -116,39 +98,72 @@
       </v-menu>
 
       <v-btn icon class="hidden-sm-and-down" @click="updateFavoriteStatus()">
-        <v-icon  v-if="this.$store.state.playlist.currentSong.favorite" color="yellow darken-3">mdi-star</v-icon>
+        <v-icon  v-if="this.$store.state.playlist.currentSong.playbackInfo && this.$store.state.playlist.currentSong.playbackInfo.favorite" color="yellow darken-3">mdi-star</v-icon>
         <v-icon v-else>mdi-star-outline</v-icon>
       </v-btn>
 
-    </v-toolbar-items>
+    </v-bottom-navigation>
 
-  </v-app-bar>
+    <v-app-bar fixed bottom flat class="pr-5 hidden-md-and-up" height="60" color="grey lighten-3">
+
+      <v-img v-if="showAlbumImage" max-height="50px" max-width="50px" class="mr-1"
+             v-bind:src="$store.state.artwork.ofCurrentSong"
+             @error="imageError"></v-img>
+
+      <v-img v-else max-height="50px" max-width="50px" class="mr-1" src="@/assets/default-album-cover.png"></v-img>
+
+      <small class="text-truncate">
+        {{ this.$store.state.playlist.currentSong.artist.name + ' - ' + this.$store.state.playlist.currentSong.name }}
+      </small>
+
+      <v-spacer></v-spacer>
+
+      <v-btn icon v-if="this.$store.state.audio.isPlaying" @click="pause()">
+        <v-icon x-large>mdi-pause</v-icon>
+      </v-btn>
+
+      <v-btn icon v-else @click="resumePlay()">
+        <v-icon x-large>mdi-play</v-icon>
+      </v-btn>
+
+      <v-btn icon small @click="playNext()">
+        <v-icon>mdi-fast-forward</v-icon>
+      </v-btn>
+
+    </v-app-bar>
+
+  </div>
+
+  <div v-else></div>
 
 </template>
 
 <script>
 
-import {eventBus} from "@/main";
 import {SONG_HELPER} from "@/utils/songs-helper";
-import api from "@/http/playqdAPI"
+import {eventBus} from "@/main";
+import api from "@/http/playqdAPI";
 
 export default {
   name: 'MiniPlayerView',
-  components: {},
   data() {
     return {
       SONG_DURATION: SONG_HELPER,
-      volumeIcon: {
-        color: 'grey darken-1',
-        name: 'mdi-volume-high'
-      },
+      showAlbumImage: true,
       slider: {
         audioTime: 0,
         audioVolume: 0.5
+      },
+      volumeIcon: {
+        color: 'grey darken-1',
+        name: 'mdi-volume-high'
       }
     }
   },
   methods: {
+    changeAudioCurrentTime() {
+      eventBus.$emit('toolbar-player-current-time-changed', this.slider.audioTime);
+    },
     playNext() {
       eventBus.$emit('play-next-song');
     },
@@ -167,9 +182,6 @@ export default {
       this.volumeIcon.name = 'mdi-volume-off'
       this.changeAudioCurrentVolume();
     },
-    changeAudioCurrentTime() {
-      eventBus.$emit('toolbar-player-current-time-changed', this.slider.audioTime);
-    },
     changeAudioCurrentVolume() {
       if (this.slider.audioVolume > 0) {
         this.volumeIcon.color = 'grey darken-1'
@@ -178,7 +190,7 @@ export default {
       eventBus.$emit('toolbar-player-current-volume-changed', this.slider.audioVolume);
     },
     updateFavoriteStatus() {
-      api.setSongFavoriteStatus(this.$store.state.playlist.currentSong.id).then(response => {
+      api.setSongFavoriteStatus(this.$store.state.playlist.currentSong).then(response => {
         this.$store.commit('setCurrentSongFavoriteStatus');
       });
     },
@@ -189,16 +201,11 @@ export default {
               playerSong: this.$store.state.playlist.currentSong
             }
       })
-    }
+    },
+    imageError() {
+      this.showAlbumImage = false;
+    },
   }
 }
 
 </script>
-
-<style>
-
-  .toolbar-player-slider .v-slider--horizontal {
-      min-height: 15px;
-  }
-
-</style>

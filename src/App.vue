@@ -4,18 +4,20 @@
     <v-main>
       <v-container>
         <Audio/>
-        <v-row class="pt-10">
+        <v-row>
           <v-col md="6" offset-md="3">
             <router-view></router-view>
           </v-col>
         </v-row>
+        <v-row>
+          <transition>
+            <div v-show="this.$store.state.miniPlayer.show">
+              <MiniPlayerView></MiniPlayerView>
+            </div>
+          </transition>
+        </v-row>
       </v-container>
     </v-main>
-    <transition>
-      <div v-show="this.$store.state.miniPlayer.show">
-        <MiniPlayerView></MiniPlayerView>
-      </div>
-    </transition>
   </v-app>
 </template>
 

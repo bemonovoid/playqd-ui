@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 import router from "@/router";
 
 const HTTP_CLIENT = axios.create({
@@ -8,6 +9,12 @@ const HTTP_CLIENT = axios.create({
 export default {
 
     getBaseUrl() { return HTTP_CLIENT.defaults.baseURL },
+
+    getArtistsApiUrl() { return this.getBaseUrl() + '/library/artists/' },
+
+    getAlbumsApiUrl() { return this.getBaseUrl() + '/library/albums/' },
+
+    getSongSrcUrl(songId) { return this.getBaseUrl() + '/audio/open/?songId=' + songId },
 
     getArtists() { return this.executeGet('/library/artists/') },
 
@@ -31,13 +38,25 @@ export default {
 
     updateArtist(data) { return this.executePut('/library/artists/', data) },
 
-    updateAlbum(data) { return this.executePut('/library/albums', data) },
+    updateAlbumProperties(data) { return this.executePut('/library/albums', data) },
 
-    setSongFavoriteStatus(songId) { return this.executePost('/library/songs/' + songId) },
+    updateAlbumPreferences(data) { return this.executePut('/library/albums/preferences', data) },
+
+    setSongFavoriteStatus(song) {
+        if (song.playbackInfo) {
+            return song.playbackInfo.favorite ? this.unsetFavorite(song.id) : this.setFavorite(song.id)
+        } else {
+            return this.setFavorite(song.id);
+        }
+    },
+
+    setFavorite(songId) { return this.executePut('/library/songs/' + songId + '/favorite') },
+
+    unsetFavorite(songId) { return this.executeDelete('/library/songs/' + songId + '/favorite') },
 
     updateSong(data) { return this.executePut('/library/songs/', data) },
 
-    updateSongHistory(songId) { return this.executePut('/library/history/' + songId) },
+    updatePlayedSongCount(songId) { return this.executePut('/library/songs/' + songId + '/stats/played') },
 
     createAccount(data) { return this.executePost('/accounts', data) },
 
@@ -48,7 +67,7 @@ export default {
     executeGet(url) {
         return HTTP_CLIENT.get(url).catch(error => {
             if (error.response && error.response.status === 401) {
-                 router.push({name: 'LoginView'});
+                router.push({name: 'LoginView'});
             }
         });
     },
@@ -63,6 +82,14 @@ export default {
 
     executePost(url, data) {
         return HTTP_CLIENT.post(url, data).catch(error => {
+            if (error.response && error.response.status === 401) {
+                router.push({name: 'LoginView'});
+            }
+        });
+    },
+
+    executeDelete(url) {
+        return HTTP_CLIENT.delete(url).catch(error => {
             if (error.response && error.response.status === 401) {
                 router.push({name: 'LoginView'});
             }

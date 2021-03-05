@@ -1,8 +1,6 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
 import router from "@/router";
-// import axios from 'axios'
-// import VueAxios from 'vue-axios'
 import VueHead from 'vue-head';
 
 import '@mdi/font/css/materialdesignicons.css'
@@ -15,7 +13,6 @@ Vue.config.productionTip = false;
 
 Vue.use(VueHead)
 Vue.use(Vuetify)
-// Vue.use(VueAxios, axios)
 
 export const eventBus = new Vue();
 

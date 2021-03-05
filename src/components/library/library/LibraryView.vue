@@ -37,7 +37,7 @@
 
 <script>
 
-import LibrarySongsView from "@/components/library/songs/LibrarySongListView";
+import LibrarySongsView from "@/components/library/songs/LibrarySongsView.vue";
 
 export default {
   name: 'LibraryView',

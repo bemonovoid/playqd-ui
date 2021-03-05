@@ -16,7 +16,7 @@
            <v-row>
              <v-col cols="1" class="text-left">
                <v-btn small icon elevation="1" @click="updateFavoriteStatus()">
-                 <v-icon v-if="this.$store.state.playlist.currentSong.favorite" color="yellow darken-3">mdi-star</v-icon>
+                 <v-icon v-if="this.$store.state.playlist.currentSong.playbackInfo && this.$store.state.playlist.currentSong.playbackInfo.favorite" color="yellow darken-3">mdi-star</v-icon>
                  <v-icon v-else>mdi-star-outline</v-icon>
                </v-btn>
              </v-col>
@@ -35,7 +35,7 @@
            </v-btn>
            <v-row>
              <v-col class="pt-3 pb-0 text-left">
-               <small>Played: {{$store.state.playlist.currentSong.playbackHistory ? $store.state.playlist.currentSong.playbackHistory.playCount : 0}}</small>
+               <small>Played: {{$store.state.playlist.currentSong.playbackInfo ? $store.state.playlist.currentSong.playbackInfo.playCount : 0}}</small>
              </v-col>
              <v-col class="text-right">
                <small>{{$store.state.playlist.currentSong.fileExtension}} | {{$store.state.playlist.currentSong.audioBitRate}} kbps | {{$store.state.playlist.currentSong.audioSampleRate}} Hz</small>
@@ -207,7 +207,7 @@ export default {
       }
     },
     updateFavoriteStatus() {
-      api.setSongFavoriteStatus(this.$store.state.playlist.currentSong.id).then(response => {
+      api.setSongFavoriteStatus(this.$store.state.playlist.currentSong).then(response => {
         this.$store.commit('setCurrentSongFavoriteStatus');
       });
     },

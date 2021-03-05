@@ -79,7 +79,7 @@ export default {
         name: this.songData.name,
         comment: this.songData.comment,
         lyrics: this.songData.lyrics,
-        overrideSongNameWithFileName: this.songData.showFileNameAsSongName,
+        overrideSongNameWithFileName: false,
         artworkSrc: ''
       },
     }

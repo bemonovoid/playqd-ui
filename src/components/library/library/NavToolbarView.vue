@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar dense color="blue-grey lighten-3" fixed flat elevation="0">
+  <v-app-bar app dense color="blue-grey lighten-3" fixed flat elevation="0">
 
     <v-app-bar-nav-icon v-if="this.$route.name === 'LibraryView'" @click="routerGoHome()"></v-app-bar-nav-icon>
 
@@ -27,13 +27,13 @@
 <script>
 
 import {eventBus} from "@/main";
-import PLAYQD_API from "@/http/playqdAPI"
+import api from "@/http/playqdAPI";
 
 export default {
   name: 'NavToolbarView',
   mounted() {
     eventBus.$on('playback-song-ended', (songId) => {
-      PLAYQD_API.updateSongHistory(songId);
+      api.updatePlayedSongCount(songId);
     });
   },
   methods: {

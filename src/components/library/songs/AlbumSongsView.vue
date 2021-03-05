@@ -62,7 +62,6 @@
             </v-col>
             <v-col class="text-right">
               <EditAlbumView v-bind:album-data="album"></EditAlbumView>
-<!--              <AlbumSongsDropdownOptionsView :album.sync="album" :show-song-name-as-file-name.sync="replaceSongNameWithFileName"/>-->
             </v-col>
           </v-row>
 
@@ -81,7 +80,7 @@
                       </v-list-item-icon>
                       <v-list-item-content class="text-left">
                         <v-list-item-title>
-                          {{ replaceSongNameWithFileName ? song.fileName : song.name }}
+                          {{ album.preferences && album.preferences.songNameAsFileName ? song.fileName : song.name }}
                         </v-list-item-title>
                       </v-list-item-content>
                       <v-list-item-action>
@@ -134,8 +133,7 @@ export default {
           {align: 'end', value: 'duration'}
       ],
       album: this.albumData,
-      songs: [],
-      replaceSongNameWithFileName: false
+      songs: []
     }
   },
   computed: {
@@ -153,15 +151,18 @@ export default {
         this.album = response.data.album;
       }
       this.album.totalTime = this.songs.length + ' songs, ' + this.album.totalTimeHumanReadable;
-      this.$store.commit('setArtworkOfOpenedAlbum', {albumId: this.album.id, src: this.$store.state.albumsBaseUrl + this.album.id + '/image'});
+      this.$store.commit('setArtworkOfOpenedAlbum', {albumId: this.album.id, src: this.$store.getters.getAlbumBaseUrl + this.album.id + '/image'});
     });
     eventBus.$on('album-data-updated', newAlbumData => {
       this.album.name = newAlbumData.name;
       this.album.genre = newAlbumData.genre;
       this.album.date = newAlbumData.date;
-      if (newAlbumData.artworkSrc.length > 0) {
+      if (newAlbumData.artworkSrc) {
         this.$store.commit('setArtworkOfOpenedAlbum', {albumId: this.album.id, src: newAlbumData.artworkSrc});
       }
+    });
+    eventBus.$on('album-preferences-updated', newPreferences => {
+      this.album.preferences = newPreferences;
     });
     eventBus.$on('audio-is-playing', () => {
       if (this.album.id === this.$store.state.playlist.currentSong.album.id) {
@@ -181,14 +182,6 @@ export default {
     },
     isPlayingSongRow(idx) {
       return idx === this.selectedSongIdx && this.album.id === this.$store.state.playlist.currentSong.album.id;
-      // if (this.$store.state.audio.isPlaying && this.$store.state.playlist.currentSong) {
-      //   let isPlayingRow = this.$store.state.playlist.currentSong.id === songId;
-      //   if (isPlayingRow) {
-      //     this.selectedSongIdx = idx;
-      //   }
-      //   return isPlayingRow;
-      // }
-      // return false;
     },
     playAlbum(songIdx) {
       eventBus.$emit('play-playlist', {songs: this.songs, startSongIdx: songIdx, shuffle: false});
