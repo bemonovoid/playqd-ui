@@ -16,7 +16,6 @@
           </v-item-group>
         </v-card-text>
         <v-card-actions class="justify-space-between">
-          <v-btn text class="text-capitalize" @click="createAccount()">Create new account</v-btn>
           <v-btn color="blue-grey lighten-3" class="text-capitalize" @click="login()">
             Login
           </v-btn>
@@ -45,12 +44,9 @@ export default {
   methods: {
     login() {
       api.login(this.account).then(response => {
-          this.$store.commit('setLoginSuccess', this.account);
+          this.$store.commit('setUserAuthToken', response.data.authToken);
           this.$router.push({name: 'LibraryView'});
       });
-    },
-    createAccount() {
-      this.$router.push({name: 'SignInView'});
     }
   }
 }

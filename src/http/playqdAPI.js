@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+import store from "@/store/vuex-store";
 import router from "@/router";
 
 const HTTP_CLIENT = axios.create({
@@ -10,37 +11,37 @@ export default {
 
     getBaseUrl() { return HTTP_CLIENT.defaults.baseURL },
 
-    getArtistsApiUrl() { return this.getBaseUrl() + '/library/artists/' },
+    getResourceApiUrl() { return this.getBaseUrl() + '/api/library/resource/' },
 
-    getAlbumsApiUrl() { return this.getBaseUrl() + '/library/albums/' },
+    getAlbumsApiUrl() { return this.getBaseUrl() + '/api/library/albums/' },
 
-    getSongSrcUrl(songId) { return this.getBaseUrl() + '/audio/open/?songId=' + songId },
+    getSongSrcUrl(resourceId) { return this.getResourceApiUrl() + 'audio/?resourceId=' + resourceId },
 
-    getArtists() { return this.executeGet('/library/artists/') },
+    getArtists() { return this.executeGet('/api/library/artists/') },
 
-    getArtistImageSrc(artistId) { return this.executeGet('/library/artists/' + artistId + '/image/src') },
+    getArtistImageSrc(artistId) { return this.executeGet('/api/library/artists/' + artistId + '/image/src') },
 
-    getAlbumImageSrc(albumId) { return this.executeGet('/library/albums/' + albumId + '/image/src') },
+    getAlbumImageSrc(albumId) { return this.executeGet('/api/library/albums/' + albumId + '/image/src') },
 
-    getGenres() { return this.executeGet('/library/genres/') },
+    getGenres() { return this.executeGet('/api/library/genres/') },
 
-    getArtistAlbums(artistId) { return this.executeGet('/library/albums/?artistId=' + artistId) },
+    getArtistAlbums(artistId) { return this.executeGet('/api/library/albums/?artistId=' + artistId) },
 
-    getAlbums(params) { return this.executeGet('/library/albums/' + params) },
+    getAlbums(params) { return this.executeGet('/api/library/albums/' + params) },
 
-    getGenreAlbums(genre) { return this.executeGet('/library/albums/?genre=' + genre) },
+    getGenreAlbums(genre) { return this.executeGet('/api/library/albums/?genre=' + genre) },
 
-    getSongsFiltered(pageSize, filterType) { return this.executeGet('/library/songs/?pageSize=' + pageSize + '&filter=' + filterType) },
+    getSongsFiltered(pageSize, filterType) { return this.executeGet('/api/library/songs/?pageSize=' + pageSize + '&filter=' + filterType) },
 
-    getAlbumSongs(albumId) { return this.executeGet('/library/songs/album/' + albumId) },
+    getAlbumSongs(albumId) { return this.executeGet('/api/library/songs/album/' + albumId) },
 
-    getSong(songId) { return this.executeGet('/library/songs/' + songId) },
+    getSong(songId) { return this.executeGet('/api/library/songs/' + songId) },
 
-    updateArtist(data) { return this.executePut('/library/artists/', data) },
+    updateArtist(data) { return this.executePut('/api/library/artists/', data) },
 
-    updateAlbumProperties(data) { return this.executePut('/library/albums', data) },
+    updateAlbumProperties(data) { return this.executePut('/api/library/albums', data) },
 
-    updateAlbumPreferences(data) { return this.executePut('/library/albums/preferences', data) },
+    updateAlbumPreferences(data) { return this.executePut('/api/library/albums/preferences', data) },
 
     setSongFavoriteStatus(song) {
         if (song.playbackInfo) {
@@ -50,49 +51,56 @@ export default {
         }
     },
 
-    setFavorite(songId) { return this.executePut('/library/songs/' + songId + '/favorite') },
+    setFavorite(songId) { return this.executePut('/api/library/songs/' + songId + '/favorite') },
 
-    unsetFavorite(songId) { return this.executeDelete('/library/songs/' + songId + '/favorite') },
+    unsetFavorite(songId) { return this.executeDelete('/api/library/songs/' + songId + '/favorite') },
 
-    updateSong(data) { return this.executePut('/library/songs/', data) },
+    updateSong(data) { return this.executePut('/api/library/songs/', data) },
 
-    updatePlayedSongCount(songId) { return this.executePut('/library/songs/' + songId + '/stats/played') },
+    updatePlayedSongCount(songId) { return this.executePut('/api/library/songs/' + songId + '/stats/played') },
 
-    createAccount(data) { return this.executePost('/accounts', data) },
+    createAccount(data) { return this.executePost('/api/accounts', data) },
 
-    login(data) {
-        return HTTP_CLIENT.post('/accounts/login', {}, {auth: data});
-    },
+    login(data) { return HTTP_CLIENT.post('/login', {}, {auth: data}) },
 
     executeGet(url) {
-        return HTTP_CLIENT.get(url).catch(error => {
-            if (error.response && error.response.status === 401) {
-                router.push({name: 'LoginView'});
-            }
+        return HTTP_CLIENT.get(url, this.authTokenHeader()).catch(error => {
+            this.handlerUnauthorizedResponse(error);
         });
     },
 
     executePut(url, data) {
-        return HTTP_CLIENT.put(url, data).catch(error => {
-            if (error.response && error.response.status === 401) {
-                router.push({name: 'LoginView'});
-            }
+        return HTTP_CLIENT.put(url, data, this.authTokenHeader()).catch(error => {
+            this.handlerUnauthorizedResponse(error);
         });
     },
 
     executePost(url, data) {
-        return HTTP_CLIENT.post(url, data).catch(error => {
-            if (error.response && error.response.status === 401) {
-                router.push({name: 'LoginView'});
-            }
+        return HTTP_CLIENT.post(url, data, this.authTokenHeader()).catch(error => {
+            this.handlerUnauthorizedResponse(error);
         });
     },
 
     executeDelete(url) {
-        return HTTP_CLIENT.delete(url).catch(error => {
-            if (error.response && error.response.status === 401) {
-                router.push({name: 'LoginView'});
-            }
+        return HTTP_CLIENT.delete(url, this.authTokenHeader()).catch(error => {
+            this.handlerUnauthorizedResponse(error);
         });
+    },
+
+    handlerUnauthorizedResponse(error) {
+        if (error.response && error.response.status === 401) {
+            router.push({name: 'LoginView'});
+        }
+    },
+
+    authTokenHeader() {
+        if (store.state.authToken) {
+            return {
+                headers: {
+                    'Authorization': 'Bearer ' + store.state.authToken
+                }
+            }
+        }
+        return null;
     }
 }

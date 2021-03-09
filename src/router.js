@@ -3,7 +3,6 @@ import Router from 'vue-router'
 
 import LibraryView from "@/components/library/library/LibraryView";
 import LoginView from "@/components/account/LoginView";
-import SignInView from "@/components/account/SignInView";
 import ArtistsView from "@/components/library/artists/ArtistsView";
 import GenresView from "@/components/library/genres/GenresView";
 import LibrarySongsView from "@/components/library/songs/LibrarySongsView.vue";
@@ -16,7 +15,6 @@ Vue.use(Router);
 const routes = [
     { path: '/', alias: ['/home', '/index.html'], name: 'Home', component: LibraryView, meta: {title: 'Home'} },
     { path: '/account/login', name: 'LoginView', component: LoginView, meta: {title: 'Login'} },
-    { path: '/account/create', name: 'SignInView', component: SignInView, meta: {title: 'SignIn'} },
     { path: '/library', name: 'LibraryView', component: LibraryView, meta: {title: 'Library'} },
     { path: '/library/artists', name: 'ArtistsView', component: ArtistsView, meta: {title: 'Artists'} },
     { path: '/library/genres', name: 'GenresView', component: GenresView, meta: {title: 'Genres'} },

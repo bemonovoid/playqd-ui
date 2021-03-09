@@ -1,16 +1,12 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import api from "@/http/playqdAPI";
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
         loginSuccess: false,
-        principal: {
-            username: null,
-            password: null
-        },
+        authToken: null,
         audio: {
             isPlaying: false,
             volume: 0.5,
@@ -19,10 +15,6 @@ export default new Vuex.Store({
             duration: 0
         },
         artists: [],
-        artwork: {
-            ofCurrentSong: '',
-            ofOpenedAlbum: ''
-        },
         playlist: {
             id: null,
             shuffle: false,
@@ -38,11 +30,8 @@ export default new Vuex.Store({
         }
     },
     getters: {
-        getArtistBaseUrl: (state) => {
-            return api.getArtistsApiUrl();
-        },
-        getAlbumBaseUrl: (state) => {
-            return api.getAlbumsApiUrl();
+        getResourceBaseUrl: (state) => {
+            return  process.env.VUE_APP_BASE_URL + '/api/library/resource/';
         },
         isLoggedIn: (state) => {
             return state.loginSuccess;
@@ -83,12 +72,9 @@ export default new Vuex.Store({
         }
     },
     mutations: {
-        setLoginSuccess: (state, payload) => {
+        setUserAuthToken: (state, payload) => {
           state.loginSuccess = true;
-          state.principal = {
-              username: payload.username,
-              password: payload.password
-          };
+          state.authToken = payload;
         },
         setAudioCurrentTime: (state, payload) => {
             state.audio.currentTime = payload;
@@ -110,29 +96,16 @@ export default new Vuex.Store({
         setArtists: (state, payload) => {
             state.artists = payload;
         },
-        setArtworkOfCurrentSong: (state, payload) => {
-            state.artwork.ofCurrentSong = payload;
-        },
-        setArtworkOfOpenedAlbum: (state, payload) => {
-            if (state.playlist.currentSong && state.playlist.currentSong.album.id === payload.albumId) {
-                state.artwork.ofCurrentSong = payload.src;
-            }
-            state.artwork.ofOpenedAlbum = payload.src;
-        },
         setPlaylist: (state, payload) => {
             state.playlist.id = payload.playlistId;
             state.playlist.shuffle = payload.shuffle;
             state.playlist.currentSong = payload.songs[payload.startSongIdx];
             state.playlist.currentSongIdx = payload.startSongIdx;
             state.playlist.songs = payload.songs;
-            state.artwork.ofCurrentSong = api.getAlbumsApiUrl() + state.playlist.currentSong.album.id + '/image';
         },
         setCurrentSongToPrev: (state) => {
             if (state.playlist.currentSongIdx - 1 >= 0) {
                 let prevSong = state.playlist.songs[--state.playlist.currentSongIdx];
-                if (prevSong.album.id !== state.playlist.currentSong.album.id) {
-                    state.artwork.ofCurrentSong = api.getAlbumsApiUrl() + state.playlist.currentSong.album.id + '/image';
-                }
                 state.playlist.currentSong = prevSong;
             }
         },
@@ -145,20 +118,10 @@ export default new Vuex.Store({
             } else {
                 return;
             }
-            if (nextSong.album.id !== state.playlist.currentSong.album.id) {
-                state.artwork.ofCurrentSong = api.getAlbumsApiUrl() + state.playlist.currentSong.album.id + '/image';
-            }
             state.playlist.currentSong = nextSong;
         },
         setCurrentSong: (state, payload) => {
             let song = state.playlist.songs[payload];
-            if (state.playlist.currentSong) {
-                if (song.album.id !== state.playlist.currentSong.album.id) {
-                    state.artwork.ofCurrentSong = api.getAlbumsApiUrl() + song.album.id + '/image';
-                }
-            } else {
-                state.artwork.ofCurrentSong = api.getAlbumsApiUrl() + song.album.id + '/image';
-            }
             state.playlist.currentSong = song;
             state.playlist.currentSongIdx = payload;
             if (state.playlist.songs.length === 0) {

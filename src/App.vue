@@ -52,7 +52,7 @@ export default {
         link.rel = 'icon';
         document.getElementsByTagName('head')[0].appendChild(link);
       }
-      link.href = this.$store.state.artwork.ofCurrentSong;
+      link.href = this.$store.getters.getResourceBaseUrl + 'image/?resourceId=' + this.$store.state.playlist.currentSong.album.resourceId;
 
     });
   },

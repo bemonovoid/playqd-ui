@@ -12,7 +12,7 @@
       <v-card-title>
 
         <v-list-item-avatar>
-          <v-img :src="$store.getters.getArtistBaseUrl + artist.id + '/image'" @error="imageError"></v-img>
+          <v-img :src="$store.getters.getResourceBaseUrl + 'image/?resourceId=' + artistData.resourceId" @error="imageError"></v-img>
         </v-list-item-avatar>
 
         <span class="headline">Edit Artist</span>
@@ -184,8 +184,7 @@ export default {
       api.getArtistImageSrc(this.artistData.id).then(response => {
         this.$emit('update:artistImageFound', true)
         this.active = false;
-      })
-
+      });
     }
   }
 }

@@ -9,21 +9,18 @@
             <template v-slot:activator="{on, attrs}">
               <v-img contain class="scoped-album-img elevation-5"
                      v-on="on" v-bind="attrs"
-                     v-bind:src="$store.state.artwork.ofOpenedAlbum"
+                     :src="$store.getters.getResourceBaseUrl + 'image/?resourceId=' + album.resourceId"
                      @error="imageError"></v-img>
             </template>
             <v-card align="center" elevation="5">
-              <v-img class="white--text align-end" :src="this.$store.state.artwork.ofOpenedAlbum">
+              <v-img class="white--text align-end" :src="$store.getters.getResourceBaseUrl + 'image/?resourceId=' + album.resourceId">
                 <v-card-title>{{this.album.name}}</v-card-title>
               </v-img>
             </v-card>
           </v-dialog>
 
-<!--          <div v-if="showAlbumImage">-->
-<!--            <v-img contain class="scoped-album-img elevation-5" v-bind:src="this.$store.state.artwork.ofOpenedAlbum" @error="imageError"></v-img>-->
-<!--          </div>-->
           <div v-else>
-            <v-img class="scoped-album-img elevation-5" src="@/assets/default-album-cover.png" @click="findAlbumImage()"></v-img>
+            <v-img class="scoped-album-img elevation-5" src="@/assets/default-album-cover.png"></v-img>
           </div>
 
           <v-card-title class="text-center text-body-1" style="display: inherit">{{ album.name }}</v-card-title>
@@ -61,7 +58,7 @@
               </div>
             </v-col>
             <v-col class="text-right">
-              <EditAlbumView v-bind:album-data="album"></EditAlbumView>
+              <EditAlbumView v-bind:album-data="album" :album-image-found.sync="showAlbumImage"></EditAlbumView>
             </v-col>
           </v-row>
 
@@ -112,14 +109,12 @@ import {eventBus} from "@/main";
 import api from "@/http/playqdAPI"
 import {SONG_HELPER} from "@/utils/songs-helper";
 
-import AlbumSongsDropdownOptionsView from "@/components/library/songs/AlbumSongsDropdownOptionsView";
 import EditAlbumView from "@/components/library/songs/EditAlbumView";
 
 export default {
   name: 'AlbumSongsView',
   components: {
-    EditAlbumView,
-    AlbumSongsDropdownOptionsView
+    EditAlbumView
   },
   props: ['albumData', 'albumFrom'],
   data() {
@@ -151,21 +146,17 @@ export default {
         this.album = response.data.album;
       }
       this.album.totalTime = this.songs.length + ' songs, ' + this.album.totalTimeHumanReadable;
-      this.$store.commit('setArtworkOfOpenedAlbum', {albumId: this.album.id, src: this.$store.getters.getAlbumBaseUrl + this.album.id + '/image'});
     });
     eventBus.$on('album-data-updated', newAlbumData => {
       this.album.name = newAlbumData.name;
       this.album.genre = newAlbumData.genre;
       this.album.date = newAlbumData.date;
-      if (newAlbumData.artworkSrc) {
-        this.$store.commit('setArtworkOfOpenedAlbum', {albumId: this.album.id, src: newAlbumData.artworkSrc});
-      }
     });
     eventBus.$on('album-preferences-updated', newPreferences => {
       this.album.preferences = newPreferences;
     });
     eventBus.$on('audio-is-playing', () => {
-      if (this.album.id === this.$store.state.playlist.currentSong.album.id) {
+      if (this.album && this.album.id === this.$store.state.playlist.currentSong.album.id) {
         this.selectedSongIdx = this.$store.state.playlist.currentSongIdx;
       }
     });
@@ -176,7 +167,6 @@ export default {
     },
     findAlbumImage() {
       api.getAlbumImageSrc(this.album.id).then(response => {
-        this.$store.commit('setArtworkOfOpenedAlbum', {albumId: this.album.id, src: response.data});
         this.showAlbumImage = true;
       })
     },

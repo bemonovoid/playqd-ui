@@ -3,7 +3,7 @@
   <v-dialog v-model="active" persistent max-width="500px">
 
     <template v-slot:activator="{ on, attrs }">
-      <v-btn small fab icon v-bind="attrs" v-on="on" class="pr-5">
+      <v-btn small icon v-bind="attrs" v-on="on">
         <v-icon small>mdi-file-document-edit-outline</v-icon>
       </v-btn>
     </template>
@@ -35,12 +35,6 @@
               v-model="song.lyrics"
               label="Lyrics">
           </v-textarea>
-
-          <v-text-field dense label="Artwork url" class="pt-5"
-                        persistent-hint
-                        hint="URL"
-                        v-model="song.artworkSrc">
-          </v-text-field>
 
           <v-checkbox label="Override song name with file name" color="red" v-model="song.overrideSongNameWithFileName"></v-checkbox>
 
@@ -79,8 +73,7 @@ export default {
         name: this.songData.name,
         comment: this.songData.comment,
         lyrics: this.songData.lyrics,
-        overrideSongNameWithFileName: false,
-        artworkSrc: ''
+        overrideSongNameWithFileName: false
       },
     }
   },

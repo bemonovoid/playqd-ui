@@ -9,7 +9,7 @@
        <v-card align="center" elevation="0">
           <router-link :to="{name: 'AlbumSongsView', params: {albumId: this.$store.state.playlist.currentSong.album.id}}">
             <v-img max-width="200px" max-height="200px" contain class="elevation-5"
-                   v-bind:src="this.$store.state.artwork.ofCurrentSong">
+                   :src="this.$store.getters.getResourceBaseUrl + 'image/?resourceId=' + this.$store.state.playlist.currentSong.album.resourceId" >
             </v-img>
           </router-link>
          <v-card-title class="pt-2 text-h5" style="display: inherit">

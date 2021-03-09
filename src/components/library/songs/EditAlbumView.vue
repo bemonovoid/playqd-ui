@@ -10,8 +10,15 @@
 
     <v-card>
       <v-card-title>
+
+        <v-list-item-avatar>
+          <v-img :src="$store.getters.getResourceBaseUrl + 'image/?resourceId=' + albumData.resourceId" @error="imageError"></v-img>
+        </v-list-item-avatar>
+
         <span class="headline">Edit Album</span>
+
         <v-spacer></v-spacer>
+
         <v-btn icon @click="active = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
@@ -115,14 +122,22 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
 
-        </v-expansion-panels>
+          <v-expansion-panel v-if="!showAlbumImage">
+            <v-expansion-panel-header>
+              Image
+            </v-expansion-panel-header>
 
-<!--          <v-text-field dense label="Artwork url" class="pt-5"-->
-<!--                        persistent-hint-->
-<!--                        :disabled="moveToExistingAlbum"-->
-<!--                        hint="URL"-->
-<!--                        v-model="album.artworkSrc">-->
-<!--          </v-text-field>-->
+            <v-expansion-panel-content>
+              <v-row>
+                <v-col>
+                  <v-btn link @click="findAlbumImage()">Find album image</v-btn>
+                </v-col>
+              </v-row>
+            </v-expansion-panel-content>
+
+          </v-expansion-panel>
+
+        </v-expansion-panels>
 
       </v-card-text>
     </v-card>
@@ -137,7 +152,7 @@ import api from "@/http/playqdAPI"
 
 export default {
   name: 'EditAlbumView',
-  props: ['albumData'],
+  props: ['albumData', 'albumImageFound'],
   data() {
     return {
       active: false,
@@ -145,6 +160,7 @@ export default {
         valid: false
       },
       artistAlbums: [],
+      showAlbumImage: true,
       album: {
         id: this.albumData.id,
         name: this.albumData.name,
@@ -165,6 +181,9 @@ export default {
     });
   },
   methods: {
+    imageError() {
+      this.showAlbumImage = false;
+    },
     updateAlbumProperties() {
       if (this.editForm.valid) {
         api.updateAlbumProperties(this.album).then(response => {
@@ -179,6 +198,13 @@ export default {
     updateAlbumPreferences() {
       api.updateAlbumPreferences(this.album.preferences).then(response => {
         eventBus.$emit('album-preferences-updated', this.album.preferences)
+        this.active = false;
+      });
+    },
+
+    findAlbumImage() {
+      api.getAlbumImageSrc(this.albumData.id).then(response => {
+        this.$emit('update:albumImageFound', true)
         this.active = false;
       });
     }

@@ -56,7 +56,7 @@
             <v-list-item v-for="(artist, i) in artists" :key="i" class="pl-0" :to="{name: 'AlbumsView', query: {artistId: artist.id}}">
 
               <v-list-item-avatar class="ml-0 mr-2">
-                <v-img :src="$store.getters.getArtistBaseUrl + artist.id + '/image'" alt="alt"></v-img>
+                <v-img :src="$store.getters.getResourceBaseUrl + 'image/?resourceId=' + artist.resourceId" alt="alt"></v-img>
               </v-list-item-avatar>
 
               <v-list-item-content class="py-0">
