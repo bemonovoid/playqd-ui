@@ -112,7 +112,7 @@
 
       <v-img v-else max-height="50px" max-width="50px" class="mr-1" src="@/assets/default-album-cover.png"></v-img>
 
-      <small class="text-truncate">
+      <small class="text-truncate" @click="openPlayerView()">
         {{ this.$store.state.playlist.currentSong.artist.name + ' - ' + this.$store.state.playlist.currentSong.name }}
       </small>
 

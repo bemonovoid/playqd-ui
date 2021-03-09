@@ -141,9 +141,9 @@ export default {
   },
   mounted() {
     api.getAlbumSongs(this.$route.params.albumId).then(response => {
-      this.songs = response.data.songs
+      this.songs = response.data
       if (!this.album) {
-        this.album = response.data.album;
+        this.album = this.songs[0].album;
       }
       this.album.totalTime = this.songs.length + ' songs, ' + this.album.totalTimeHumanReadable;
     });
