@@ -1,15 +1,15 @@
 <template>
 
-  <div>
+  <div v-if="this.artists.length > 0">
     <v-row>
 
-      <v-col class="py-0 pl-0 text-left">
+      <v-col class="py-0 px-0 text-left">
         <v-list-item>
 
           <v-list-item-content>
             <v-list-item-title class="display-1">Artists</v-list-item-title>
             <v-list-item-subtitle class="text-caption text--disabled">
-              Total: {{artists.length}}, songs: {{this.totalSongsCount}}
+              Total: {{pagination.totalElements}}
             </v-list-item-subtitle>
           </v-list-item-content>
 
@@ -23,12 +23,14 @@
 
               <v-list dense class="text-left">
                 <v-subheader>Sort artists</v-subheader>
-                <v-list-item v-for="(sortType, i) in sorting.types" :key="i" @click="sortArtists(sortType.id)">
-                  <v-list-item-title>{{sortType.name}}</v-list-item-title>
-                  <v-list-item-icon>
-                    <v-icon right small>{{sortType.icon}}</v-icon>
-                  </v-list-item-icon>
-                </v-list-item>
+                <v-list-item-group color="primary" v-model="selectedSortType.idx">
+                  <v-list-item v-for="(sortType, i) in sorting.types" :key="i" @click="sortArtists(sortType)">
+                    <v-list-item-title>{{sortType.name}}</v-list-item-title>
+                    <v-list-item-icon>
+                      <v-icon right small>{{sortType.icon}}</v-icon>
+                    </v-list-item-icon>
+                  </v-list-item>
+                </v-list-item-group>
               </v-list>
             </v-menu>
           </v-list-item-action>
@@ -42,21 +44,25 @@
         <v-list align="left" class="py-0">
 
           <v-item-group align="left" class="py-0">
-            <v-text-field placeholder="Find in artists"
-                          v-model="searchFilter"
-                          @input="filterArtists()"
-                          clearable
+            <v-text-field flat dense clearable placeholder="Find in artists"
+                          v-model="artistNameQuery"
                           @click:clear="clearInput()"
-                          prepend-inner-icon="mdi-magnify">
+                          prepend-inner-icon="mdi-format-text-rotation-none"
+                          append-outer-icon="mdi-magnify"
+                          @click:append-outer="findArtistsByName()">
             </v-text-field>
           </v-item-group>
 
           <v-list-item-group color="primary">
 
-            <v-list-item v-for="(artist, i) in artists" :key="i" class="pl-0" :to="{name: 'AlbumsView', query: {artistId: artist.id}}">
+            <v-list-item v-for="(artist, i) in artists" :key="i" class="px-0" :to="{name: 'AlbumsView', query: {artistId: artist.id}}">
 
-              <v-list-item-avatar class="ml-0 mr-2">
-                <v-img :src="$store.getters.getResourceBaseUrl + 'image/?resourceId=' + artist.resourceId" alt="alt"></v-img>
+              <v-list-item-avatar v-if="artistsWithImageNotFound.includes(artist.id)" class="ml-0 mr-2">
+                <v-icon>mdi-account-music</v-icon>
+              </v-list-item-avatar>
+
+              <v-list-item-avatar v-else class="ml-0 mr-2">
+                <v-img :src="$store.getters.getResourceBaseUrl + 'image/?resourceId=' + artist.resourceId" alt="alt" @error="imageError(artist.id)"></v-img>
               </v-list-item-avatar>
 
               <v-list-item-content class="py-0">
@@ -80,6 +86,18 @@
 
     </v-row>
 
+    <v-row>
+      <v-col>
+        <v-pagination circle
+                      v-model="pagination.page"
+                      @next="nextPage"
+                      @previous="prevPage"
+                      @input="selectPage"
+                      :total-visible="5"
+                      :length="pagination.totalPages" ></v-pagination>
+      </v-col>
+    </v-row>
+
   </div>
 
 
@@ -96,94 +114,74 @@ export default {
   },
   data() {
     return {
-      searchFilter: '',
+      selectedSortItemIdx: null,
+      artistsWithImageNotFound: [],
+      artistNameQuery: null,
       artists: [],
-      totalSongsCount: 0,
       sorting: {
         types: [
-          {id: 'name',            name: 'By Name',         icon: 'mdi-sort-alphabetical-ascending'},
-          {id: 'play-last-date',  name: 'Recently Played', icon: 'mdi-sort-clock-ascending-outline'},
-          {id: 'play-count',      name: 'Most Played',     icon: 'mdi-sort-ascending'},
-          {id: 'album-count',     name: 'Total Albums',    icon: 'mdi-folder-music-outline'},
-          {id: 'song-count',      name: 'Total Songs',     icon: 'mdi-music-box-multiple-outline'}
+          {id: 'NAME',            idx: 0, name: 'By Name',         direction: 'ASC',  icon: 'mdi-sort-alphabetical-ascending'},
+          {id: 'RECENTLY_PLAYED', idx: 1, name: 'Recently Played', direction: 'DESC', icon: 'mdi-sort-clock-ascending-outline'},
+          {id: 'MOST_PLAYED',     idx: 2, name: 'Most Played',     direction: 'DESC', icon: 'mdi-sort-ascending'},
+          {id: 'ALBUM_COUNT',     idx: 3, name: 'Total Albums',    direction: 'DESC', icon: 'mdi-folder-music-outline'},
+          {id: 'SONG_COUNT',      idx: 4, name: 'Total Songs',     direction: 'DESC', icon: 'mdi-music-box-multiple-outline'}
         ]
-      }
+      },
+      pagination: {
+        page: 0,
+        pageSize: 9,
+        totalElements: 0,
+        totalPages: 0
+      },
+      selectedSortType: {},
+      defaultPageRequest: {},
     }
   },
   mounted() {
-    if (this.$store.getters.getArtists.length === 0) {
-      api.getArtists().then(response => {
-        this.$store.commit('setArtists', response.data.artists);
-        this.artists = this.$store.getters.getArtists;
-        this.totalSongsCount = this.$store.getters.getArtists.map(a => a.songCount).reduce((a1, a2) => a1 + a2, 0);
-        this.sortArtists('play-last-date');
-      });
-    } else {
-      this.artists = this.$store.getters.getArtists;
-      this.totalSongsCount = this.$store.getters.getArtists.map(a => a.songCount).reduce((a1, a2) => a1 + a2, 0);
-    }
+    this.selectedSortType = this.sorting.types[0];
+    this.defaultPageRequest = { page: 0, sort: this.sorting.types[0] };
+    this.findArtists(this.defaultPageRequest);
   },
   methods: {
+    findArtists(pageRequest) {
+      api.getArtists(pageRequest).then(response => {
+        this.artists = response.data.artists;
+        this.pagination = { page: response.data.page + 1, pageSize: response.data.pageSize, totalElements: response.data.totalElements, totalPages: response.data.totalPages };
+      });
+    },
+    findArtistsByName() {
+      if (this.artistNameQuery && this.artistNameQuery.length > 0) {
+        this.selectedSortType = this.sorting.types[0];
+        this.findArtists({ page: 1, sort: this.selectedSortType, name: this.artistNameQuery });
+        this.artistNameQueryApplied = this.artistNameQuery;
+      }
+    },
+    clearInput() {
+      this.artistNameQuery = null;
+      this.findArtists(this.defaultPageRequest);
+    },
+    sortArtists(sortType) {
+      this.selectedSortType = sortType;
+      this.findArtists({ page: this.pagination.page, sort: sortType });
+    },
     albumsCountString(artist) {
       return artist.albumCount > 1 ? artist.albumCount + ' albums' : artist.albumCount + ' album';
     },
     albumSongsCountString(artist) {
       return artist.songCount > 1 ? artist.songCount + ' songs' : artist.songCount + ' song';
     },
-    filterArtists() {
-      if (!this.searchFilter || this.searchFilter === '') {
-        this.artists = this.$store.getters.getArtists;
-      } else {
-        let filter = this.searchFilter.toLowerCase();
-        this.artists = this.$store.getters.getArtists.filter(artist => artist.name.toLowerCase().includes(filter));
-      }
+    nextPage() {
+      this.findArtists({ page: this.pagination.page, sort: this.selectedSortType, name: this.artistNameQuery });
     },
-    clearInput() {
-      this.searchFilter = '';
-      this.filterArtists();
+    prevPage() {
+      console.log("prev page: " + this.pagination.page)
+      this.findArtists({ page: this.pagination.page, sort: this.selectedSortType, name: this.artistNameQuery });
     },
-    sortArtists(sortType) {
-      if (sortType === 'name') {
-        this.artists.sort((a1, a2) => {
-          let a1Name = a1.name;
-          let a2Name = a2.name;
-          return a1Name.localeCompare(a2Name);
-        });
-      }
-      if (sortType === 'play-last-date') {
-        this.artists.sort((a1, a2) => {
-          if (a1.playbackInfo) {
-            if (a2.playbackInfo) {
-              if (a1.playbackInfo.lastPlayedTime < a2.playbackInfo.lastPlayedTime) return 1;
-              if (a1.playbackInfo.lastPlayedTime > a2.playbackInfo.lastPlayedTime) return -1;
-            } else {
-              return 1;
-            }
-          } else if (a2.playbackInfo) {
-            return 1;
-          } else {
-            return -1;
-          }
-        });
-      }
-      if (sortType === 'play-count') {
-        this.artists.sort((a1, a2) => {
-          if (a1.playbackInfo && a2.playbackInfo) {
-            return a2.playbackInfo.playCount - a1.playbackInfo.playCount;
-          }
-          return 0;
-        });
-      }
-      if (sortType === 'album-count') {
-        this.artists.sort((a1, a2) => {
-          return a2.albumCount - a1.albumCount;
-        });
-      }
-      if (sortType === 'song-count') {
-        this.artists.sort((a1, a2) => {
-          return a2.songCount - a1.songCount;
-        });
-      }
+    selectPage(page) {
+      this.findArtists({ page: page, sort: this.selectedSortType, name: this.artistNameQuery });
+    },
+    imageError(artistId) {
+      this.artistsWithImageNotFound.push(artistId);
     }
   }
 }

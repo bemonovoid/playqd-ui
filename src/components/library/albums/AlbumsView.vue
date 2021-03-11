@@ -135,7 +135,7 @@ export default {
       albumsWithoutImage: [],
       sorting: {
         types: [
-          {id: 'by-title', name: 'Title', active: false},
+          {id: 'by-title',  name: 'Title',        active: false},
           {id: 'by-newest', name: 'Newest First', active: true},
           {id: 'by-oldest', name: 'Oldest First', active: false}
         ]

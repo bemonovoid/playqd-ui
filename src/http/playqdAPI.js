@@ -17,7 +17,17 @@ export default {
 
     getSongSrcUrl(resourceId) { return this.getResourceApiUrl() + 'audio/?resourceId=' + resourceId },
 
-    getArtists() { return this.executeGet('/api/library/artists/') },
+    getArtists(pageRequest) {
+        let url = '/api/library/artists/' +
+            '?page=' + (pageRequest.page === 0 ? 0 : pageRequest.page - 1) +
+            '&size=9' +
+            '&sortBy=' + pageRequest.sort.id +
+            '&direction=' + pageRequest.sort.direction;
+        if (pageRequest.name && pageRequest.name.length > 0) {
+            url += '&name=' + pageRequest.name;
+        }
+        return this.executeGet(url);
+    },
 
     getArtistImageSrc(artistId) { return this.executeGet('/api/library/artists/' + artistId + '/image/src') },
 
