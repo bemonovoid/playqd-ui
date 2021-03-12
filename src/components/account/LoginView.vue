@@ -5,15 +5,17 @@
       <v-card elevation="2">
         <v-card-title>Login</v-card-title>
         <v-card-text>
-          <v-item-group>
-            <v-text-field label="Account name" placeholder="Account name" required v-model="account.username"></v-text-field>
-            <v-text-field label="Password" placeholder="Password" required
-                          :type="showPassword ? 'text' : 'password'"
-                          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                          @click:append="showPassword = !showPassword"
-                          v-model="account.password">
-            </v-text-field>
-          </v-item-group>
+          <v-form>
+            <v-item-group>
+              <v-text-field label="Account name" placeholder="Account name" required v-model="account.username"></v-text-field>
+              <v-text-field label="Password" placeholder="Password" required autocomplete="off"
+                            :type="showPassword ? 'text' : 'password'"
+                            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                            @click:append="showPassword = !showPassword"
+                            v-model="account.password">
+              </v-text-field>
+            </v-item-group>
+          </v-form>
         </v-card-text>
         <v-card-actions class="justify-space-between">
           <v-btn color="blue-grey lighten-3" class="text-capitalize" @click="login()">

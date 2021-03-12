@@ -109,7 +109,7 @@ import {eventBus} from "@/main";
 import api from "@/http/playqdAPI"
 import {SONG_HELPER} from "@/utils/songs-helper";
 
-import EditAlbumView from "@/components/library/songs/EditAlbumView";
+import EditAlbumView from "@/components/library/albums/EditAlbumView";
 
 export default {
   name: 'AlbumSongsView',
@@ -131,21 +131,14 @@ export default {
       songs: []
     }
   },
-  computed: {
-    playingSongId: function () {
-      if (this.$store.state.playlist.currentSong && this.$store.state.audio.isPlaying) {
-        return this.$store.state.playlist.currentSong.id;
-      }
-      return null;
-    }
-  },
   mounted() {
-    api.getAlbumSongs(this.$route.params.albumId).then(response => {
-      this.songs = response.data
+    api.getSongs({page: 0, pageSize: 0, albumId: this.$route.params.albumId}).then(response => {
+      this.songs = response.data.songs
       if (!this.album) {
         this.album = this.songs[0].album;
       }
       this.album.totalTime = this.songs.length + ' songs, ' + this.album.totalTimeHumanReadable;
+      this.setPlayingSongSelected();
     });
     eventBus.$on('album-data-updated', newAlbumData => {
       this.album.name = newAlbumData.name;
@@ -156,9 +149,7 @@ export default {
       this.album.preferences = newPreferences;
     });
     eventBus.$on('audio-is-playing', () => {
-      if (this.album && this.album.id === this.$store.state.playlist.currentSong.album.id) {
-        this.selectedSongIdx = this.$store.state.playlist.currentSongIdx;
-      }
+      this.setPlayingSongSelected();
     });
   },
   methods: {
@@ -172,6 +163,11 @@ export default {
     },
     isPlayingSongRow(idx) {
       return idx === this.selectedSongIdx && this.album.id === this.$store.state.playlist.currentSong.album.id;
+    },
+    setPlayingSongSelected() {
+      if (this.$store.state.playlist.currentSong && this.album.id === this.$store.state.playlist.currentSong.album.id) {
+        this.selectedSongIdx = this.songs.findIndex((item) => item.id === this.$store.state.playlist.currentSong.id);
+      }
     },
     playAlbum(songIdx) {
       eventBus.$emit('play-playlist', {songs: this.songs, startSongIdx: songIdx, shuffle: false});

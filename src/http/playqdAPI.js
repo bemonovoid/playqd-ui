@@ -17,10 +17,16 @@ export default {
 
     getSongSrcUrl(resourceId) { return this.getResourceApiUrl() + 'audio/?resourceId=' + resourceId },
 
+    getArtistImageSrc(artistId) { return this.executeGet('/api/library/artists/' + artistId + '/image/src') },
+
+    getAlbumImageSrc(albumId) { return this.executeGet('/api/library/albums/' + albumId + '/image/src') },
+
+    getAllBasicArtists() { return this.executeGet('/api/library/artists/basic') },
+
     getArtists(pageRequest) {
         let url = '/api/library/artists/' +
             '?page=' + (pageRequest.page === 0 ? 0 : pageRequest.page - 1) +
-            '&size=9' +
+            '&size=' + pageRequest.pageSize +
             '&sortBy=' + pageRequest.sort.id +
             '&direction=' + pageRequest.sort.direction;
         if (pageRequest.name && pageRequest.name.length > 0) {
@@ -29,21 +35,50 @@ export default {
         return this.executeGet(url);
     },
 
-    getArtistImageSrc(artistId) { return this.executeGet('/api/library/artists/' + artistId + '/image/src') },
+    getAlbums(pageRequest) {
+        let url = '/api/library/albums/' +
+            '?page=' + (pageRequest.page === 0 ? 0 : pageRequest.page - 1) + '&size=' + pageRequest.pageSize;
+        if (pageRequest.sort) {
+            url += '&sortBy=' + pageRequest.sort.id + '&direction=' + pageRequest.sort.direction;
+        }
+        if (pageRequest.artistId) {
+            url += '&artistId=' + pageRequest.artistId;
+        }
+        if (pageRequest.name && pageRequest.name.length > 0) {
+            url += '&name=' + pageRequest.name;
+        } else if (pageRequest.genre && pageRequest.genre.length > 0) {
+            url += '&genre=' + pageRequest.genre;
+        }
+        return this.executeGet(url);
+    },
 
-    getAlbumImageSrc(albumId) { return this.executeGet('/api/library/albums/' + albumId + '/image/src') },
+    getGenres(pageRequest) {
+        let url = '/api/library/genres/' +
+            '?page=' + (pageRequest.page === 0 ? 0 : pageRequest.page - 1) +
+            '&size=10' +
+            '&direction=ASC';
+        if (pageRequest.name && pageRequest.name.length > 0) {
+            url += '&name=' + pageRequest.name;
+        }
+        return this.executeGet(url);
+    },
 
-    getGenres() { return this.executeGet('/api/library/genres/') },
-
-    getArtistAlbums(artistId) { return this.executeGet('/api/library/albums/?artistId=' + artistId) },
-
-    getAlbums(params) { return this.executeGet('/api/library/albums/' + params) },
-
-    getGenreAlbums(genre) { return this.executeGet('/api/library/albums/?genre=' + genre) },
+    getSongs(pageRequest) {
+        let url = '/api/library/songs/' +
+            '?page=' + (pageRequest.page === 0 ? 0 : pageRequest.page - 1) + '&size=' + pageRequest.pageSize;
+        if (pageRequest.sort) {
+            url += '&sortBy=' + pageRequest.sort.id + '&direction=' + pageRequest.sort.direction;
+        }
+        if (pageRequest.albumId) {
+            url += '&albumId=' + pageRequest.albumId;
+        }
+        if (pageRequest.name && pageRequest.name.length > 0) {
+            url += '&name=' + pageRequest.name;
+        }
+        return this.executeGet(url);
+    },
 
     getSongsFiltered(pageSize, filterType) { return this.executeGet('/api/library/songs/?pageSize=' + pageSize + '&filter=' + filterType) },
-
-    getAlbumSongs(albumId) { return this.executeGet('/api/library/songs/album/' + albumId) },
 
     getSong(songId) { return this.executeGet('/api/library/songs/' + songId) },
 
@@ -67,7 +102,7 @@ export default {
 
     updateSong(data) { return this.executePut('/api/library/songs/', data) },
 
-    updatePlayedSongCount(songId) { return this.executePut('/api/library/songs/' + songId + '/stats/played') },
+    updatePlayedSongCount(songId) { return this.executePut('/api/library/songs/' + songId + '/played') },
 
     createAccount(data) { return this.executePost('/api/accounts', data) },
 

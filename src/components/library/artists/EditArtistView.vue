@@ -67,7 +67,7 @@
 
           </v-expansion-panel>
 
-          <v-expansion-panel @change="prepareMoveArtistForm()">
+          <v-expansion-panel @change="getArtists()">
 
             <v-expansion-panel-header>
               Miscellaneous
@@ -83,7 +83,7 @@
                                 item-text="name"
                                 item-value="id"
                                 v-model="artist.id"
-                                :items="this.$store.state.artists">
+                                :items="this.artists">
                 </v-autocomplete>
               </v-row>
 
@@ -135,7 +135,7 @@ import api from "@/http/playqdAPI"
 import countryCodes from 'country-code-lookup';
 
 export default {
-  name: 'EditAlbumsArtistView',
+  name: 'EditArtistView',
   props: ['artistData', 'artistImageFound'],
   components: {countryCodes},
   data() {
@@ -151,6 +151,7 @@ export default {
         ]
       },
       showArtistImage: true,
+      artists: [],
       artist: {
         id: this.artistData.id,
         name: this.artistData.name,
@@ -160,12 +161,10 @@ export default {
     }
   },
   methods: {
-    prepareMoveArtistForm() {
-      if (this.$store.state.artists.length === 0) {
-        api.getArtists().then(response => {
-          this.$store.commit('setArtists', response.data.artists);
-        });
-      }
+    getArtists() {
+      api.getAllBasicArtists().then(response => {
+        this.artists = response.data.artists;
+      });
     },
     imageError() {
       this.showArtistImage = false;

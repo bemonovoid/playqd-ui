@@ -14,7 +14,6 @@ export default new Vuex.Store({
             currentTimeAsInt: 0,
             duration: 0
         },
-        artists: [],
         playlist: {
             id: null,
             shuffle: false,
@@ -31,13 +30,10 @@ export default new Vuex.Store({
     },
     getters: {
         getResourceBaseUrl: (state) => {
-            return  process.env.VUE_APP_BASE_URL + '/api/library/resource/';
+            return process.env.VUE_APP_BASE_URL + '/api/library/resource/';
         },
         isLoggedIn: (state) => {
             return state.loginSuccess;
-        },
-        getArtists: (state) => {
-            return state.artists;
         },
         repeatAll: (state) => {
             return state.playlist.repeat === 'all';
@@ -92,9 +88,6 @@ export default new Vuex.Store({
         },
         setAudioVolume: (state, payload) => {
             state.audio.volume = payload;
-        },
-        setArtists: (state, payload) => {
-            state.artists = payload;
         },
         setPlaylist: (state, payload) => {
             state.playlist.id = payload.playlistId;

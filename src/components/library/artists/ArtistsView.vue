@@ -1,6 +1,7 @@
 <template>
 
-  <div v-if="this.artists.length > 0">
+<!--  <div v-if="this.artists.length > 0">-->
+  <div>
     <v-row>
 
       <v-col class="py-0 px-0 text-left">
@@ -45,9 +46,10 @@
 
           <v-item-group align="left" class="py-0">
             <v-text-field flat dense clearable placeholder="Find in artists"
+                          @keydown.enter="findArtistsByName()" @keydown.esc="clearInput()"
                           v-model="artistNameQuery"
                           @click:clear="clearInput()"
-                          prepend-inner-icon="mdi-format-text-rotation-none"
+                          prepend-inner-icon="mdi-text-short"
                           append-outer-icon="mdi-magnify"
                           @click:append-outer="findArtistsByName()">
             </v-text-field>
@@ -100,7 +102,6 @@
 
   </div>
 
-
 </template>
 
 <script>
@@ -114,7 +115,6 @@ export default {
   },
   data() {
     return {
-      selectedSortItemIdx: null,
       artistsWithImageNotFound: [],
       artistNameQuery: null,
       artists: [],
@@ -128,7 +128,7 @@ export default {
         ]
       },
       pagination: {
-        page: 0,
+        page: 1,
         pageSize: 9,
         totalElements: 0,
         totalPages: 0
@@ -140,7 +140,7 @@ export default {
   mounted() {
     this.selectedSortType = this.sorting.types[0];
     this.defaultPageRequest = { page: 0, sort: this.sorting.types[0] };
-    this.findArtists(this.defaultPageRequest);
+    this.findArtists(this.createPageRequest(this.defaultPageRequest.page, this.defaultPageRequest.sort));
   },
   methods: {
     findArtists(pageRequest) {
@@ -152,33 +152,34 @@ export default {
     findArtistsByName() {
       if (this.artistNameQuery && this.artistNameQuery.length > 0) {
         this.selectedSortType = this.sorting.types[0];
-        this.findArtists({ page: 1, sort: this.selectedSortType, name: this.artistNameQuery });
-        this.artistNameQueryApplied = this.artistNameQuery;
+        this.findArtists(this.createPageRequest(1));
       }
     },
     clearInput() {
       this.artistNameQuery = null;
-      this.findArtists(this.defaultPageRequest);
+      this.findArtists(this.createPageRequest(this.defaultPageRequest.page, this.defaultPageRequest.sort));
     },
     sortArtists(sortType) {
       this.selectedSortType = sortType;
-      this.findArtists({ page: this.pagination.page, sort: sortType });
+      this.findArtists(this.createPageRequest(1));
+    },
+    nextPage() {
+      this.findArtists(this.createPageRequest(this.pagination.page));
+    },
+    prevPage() {
+      this.findArtists(this.createPageRequest(this.pagination.page));
+    },
+    selectPage(page) {
+      this.findArtists(this.createPageRequest(page));
+    },
+    createPageRequest(page, sortType) {
+      return { page: page, pageSize: 9, sort: sortType ? sortType : this.selectedSortType, name: this.artistNameQuery }
     },
     albumsCountString(artist) {
       return artist.albumCount > 1 ? artist.albumCount + ' albums' : artist.albumCount + ' album';
     },
     albumSongsCountString(artist) {
       return artist.songCount > 1 ? artist.songCount + ' songs' : artist.songCount + ' song';
-    },
-    nextPage() {
-      this.findArtists({ page: this.pagination.page, sort: this.selectedSortType, name: this.artistNameQuery });
-    },
-    prevPage() {
-      console.log("prev page: " + this.pagination.page)
-      this.findArtists({ page: this.pagination.page, sort: this.selectedSortType, name: this.artistNameQuery });
-    },
-    selectPage(page) {
-      this.findArtists({ page: page, sort: this.selectedSortType, name: this.artistNameQuery });
     },
     imageError(artistId) {
       this.artistsWithImageNotFound.push(artistId);

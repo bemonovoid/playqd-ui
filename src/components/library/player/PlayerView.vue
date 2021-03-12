@@ -8,9 +8,10 @@
 
        <v-card align="center" elevation="0">
           <router-link :to="{name: 'AlbumSongsView', params: {albumId: this.$store.state.playlist.currentSong.album.id}}">
-            <v-img max-width="200px" max-height="200px" contain class="elevation-5"
-                   :src="this.$store.getters.getResourceBaseUrl + 'image/?resourceId=' + this.$store.state.playlist.currentSong.album.resourceId" >
+            <v-img v-if="showAlbumImage" max-width="200px" max-height="200px" contain class="elevation-5"
+                   :src="this.$store.getters.getResourceBaseUrl + 'image/?resourceId=' + this.$store.state.playlist.currentSong.album.resourceId" @error="imageError">
             </v-img>
+            <v-img v-else class="elevation-5" src="@/assets/default-album-cover.png" max-width="200px" max-height="200px"></v-img>
           </router-link>
          <v-card-title class="pt-2 text-h5" style="display: inherit">
            <v-row>
@@ -149,6 +150,7 @@ export default {
   data() {
     return {
       SONG_DURATION: SONG_HELPER,
+      showAlbumImage: true,
       slider: {
         audioTime: 0,
         audioVolume: 0.5
@@ -162,7 +164,7 @@ export default {
   },
   mounted() {
     this.$store.commit('setShowMiniPlayer', false);
-    if (!this.playerSong) {
+    if (!this.$store.state.playlist.currentSong && !this.playerSong) {
       api.getSong(this.$route.params.songId).then(response => {
         let songs = [response.data];
         eventBus.$emit('play-playlist', {songs: songs, startSongIdx: 0, shuffle: false});
@@ -213,6 +215,9 @@ export default {
     },
     openAlbum() {
       this.$router.push({name: 'AlbumSongsView', params: {albumId: this.$store.state.playlist.currentSong.album.id}})
+    },
+    imageError() {
+      this.showAlbumImage = false;
     }
   }
 }

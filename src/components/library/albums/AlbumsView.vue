@@ -1,21 +1,21 @@
 <template>
 
-  <div v-if="this.originalAlbums.length > 0">
+  <div v-if="this.albums.length > 0">
 
     <v-row>
 
-      <v-col class="pl-0 py-0 text-left">
+      <v-col class="px-0 py-0 text-left">
         <v-list-item>
 
           <div v-if="$route.query.artistId">
             <v-dialog v-if="showArtistImage" max-width="500">
               <template v-slot:activator="{on, attrs}">
                 <v-list-item-avatar class="ml-0 mr-2 mb-5" v-on="on" v-bind="attrs">
-                  <v-img :src="$store.getters.getResourceBaseUrl + 'image/?resourceId=' + originalAlbums[0].artist.resourceId" @error="imageError()"></v-img>
+                  <v-img :src="$store.getters.getResourceBaseUrl + 'image/?resourceId=' + albums[0].artist.resourceId" @error="imageError()"></v-img>
                 </v-list-item-avatar>
               </template>
               <v-card align="center" elevation="5">
-                <v-img class="white--text align-end" :src="$store.getters.getResourceBaseUrl + 'image?resourceId=' + originalAlbums[0].artist.resourceId + '&size=LARGE'">
+                <v-img class="white--text align-end" :src="$store.getters.getResourceBaseUrl + 'image?resourceId=' + albums[0].artist.resourceId + '&size=LARGE'">
                   <v-card-title>{{this.albums[0].artist.name}}</v-card-title>
                 </v-img>
               </v-card>
@@ -24,11 +24,11 @@
 
           <v-list-item-content>
             <v-list-item-title class="display-1">{{this.$route.query.artistId ? this.albums[0].artist.name : this.$route.query.genre}}</v-list-item-title>
-            <v-list-item-subtitle>{{this.$route.query.artistId ? '(artist albums)' : '(genre albums)'}}</v-list-item-subtitle>
+            <v-list-item-subtitle>Total {{ (this.$route.query.artistId ? ' artist ' : ' genre ')  + 'albums: ' + this.pagination.totalElements}}</v-list-item-subtitle>
           </v-list-item-content>
 
           <v-list-item-action v-if="$route.query.artistId" class="mx-0">
-            <EditAlbumsArtistView v-on:close="" v-bind:artist-data="originalAlbums[0].artist" :artist-image-found.sync="showArtistImage"></EditAlbumsArtistView>
+            <EditArtistView v-on:close="" v-bind:artist-data="albums[0].artist" :artist-image-found.sync="showArtistImage"></EditArtistView>
           </v-list-item-action>
 
           <v-list-item-action class="mx-0">
@@ -42,12 +42,14 @@
 
               <v-list dense class="text-left">
                 <v-subheader>Sort albums</v-subheader>
-                <v-list-item v-for="(sortType, i) in sorting.types" :key="i" @click="applyNewSort(sortType)">
-                  <v-list-item-title>{{sortType.name}}</v-list-item-title>
-                  <v-list-item-icon v-if="sortType.active">
-                    <v-icon right>mdi-check</v-icon>
-                  </v-list-item-icon>
-                </v-list-item>
+                <v-list-item-group color="primary" v-model="selectedSortType.idx">
+                  <v-list-item v-for="(sortType, i) in sorting.types" :key="i" @click="sortAlbums(sortType)">
+                    <v-list-item-title>{{sortType.name}}</v-list-item-title>
+                    <v-list-item-icon>
+                      <v-icon right small>{{sortType.icon}}</v-icon>
+                    </v-list-item-icon>
+                  </v-list-item>
+                </v-list-item-group>
               </v-list>
             </v-menu>
           </v-list-item-action>
@@ -59,21 +61,22 @@
     <v-row>
       <v-col class="py-0">
         <v-item-group align="left">
-          <v-text-field placeholder="Find album" class="py-0"
-                        v-model="searchFilter"
-                        @input="filterAlbums()"
-                        prepend-inner-icon="mdi-magnify"
+          <v-text-field flat dense clearable placeholder="Find album" class="py-0"
+                        @keydown.enter="findAlbumsByName()" @keydown.esc="clearInput()"
+                        v-model="albumNameQuery"
                         @click:clear="clearInput()"
-                        clearable>
+                        prepend-inner-icon="mdi-text-short"
+                        append-outer-icon="mdi-magnify"
+                        @click:append-outer="findAlbumsByName()">
           </v-text-field>
         </v-item-group>
 
       </v-col>
     </v-row>
 
-    <v-row class="justify-space-around pb-15">
+    <v-row class="justify-space-around">
       <v-col v-for="album in albums" :key="album.id" :cols="6" align="center" md="auto">
-        <v-card max-width="200px" max-height="300px" @click="openAlbum(album)">
+        <v-card max-width="200" max-height="300" @click="openAlbum(album)">
 
           <div v-if="albumsWithoutImage.includes(album.id)">
             <v-img src="@/assets/default-album-cover.png"
@@ -105,12 +108,13 @@
 
     <v-row>
       <v-col>
-        <div class="text-center" v-if="paginationRequired()">
-          <v-pagination class="pb-15" v-model="pagination.page"
-                        @input="showPage"
-                        :total-visible="pagination.totalVisible"
-                        :length="pagination.length"></v-pagination>
-        </div>
+        <v-pagination circle
+                      v-model="pagination.page"
+                      @next="nextPage"
+                      @previous="prevPage"
+                      @input="selectPage"
+                      :total-visible="5"
+                      :length="pagination.totalPages" ></v-pagination>
       </v-col>
     </v-row>
 
@@ -118,121 +122,74 @@
 
 </template>
 
-
 <script>
 
 import api from "@/http/playqdAPI"
-import EditAlbumsArtistView from "@/components/library/artists/EditArtistView";
-
-const ITEMS_PER_PAGE = 12;
+import EditArtistView from "@/components/library/artists/EditArtistView";
 
 export default {
   name: 'AlbumsView',
-  components: {EditAlbumsArtistView},
+  components: {EditArtistView},
   data() {
     return {
+      albumNameQuery: null,
       showArtistImage: true,
       albumsWithoutImage: [],
       sorting: {
         types: [
-          {id: 'by-title',  name: 'Title',        active: false},
-          {id: 'by-newest', name: 'Newest First', active: true},
-          {id: 'by-oldest', name: 'Oldest First', active: false}
+          {id: 'NAME', idx: 0, direction: 'ASC',  name: 'Title',        icon: 'mdi-sort-alphabetical-ascending'},
+          {id: 'DATE', idx: 1, direction: 'DESC', name: 'Newest First', icon: 'mdi-sort-clock-ascending-outline'},
+          {id: 'DATE', idx: 2, direction: 'ASC',  name: 'Oldest First', icon: 'mdi-sort-ascending'}
         ]
       },
+      albums: [],
       pagination: {
         page: 1,
-        totalVisible: 7,
-        length: 15
+        pageSize: 6,
+        totalElements: 0,
+        totalPages: 0
       },
-      searchFilter: '',
-      originalAlbums: [],
-      albums: []
+      selectedSortType: {},
+      defaultPageRequest: {},
     }
   },
   mounted() {
-    let query = '';
-    if (this.$route.query.artistId) {
-      query = '?artistId=' + this.$route.query.artistId;
-    } else {
-      query = '?genre=' + this.$route.query.genre;
-      this.sorting.type = 'by-title';
-    }
-    api.getAlbums(query).then(response => {
-      this.originalAlbums = Array.from(response.data.albums);
-      this.sortAlbums(this.originalAlbums);
-      this.albums = this.originalAlbums.slice(0, ITEMS_PER_PAGE);
-      this.pagination.length = Math.ceil(this.originalAlbums.length / ITEMS_PER_PAGE);
-    });
+    this.selectedSortType = this.sorting.types[0];
+    this.defaultPageRequest = this.createPageRequest(1, this.sorting.types[0]);
+    this.findAlbums(this.defaultPageRequest);
   },
   methods: {
-    imageError(albumId) {
-      if (albumId) {
-        this.albumsWithoutImage.push(albumId);
-      } else {
-        this.showArtistImage = false;
-      }
+    findAlbums(pageRequest) {
+      api.getAlbums(pageRequest).then(response => {
+        this.albums = response.data.albums;
+        this.pagination = { page: response.data.page + 1, pageSize: response.data.pageSize, totalElements: response.data.totalElements, totalPages: response.data.totalPages };
+      });
     },
-    paginationRequired() {
-      return this.originalAlbums.length > ITEMS_PER_PAGE;
-    },
-    showPage(pageId) {
-      let startIdx = 0;
-      let endIdx = ITEMS_PER_PAGE;
-      if (pageId > 1) {
-        startIdx = (pageId - 1) * ITEMS_PER_PAGE;
-        endIdx = startIdx +  ITEMS_PER_PAGE;
+    findAlbumsByName() {
+      if (this.albumNameQuery && this.albumNameQuery.length > 0) {
+        this.selectedSortType = this.sorting.types[0];
+        this.findAlbums(this.createPageRequest(1));
       }
-      this.albums = Array.from(this.originalAlbums.slice(startIdx, endIdx));
     },
     clearInput() {
-      this.searchFilter = '';
-      this.filterAlbums();
+      this.albumNameQuery = null;
+      this.findAlbums(this.defaultPageRequest);
     },
-    filterAlbums() {
-      if (!this.searchFilter || this.searchFilter === '') {
-        this.albums = this.originalAlbums;
-      } else {
-        let filter = this.searchFilter.toLowerCase();
-        this.albums = this.originalAlbums.filter(album => album.name.toLowerCase().includes(filter));
-      }
+    sortAlbums(sortType) {
+      this.selectedSortType = sortType;
+      this.findAlbums(this.createPageRequest(1));
     },
-    applyNewSort(sortConfig) {
-      this.sorting.types.forEach(item => item.active = false);
-      sortConfig.active = true;
-      this.sortAlbums(this.originalAlbums);
-      this.albums = this.originalAlbums.slice(0, ITEMS_PER_PAGE);
-      this.pagination.page = 1;
+    nextPage() {
+      this.findAlbums(this.createPageRequest(this.pagination.page));
     },
-    sortAlbums(albums) {
-      let sortTypeId = this.sorting.types.filter(item => item.active)[0].id;
-      if ('by-oldest' === sortTypeId) {
-        albums.sort((a1, a2) => {
-          if (a1.date && a2.date) {
-            if (a1.date > a2.date) return 1;
-            if (a1.date < a2.date) return -1;
-            return 0;
-          }
-          return 0;
-        })
-      } else if ('by-newest' === sortTypeId) {
-        albums.sort((a1, a2) => {
-          if (a1.date && a2.date) {
-            if (a1.date < a2.date) return 1;
-            if (a1.date > a2.date) return -1;
-            return 0;
-          }
-          return 0;
-        })
-      } else if ('by-title' === sortTypeId) {
-        albums.sort((a1, a2) => {
-          let a1Name = a1.name;
-          let a2Name = a2.name;
-          return a1Name.localeCompare(a2Name);
-        });
-      } else {
-
-      }
+    prevPage() {
+      this.findAlbums(this.createPageRequest(this.pagination.page));
+    },
+    selectPage(page) {
+      this.findAlbums(this.createPageRequest(page));
+    },
+    createPageRequest(page, sortType) {
+      return { page: page, pageSize: 6, sort: sortType ? sortType : this.selectedSortType, name: this.albumNameQuery, artistId: this.$route.query.artistId, genre: this.$route.query.genre };
     },
     openAlbum(album) {
       this.$router.push({name: 'AlbumSongsView', params:
@@ -242,6 +199,13 @@ export default {
               albumFrom: this.$route.query.artistId ? 'artist' : 'genre'
             }
       });
+    },
+    imageError(albumId) {
+      if (albumId) {
+        this.albumsWithoutImage.push(albumId);
+      } else {
+        this.showArtistImage = false;
+      }
     }
   }
 }

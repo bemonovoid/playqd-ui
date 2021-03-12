@@ -9,15 +9,13 @@
             <router-view></router-view>
           </v-col>
         </v-row>
-        <v-row>
-          <transition>
-            <div v-show="this.$store.state.miniPlayer.show">
-              <MiniPlayerView></MiniPlayerView>
-            </div>
-          </transition>
-        </v-row>
       </v-container>
     </v-main>
+    <transition>
+      <div v-show="this.$store.state.miniPlayer.show">
+        <MiniPlayerView></MiniPlayerView>
+      </div>
+    </transition>
   </v-app>
 </template>
 
@@ -40,7 +38,7 @@ export default {
     NavToolbarView,
     MiniPlayerView
   },
-  created() {
+  mounted() {
     eventBus.$on('song-is-ready-to-play', () => {
       this.appTitle.inner = this.$store.state.playlist.currentSong.artist.name;
       this.appTitle.complement = this.$store.state.playlist.currentSong.name;

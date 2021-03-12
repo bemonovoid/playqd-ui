@@ -90,10 +90,12 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
 
-          <v-expansion-panel>
+          <v-expansion-panel @change="getArtistAlbums()">
+
             <v-expansion-panel-header>
               Miscellaneous
             </v-expansion-panel-header>
+
             <v-expansion-panel-content>
               <v-row align="center" class="pt-5">
                 <v-autocomplete dense label="Move to existing album" class="pt-5 pr-3 text-left"
@@ -176,11 +178,14 @@ export default {
     }
   },
   mounted() {
-    api.getArtistAlbums(this.albumData.artist.id).then(response => {
-      this.artistAlbums = response.data.albums.filter(alb => alb.id !== this.albumData.id);
-    });
+
   },
   methods: {
+    getArtistAlbums() {
+      api.getAlbums({ page: 1, pageSize: 100, name: this.albumNameQuery, artistId: this.albumData.artist.id }).then(response => {
+        this.artistAlbums = response.data.albums.filter(alb => alb.id !== this.albumData.id);
+      });
+    },
     imageError() {
       this.showAlbumImage = false;
     },

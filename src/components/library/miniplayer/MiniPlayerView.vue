@@ -2,15 +2,13 @@
 
   <div v-if="this.$store.state.playlist.currentSong">
 
-    <v-bottom-navigation fixed horizontal class="hidden-sm-and-down pl-2" height="60">
+    <v-bottom-navigation app fixed horizontal class="hidden-sm-and-down pl-2" height="60">
 
       <v-row>
 
         <v-col md="auto">
           <v-img v-if="showAlbumImage" max-height="50px" max-width="50px" class="mr-1 mt-1 elevation-1"
-                 v-bind:src="$store.getters.getResourceBaseUrl + 'image/?resourceId=' + $store.state.playlist.currentSong.album.resourceId"
-                 @error="imageError"></v-img>
-
+                 v-bind:src="$store.getters.getResourceBaseUrl + 'image/?resourceId=' + $store.state.playlist.currentSong.album.resourceId" @error="imageError"></v-img>
           <v-img v-else max-height="50px" max-width="50px" class="mr-1 mt-1 elevation-1" src="@/assets/default-album-cover.png"></v-img>
         </v-col>
 
@@ -98,13 +96,13 @@
       </v-menu>
 
       <v-btn icon class="hidden-sm-and-down" @click="updateFavoriteStatus()">
-        <v-icon  v-if="this.$store.state.playlist.currentSong.playbackInfo && this.$store.state.playlist.currentSong.playbackInfo.favorite" color="yellow darken-3">mdi-star</v-icon>
+        <v-icon v-if="this.$store.state.playlist.currentSong.playbackInfo && this.$store.state.playlist.currentSong.playbackInfo.favorite" color="yellow darken-3">mdi-star</v-icon>
         <v-icon v-else>mdi-star-outline</v-icon>
       </v-btn>
 
     </v-bottom-navigation>
 
-    <v-app-bar fixed bottom flat class="pr-5 hidden-md-and-up" height="60" color="grey lighten-3">
+    <v-app-bar app fixed bottom flat class="pr-5 hidden-md-and-up" height="60" color="grey lighten-3">
 
       <v-img v-if="showAlbumImage" max-height="50px" max-width="50px" class="mr-1"
              :src="$store.getters.getResourceBaseUrl + 'image/?resourceId=' + $store.state.playlist.currentSong.album.resourceId"
@@ -160,6 +158,11 @@ export default {
       }
     }
   },
+  mounted() {
+    eventBus.$on('audio-is-playing', () => {
+      this.showAlbumImage = true; // Enables album image update
+    });
+  },
   methods: {
     changeAudioCurrentTime() {
       eventBus.$emit('toolbar-player-current-time-changed', this.slider.audioTime);
@@ -195,11 +198,10 @@ export default {
       });
     },
     openPlayerView() {
-      this.$router.push({name: 'PlayerView', params:
-            {
-              songId: this.$store.state.playlist.currentSong.id,
-              playerSong: this.$store.state.playlist.currentSong
-            }
+      this.$router.push({name: 'PlayerView', params: {
+          songId: this.$store.state.playlist.currentSong.id,
+          playerSong: this.$store.state.playlist.currentSong
+        }
       })
     },
     imageError() {
