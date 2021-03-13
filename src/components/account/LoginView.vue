@@ -9,6 +9,7 @@
             <v-item-group>
               <v-text-field label="Account name" placeholder="Account name" required v-model="account.username"></v-text-field>
               <v-text-field label="Password" placeholder="Password" required autocomplete="off"
+                            @keydown.enter="login()"
                             :type="showPassword ? 'text' : 'password'"
                             :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                             @click:append="showPassword = !showPassword"
