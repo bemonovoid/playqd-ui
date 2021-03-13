@@ -39,6 +39,9 @@ export default {
     MiniPlayerView
   },
   mounted() {
+    if (this.$store.state.authToken === null) {
+      this.$router.push({name: 'LoginView'});
+    }
     eventBus.$on('song-is-ready-to-play', () => {
       this.appTitle.inner = this.$store.state.playlist.currentSong.artist.name;
       this.appTitle.complement = this.$store.state.playlist.currentSong.name;
