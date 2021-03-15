@@ -132,8 +132,8 @@ export default {
     }
   },
   mounted() {
-    api.getSongs({page: 0, pageSize: 0, albumId: this.$route.params.albumId}).then(response => {
-      this.songs = response.data.songs
+    api.getAlbumSongs(this.$route.params.albumId).then(response => {
+      this.songs = response.data
       if (!this.album) {
         this.album = this.songs[0].album;
       }

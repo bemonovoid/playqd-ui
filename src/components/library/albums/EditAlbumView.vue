@@ -170,7 +170,6 @@ export default {
         date: this.albumData.date,
         updateAudioTags: true,
         preferences: {
-          albumId: this.albumData.id,
           songNameAsFileName: this.albumData.preferences ? this.albumData.preferences.songNameAsFileName : false,
         },
         artworkSrc: null
@@ -201,7 +200,7 @@ export default {
       }
     },
     updateAlbumPreferences() {
-      api.updateAlbumPreferences(this.album.preferences).then(response => {
+      api.updateAlbumPreferences(this.albumData.id, this.album.preferences).then(response => {
         eventBus.$emit('album-preferences-updated', this.album.preferences)
         this.active = false;
       });

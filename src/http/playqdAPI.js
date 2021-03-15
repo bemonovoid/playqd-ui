@@ -21,7 +21,7 @@ export default {
 
     getAlbumImageSrc(albumId) { return this.executeGet('/api/library/albums/' + albumId + '/image/src') },
 
-    getAllBasicArtists() { return this.executeGet('/api/library/artists/basic') },
+    getAllBasicArtists() { return this.executeGet('/api/library/artists/view/basic') },
 
     getArtists(pageRequest) {
         let url = '/api/library/artists/' +
@@ -69,24 +69,21 @@ export default {
         if (pageRequest.sort) {
             url += '&sortBy=' + pageRequest.sort.id + '&direction=' + pageRequest.sort.direction;
         }
-        if (pageRequest.albumId) {
-            url += '&albumId=' + pageRequest.albumId;
-        }
         if (pageRequest.name && pageRequest.name.length > 0) {
             url += '&name=' + pageRequest.name;
         }
         return this.executeGet(url);
     },
 
-    getSongsFiltered(pageSize, filterType) { return this.executeGet('/api/library/songs/?pageSize=' + pageSize + '&filter=' + filterType) },
+    getAlbumSongs(albumId) { return this.executeGet('/api/library/songs/album/' + albumId) },
 
     getSong(songId) { return this.executeGet('/api/library/songs/' + songId) },
 
-    updateArtist(data) { return this.executePut('/api/library/artists/', data) },
+    updateArtist(data) { return this.executePut('/api/library/artists/' + data.id, data) },
 
-    updateAlbumProperties(data) { return this.executePut('/api/library/albums', data) },
+    updateAlbumProperties(data) { return this.executePut('/api/library/albums/' + data.id, data) },
 
-    updateAlbumPreferences(data) { return this.executePut('/api/library/albums/preferences', data) },
+    updateAlbumPreferences(albumId, data) { return this.executePut('/api/library/albums/' + albumId + '/preferences', data) },
 
     setSongFavoriteStatus(song) {
         if (song.playbackInfo) {
