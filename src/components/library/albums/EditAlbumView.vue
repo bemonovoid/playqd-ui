@@ -104,7 +104,7 @@
                                 :hint="albumData.name"
                                 item-text="name"
                                 item-value="id"
-                                v-model="album.id"
+                                v-model="moveToAlbumId"
                                 :items="artistAlbums">
                 </v-autocomplete>
               </v-row>
@@ -118,7 +118,7 @@
               </v-row>
               <v-row>
                 <v-col>
-                  <v-btn small depressed block color="primary" class="text-capitalize">Move</v-btn>
+                  <v-btn small depressed block color="primary" class="text-capitalize" :disabled="!moveToAlbumId" @click="moveAlbum()">Move</v-btn>
                 </v-col>
               </v-row>
             </v-expansion-panel-content>
@@ -131,8 +131,8 @@
 
             <v-expansion-panel-content>
               <v-row>
-                <v-col>
-                  <v-btn link @click="findAlbumImage()">Find album image</v-btn>
+                <v-col class="pt-5">
+                  <v-btn small depressed block color="primary" class="text-capitalize" @click="findAlbumImage()">Find album image</v-btn>
                 </v-col>
               </v-row>
             </v-expansion-panel-content>
@@ -174,28 +174,26 @@ export default {
         },
         artworkSrc: null
       },
+      moveToAlbumId: null
     }
   },
   mounted() {
 
   },
   methods: {
+    imageError() {
+      this.showAlbumImage = false;
+    },
     getArtistAlbums() {
       api.getAlbums({ page: 1, pageSize: 100, name: this.albumNameQuery, artistId: this.albumData.artist.id }).then(response => {
         this.artistAlbums = response.data.albums.filter(alb => alb.id !== this.albumData.id);
       });
-    },
-    imageError() {
-      this.showAlbumImage = false;
     },
     updateAlbumProperties() {
       if (this.editForm.valid) {
         api.updateAlbumProperties(this.album).then(response => {
           eventBus.$emit('album-data-updated', this.album)
           this.active = false;
-          // if (this.album.moveToAlbumId) {
-          //   this.$router.push({name: 'AlbumsView', query: {artistId: this.albumData.artist.id}})
-          // }
         });
       }
     },
@@ -205,7 +203,13 @@ export default {
         this.active = false;
       });
     },
-
+    moveAlbum() {
+      let moveConfig = { albumIdFrom: this.albumData.id, albumIdTo: this.moveToAlbumId, updateAudioTags: this.updateAudioTags };
+      api.moveAlbum(moveConfig).then(response => {
+        this.active = false;
+        this.$router.push({name: 'AlbumsView', query: {artistId: this.albumData.artist.id}})
+      });
+    },
     findAlbumImage() {
       api.getAlbumImageSrc(this.albumData.id).then(response => {
         this.$emit('update:albumImageFound', true)

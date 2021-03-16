@@ -82,7 +82,7 @@
                                 :hint="artistData.name"
                                 item-text="name"
                                 item-value="id"
-                                v-model="artist.id"
+                                v-model="moveToArtistId"
                                 :items="this.artists">
                 </v-autocomplete>
               </v-row>
@@ -98,7 +98,7 @@
 
               <v-row>
                 <v-col>
-                  <v-btn small depressed block color="primary" class="text-capitalize">Move</v-btn>
+                  <v-btn small depressed block color="primary" class="text-capitalize" :disabled="!moveToArtistId" @click="moveArtist()">Move</v-btn>
                 </v-col>
               </v-row>
 
@@ -113,8 +113,8 @@
 
             <v-expansion-panel-content>
               <v-row>
-                <v-col>
-                  <v-btn link @click="findArtistImage()">Find artist image</v-btn>
+                <v-col class="pt-5">
+                  <v-btn small depressed block color="primary" class="text-capitalize" @click="findArtistImage()">Find artist image</v-btn>
                 </v-col>
               </v-row>
             </v-expansion-panel-content>
@@ -158,26 +158,31 @@ export default {
         country: this.artistData.country,
         updateAudioTags: true
       },
+      moveToArtistId: null
     }
   },
   methods: {
-    getArtists() {
-      api.getAllBasicArtists().then(response => {
-        this.artists = response.data.artists;
-      });
-    },
     imageError() {
       this.showArtistImage = false;
+    },
+    getArtists() {
+      api.getAllBasicArtists().then(response => {
+        this.artists = response.data.artists.filter(art => art.id !== this.artistData.id);
+      });
     },
     updateArtistProperties() {
       if (this.editForm.valid) {
         api.updateArtist(this.artist).then(response => {
             this.active = false;
-            // if (this.artist.moveToArtistId) {
-            //   this.$router.push({name: 'ArtistsView'})
-            // }
         });
       }
+    },
+    moveArtist() {
+      let moveConfig = { artistIdFrom: this.artistData.id, artistIdTo: this.moveToArtistId, updateAudioTags: this.updateAudioTags };
+      api.moveArtist(moveConfig).then(response => {
+        this.active = false;
+        this.$router.push({name: 'ArtistsView'})
+      });
     },
     findArtistImage() {
       api.getArtistImageSrc(this.artistData.id).then(response => {

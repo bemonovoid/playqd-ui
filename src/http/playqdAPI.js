@@ -81,9 +81,13 @@ export default {
 
     updateArtist(data) { return this.executePut('/api/library/artists/' + data.id, data) },
 
+    moveArtist(data) {return this.executePut('/api/library/artists/moved', data) },
+
     updateAlbumProperties(data) { return this.executePut('/api/library/albums/' + data.id, data) },
 
     updateAlbumPreferences(albumId, data) { return this.executePut('/api/library/albums/' + albumId + '/preferences', data) },
+
+    moveAlbum(data) { return this.executePut('/api/library/albums/moved', data) },
 
     setSongFavoriteStatus(song) {
         if (song.playbackInfo) {
