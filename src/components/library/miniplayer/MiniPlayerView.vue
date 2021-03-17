@@ -110,9 +110,12 @@
 
       <v-img v-else max-height="50px" max-width="50px" class="mr-1" src="@/assets/default-album-cover.png"></v-img>
 
-      <small class="text-truncate" @click="openPlayerView()">
-        {{ this.$store.state.playlist.currentSong.artist.name + ' - ' + this.$store.state.playlist.currentSong.name }}
-      </small>
+      <v-list-item class="pl-1 text-left text-truncate" @click="openPlayerView()">
+        <v-list-item-content>
+          <v-list-item-title>{{this.$store.state.playlist.currentSong.name}}</v-list-item-title>
+          <v-list-item-subtitle>{{this.$store.state.playlist.currentSong.artist.name}}</v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
 
       <v-spacer></v-spacer>
 

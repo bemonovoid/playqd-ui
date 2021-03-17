@@ -5,7 +5,7 @@
       <v-container>
         <Audio/>
         <v-row>
-          <v-col md="6" offset-md="3">
+          <v-col md="6" offset-md="3" class="pt-0">
             <router-view></router-view>
           </v-col>
         </v-row>

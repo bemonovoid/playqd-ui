@@ -1,6 +1,5 @@
 <template>
 
-<!--  <div v-if="this.artists.length > 0">-->
   <div>
     <v-row>
 
