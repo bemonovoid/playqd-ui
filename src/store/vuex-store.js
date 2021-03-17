@@ -122,7 +122,7 @@ export default new Vuex.Store({
             }
         },
         setCurrentSongFavoriteStatus: (state) => {
-            state.playlist.currentSong.playbackInfo.favorite = !state.playlist.currentSong.playbackInfo.favorite;
+            state.playlist.currentSong.favorite = !state.playlist.currentSong.favorite;
         },
         setShowMiniPlayer: (state, payload) => {
             state.miniPlayer.show = payload;

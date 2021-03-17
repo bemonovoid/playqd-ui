@@ -96,7 +96,7 @@
       </v-menu>
 
       <v-btn icon class="hidden-sm-and-down" @click="updateFavoriteStatus()">
-        <v-icon v-if="this.$store.state.playlist.currentSong.playbackInfo && this.$store.state.playlist.currentSong.playbackInfo.favorite" color="yellow darken-3">mdi-star</v-icon>
+        <v-icon v-if="this.$store.state.playlist.currentSong.favorite" color="yellow darken-3">mdi-star</v-icon>
         <v-icon v-else>mdi-star-outline</v-icon>
       </v-btn>
 

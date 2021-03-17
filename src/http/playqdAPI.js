@@ -89,19 +89,15 @@ export default {
 
     moveAlbum(data) { return this.executePut('/api/library/albums/moved', data) },
 
-    setSongFavoriteStatus(song) {
-        if (song.playbackInfo) {
-            return song.playbackInfo.favorite ? this.unsetFavorite(song.id) : this.setFavorite(song.id)
-        } else {
-            return this.setFavorite(song.id);
-        }
-    },
+    setSongFavoriteStatus(song) { return song.favorite ? this.unsetFavorite(song.id) : this.setFavorite(song.id) },
 
     setFavorite(songId) { return this.executePut('/api/library/songs/' + songId + '/favorite') },
 
     unsetFavorite(songId) { return this.executeDelete('/api/library/songs/' + songId + '/favorite') },
 
-    updateSong(data) { return this.executePut('/api/library/songs/', data) },
+    updateSong(data) { return this.executePut('/api/library/songs/' + data.id, data) },
+
+    moveSong(data) { return this.executePut('/api/library/songs/' + data.songId + '/moved', data) },
 
     updatePlayedSongCount(songId) { return this.executePut('/api/library/songs/' + songId + '/played') },
 

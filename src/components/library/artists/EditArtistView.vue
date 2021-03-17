@@ -178,7 +178,7 @@ export default {
       }
     },
     moveArtist() {
-      let moveConfig = { artistIdFrom: this.artistData.id, artistIdTo: this.moveToArtistId, updateAudioTags: this.updateAudioTags };
+      let moveConfig = { artistIdFrom: this.artistData.id, artistIdTo: this.moveToArtistId, updateAudioTags: this.artist.updateAudioTags };
       api.moveArtist(moveConfig).then(response => {
         this.active = false;
         this.$router.push({name: 'ArtistsView'})

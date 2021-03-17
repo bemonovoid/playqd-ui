@@ -204,7 +204,7 @@ export default {
       });
     },
     moveAlbum() {
-      let moveConfig = { albumIdFrom: this.albumData.id, albumIdTo: this.moveToAlbumId, updateAudioTags: this.updateAudioTags };
+      let moveConfig = { albumIdFrom: this.albumData.id, albumIdTo: this.moveToAlbumId, updateAudioTags: this.album.updateAudioTags };
       api.moveAlbum(moveConfig).then(response => {
         this.active = false;
         this.$router.push({name: 'AlbumsView', query: {artistId: this.albumData.artist.id}})
