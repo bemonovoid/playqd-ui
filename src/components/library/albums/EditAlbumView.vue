@@ -12,7 +12,7 @@
       <v-card-title>
 
         <v-list-item-avatar>
-          <v-img :src="$store.getters.getResourceBaseUrl + 'image/?resourceId=' + albumData.resourceId" @error="imageError"></v-img>
+          <v-img :src="$store.getters.getResourceBaseUrl + 'image/' + albumData.id + '?target=ALBUM'" @error="imageError"></v-img>
         </v-list-item-avatar>
 
         <span class="headline">Edit Album</span>

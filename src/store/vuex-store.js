@@ -30,7 +30,7 @@ export default new Vuex.Store({
     },
     getters: {
         getResourceBaseUrl: (state) => {
-            return process.env.VUE_APP_BASE_URL + '/api/library/resource/';
+            return process.env.VUE_APP_BASE_URL + '/resource/';
         },
         isLoggedIn: (state) => {
             return state.loginSuccess;

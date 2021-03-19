@@ -8,7 +8,7 @@
 
         <v-col md="auto">
           <v-img v-if="showAlbumImage" max-height="50px" max-width="50px" class="mr-1 mt-1 elevation-1"
-                 v-bind:src="$store.getters.getResourceBaseUrl + 'image/?resourceId=' + $store.state.playlist.currentSong.album.resourceId" @error="imageError"></v-img>
+                 v-bind:src="$store.getters.getResourceBaseUrl + 'image/' + $store.state.playlist.currentSong.album.id + '?target=ALBUM'" @error="imageError"></v-img>
           <v-img v-else max-height="50px" max-width="50px" class="mr-1 mt-1 elevation-1" src="@/assets/default-album-cover.png"></v-img>
         </v-col>
 
@@ -105,7 +105,7 @@
     <v-app-bar app fixed bottom flat class="pr-5 hidden-md-and-up" height="60" color="grey lighten-3">
 
       <v-img v-if="showAlbumImage" max-height="50px" max-width="50px" class="mr-1"
-             :src="$store.getters.getResourceBaseUrl + 'image/?resourceId=' + $store.state.playlist.currentSong.album.resourceId"
+             :src="$store.getters.getResourceBaseUrl + 'image/' + $store.state.playlist.currentSong.album.id + '?target=ALBUM'"
              @error="imageError"></v-img>
 
       <v-img v-else max-height="50px" max-width="50px" class="mr-1" src="@/assets/default-album-cover.png"></v-img>

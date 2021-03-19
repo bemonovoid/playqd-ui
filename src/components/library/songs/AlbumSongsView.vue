@@ -9,11 +9,11 @@
             <template v-slot:activator="{on, attrs}">
               <v-img contain class="scoped-album-img elevation-5"
                      v-on="on" v-bind="attrs"
-                     :src="$store.getters.getResourceBaseUrl + 'image/?resourceId=' + album.resourceId"
+                     :src="$store.getters.getResourceBaseUrl + 'image/' + album.id + '?target=ALBUM'"
                      @error="imageError"></v-img>
             </template>
             <v-card align="center" elevation="5">
-              <v-img class="white--text align-end" :src="$store.getters.getResourceBaseUrl + 'image/?resourceId=' + album.resourceId">
+              <v-img class="white--text align-end" :src="$store.getters.getResourceBaseUrl + 'image/' + album.id + '?target=ALBUM'">
                 <v-card-title>{{this.album.name}}</v-card-title>
               </v-img>
             </v-card>

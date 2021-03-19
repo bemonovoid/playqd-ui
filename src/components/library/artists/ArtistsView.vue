@@ -63,7 +63,7 @@
               </v-list-item-avatar>
 
               <v-list-item-avatar v-else class="ml-0 mr-2">
-                <v-img :src="$store.getters.getResourceBaseUrl + 'image/?resourceId=' + artist.resourceId" alt="alt" @error="imageError(artist.id)"></v-img>
+                <v-img :src="$store.getters.getResourceBaseUrl + 'image/' + artist.id + '?target=ARTIST'" alt="alt" @error="imageError(artist.id)"></v-img>
               </v-list-item-avatar>
 
               <v-list-item-content class="py-0">

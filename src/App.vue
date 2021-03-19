@@ -53,7 +53,7 @@ export default {
         link.rel = 'icon';
         document.getElementsByTagName('head')[0].appendChild(link);
       }
-      link.href = this.$store.getters.getResourceBaseUrl + 'image/?resourceId=' + this.$store.state.playlist.currentSong.album.resourceId;
+      link.href = this.$store.getters.getResourceBaseUrl + 'image/' + this.$store.state.playlist.currentSong.album.id + '?target=ALBUM';
 
     });
   },

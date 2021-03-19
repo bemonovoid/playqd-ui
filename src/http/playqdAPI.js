@@ -11,11 +11,11 @@ export default {
 
     getBaseUrl() { return HTTP_CLIENT.defaults.baseURL },
 
-    getResourceApiUrl() { return this.getBaseUrl() + '/api/library/resource/' },
+    getResourceApiUrl() { return this.getBaseUrl() + '/resource/' },
 
     getAlbumsApiUrl() { return this.getBaseUrl() + '/api/library/albums/' },
 
-    getSongSrcUrl(resourceId) { return this.getResourceApiUrl() + 'audio/?resourceId=' + resourceId },
+    getSongSrcUrl(songId) { return this.getResourceApiUrl() + 'audio/' + songId},
 
     getArtistImageSrc(artistId) { return this.executeGet('/api/library/artists/' + artistId + '/image/src') },
 
