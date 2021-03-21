@@ -71,7 +71,7 @@
                     {{song.artist.name}}
                   </v-list-item-subtitle>
                   <v-list-item-subtitle class="text-caption">
-                    <i>play count: {{song.playCount}}, last: {{song.lastPlayedTime}}</i>
+                    <i>{{song.fileExtension}}, play count: {{song.playCount}}, last: {{song.lastPlayedTime}}</i>
                   </v-list-item-subtitle>
                 </v-list-item-content>
 

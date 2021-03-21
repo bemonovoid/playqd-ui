@@ -57,7 +57,25 @@
                 {{ album.totalTime }}
               </div>
             </v-col>
-            <v-col class="text-right">
+            <v-spacer></v-spacer>
+            <v-col class="text-right pt-5" md="auto">
+              <v-menu bottom left offset-y>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn style="text-transform: none" small icon v-bind="attrs" v-on="on" @click="getFormats">
+                    <v-icon small>mdi-arrow-down-drop-circle-outline</v-icon>
+                    format
+                  </v-btn>
+                </template>
+                <v-list dense :disabled="formats.length <= 1">
+                  <v-list-item-group color="primary" v-model="selectedFormatIdx">
+                    <v-list-item v-for="format in formats" :key="format.index" @click="filterByFormat(format)">
+                      <v-list-item-title>{{ format }}</v-list-item-title>
+                    </v-list-item>
+                  </v-list-item-group>
+                </v-list>
+              </v-menu>
+            </v-col>
+            <v-col class="text-right" md="auto">
               <EditAlbumView v-bind:album-data="album" :album-image-found.sync="showAlbumImage"></EditAlbumView>
             </v-col>
           </v-row>
@@ -66,7 +84,7 @@
             <v-list>
               <v-list-item-group color="error" v-model="selectedSongIdx">
                 <template v-for="(song, i) in songs">
-                  <v-list-item :key="i" @click="playSong(i)">
+                  <v-list-item :key="i" @click="playAlbum(i)">
                       <v-list-item-icon class="py-0 mr-1">
                         <div v-if="isPlayingSongRow(i)">
                           <v-icon small>mdi-music-circle-outline mdi-spin</v-icon>
@@ -122,6 +140,8 @@ export default {
       selectedSongIdx: null,
       SONG_DURATION: SONG_HELPER,
       showAlbumImage: true,
+      formats: [],
+      selectedFormatIdx: null,
       headers: [
           {align: 'center', value: 'orderId', cellClass: 'pa-0'},
           {align: 'start', value: 'name'},
@@ -132,14 +152,7 @@ export default {
     }
   },
   mounted() {
-    api.getAlbumSongs(this.$route.params.albumId).then(response => {
-      this.songs = response.data
-      if (!this.album) {
-        this.album = this.songs[0].album;
-      }
-      this.album.totalTime = this.songs.length + ' songs, ' + this.album.totalTimeHumanReadable;
-      this.setPlayingSongSelected();
-    });
+    this.findAlbumSongs();
     eventBus.$on('album-data-updated', newAlbumData => {
       this.album.name = newAlbumData.name;
       this.album.genre = newAlbumData.genre;
@@ -153,7 +166,28 @@ export default {
     });
   },
   methods: {
-    imageError(error) {
+    findAlbumSongs(format) {
+      api.getAlbumSongs(this.$route.params.albumId, format).then(response => {
+        this.songs = response.data.songs;
+        if (!this.album) {
+          this.album = this.songs[0].album;
+        }
+        this.album.totalTime = this.songs.length + ' songs, ' + this.album.totalTimeHumanReadable;
+        this.setPlayingSongSelected();
+      });
+    },
+    getFormats() {
+      if (this.formats.length > 0) {
+        return;
+      }
+      api.getAlbumSongsFormats(this.album.id).then(response => {
+        this.formats = response.data;
+      });
+    },
+    filterByFormat(format) {
+      this.findAlbumSongs(format);
+    },
+    imageError() {
       this.showAlbumImage = false;
     },
     findAlbumImage() {

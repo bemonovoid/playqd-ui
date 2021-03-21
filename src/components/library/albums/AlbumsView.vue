@@ -2,7 +2,7 @@
 
   <div>
 
-    <v-row>
+    <v-row v-if="albums.length > 0">
 
       <v-col class="px-0 py-0 text-left">
         <v-list-item>

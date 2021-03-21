@@ -72,10 +72,18 @@ export default {
         if (pageRequest.name && pageRequest.name.length > 0) {
             url += '&name=' + pageRequest.name;
         }
+        if (pageRequest.albumId) {
+            url += '&albumId=' + pageRequest.albumId;
+        }
+        if (pageRequest.format) {
+            url += '&format=' + pageRequest.format;
+        }
         return this.executeGet(url);
     },
 
-    getAlbumSongs(albumId) { return this.executeGet('/api/library/songs/album/' + albumId) },
+    getAlbumSongs(albumId, format) { return this.getSongs({page: 0, pageSize: 1000, albumId: albumId, format: format}) },
+
+    getAlbumSongsFormats(albumId) { return this.executeGet('/api/library/songs/album/' + albumId + '/formats') },
 
     getSong(songId) { return this.executeGet('/api/library/songs/' + songId) },
 
