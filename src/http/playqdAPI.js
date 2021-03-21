@@ -79,6 +79,8 @@ export default {
 
     getSong(songId) { return this.executeGet('/api/library/songs/' + songId) },
 
+    getLibrarySettings() { return this.executeGet('/api/settings/library') },
+
     updateArtist(data) { return this.executePut('/api/library/artists/' + data.id, data) },
 
     moveArtist(data) {return this.executePut('/api/library/artists/moved', data) },
@@ -105,8 +107,18 @@ export default {
 
     login(data) { return HTTP_CLIENT.post('/login', {}, {auth: data}) },
 
+    saveLibrarySettings(data) { return this.executePut('/api/settings/library', data) },
+
+    rescanLibrary(data) { return this.executePatch('/api/settings/library', data) },
+
     executeGet(url) {
         return HTTP_CLIENT.get(url, this.authTokenHeader()).catch(error => {
+            this.handlerUnauthorizedResponse(error);
+        });
+    },
+
+    executePatch(url, data) {
+        return HTTP_CLIENT.patch(url, data, this.authTokenHeader()).catch(error => {
             this.handlerUnauthorizedResponse(error);
         });
     },

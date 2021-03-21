@@ -10,6 +10,9 @@ import AlbumsView from "@/components/library/albums/AlbumsView";
 import AlbumSongsView from "@/components/library/songs/AlbumSongsView";
 import PlayerView from "@/components/library/player/PlayerView";
 
+import PreferencesView from "@/components/preferences/PreferencesView";
+import LibrarySettingsView from "@/components/preferences/LibrarySettingsView";
+
 Vue.use(Router);
 
 const routes = [
@@ -21,7 +24,12 @@ const routes = [
     { path: '/library/songs', name: 'LibrarySongsView', component: LibrarySongsView, meta: {title: 'Library songs'} },
     { path: '/library/albums', name: 'AlbumsView', component: AlbumsView, props: route => ({artistId: route.query.artistId, genre: route.query.genre}), meta: {title: 'Albums'} },
     { path: '/library/artists/albums/:albumId', name: 'AlbumSongsView', component: AlbumSongsView, meta: {title: 'Album songs'}, props: true },
-    { path: '/library/player/:songId', name: 'PlayerView', component: PlayerView, meta: {title: 'Player'}, props: true }
+    { path: '/library/player/:songId', name: 'PlayerView', component: PlayerView, meta: {title: 'Player'}, props: true },
+    { path: '/preferences', name: 'PreferencesView', components: { preferencesRoute: PreferencesView }, meta: {title: 'Preferences'},
+        children: [
+                { path: 'library', name: 'LibrarySettingsView', component: LibrarySettingsView }
+            ]
+    },
 ]
 
 const router = new Router({

@@ -2,6 +2,7 @@
   <v-app class="grey lighten-4">
     <NavToolbarView/>
     <v-main>
+      <router-view name="preferencesRoute"></router-view>
       <v-container>
         <Audio/>
         <v-row>
@@ -27,7 +28,7 @@ import {eventBus} from "@/main";
 
 import Audio from "@/components/audio/Audio";
 
-import NavToolbarView from "@/components/library/library/NavToolbarView";
+import NavToolbarView from "@/components/toolbar/NavToolbarView";
 import MiniPlayerView from "@/components/library/miniplayer/MiniPlayerView";
 
 export default {

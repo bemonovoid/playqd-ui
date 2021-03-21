@@ -1,6 +1,6 @@
 <template>
 
-  <div v-if="this.albums.length > 0">
+  <div>
 
     <v-row>
 
