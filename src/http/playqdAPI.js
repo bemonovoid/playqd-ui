@@ -81,7 +81,7 @@ export default {
         return this.executeGet(url);
     },
 
-    getAlbumSongs(albumId, format) { return this.getSongs({page: 0, pageSize: 1000, albumId: albumId, format: format}) },
+    getAlbumSongs(albumId, format) { return this.executeGet('/api/library/songs/album/' + albumId + '/?format=' + format) },
 
     getAlbumSongsFormats(albumId) { return this.executeGet('/api/library/songs/album/' + albumId + '/formats') },
 
@@ -94,8 +94,6 @@ export default {
     moveArtist(data) {return this.executePut('/api/library/artists/moved', data) },
 
     updateAlbumProperties(data) { return this.executePut('/api/library/albums/' + data.id, data) },
-
-    updateAlbumPreferences(albumId, data) { return this.executePut('/api/library/albums/' + albumId + '/preferences', data) },
 
     moveAlbum(data) { return this.executePut('/api/library/albums/moved', data) },
 

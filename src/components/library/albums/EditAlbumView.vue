@@ -74,22 +74,6 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
 
-          <v-expansion-panel>
-            <v-expansion-panel-header>
-              Preferences
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <v-row>
-                <v-list-item class="pt-5">
-                  <v-list-item-title class="text-left">Song name as file name</v-list-item-title>
-                  <v-list-item-action>
-                    <v-switch dense color="info" hide-details v-model="album.preferences.songNameAsFileName" @change="updateAlbumPreferences()"></v-switch>
-                  </v-list-item-action>
-                </v-list-item>
-              </v-row>
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-
           <v-expansion-panel @change="getArtistAlbums()">
 
             <v-expansion-panel-header>
@@ -169,9 +153,6 @@ export default {
         genre: this.albumData.genre,
         date: this.albumData.date,
         updateAudioTags: true,
-        preferences: {
-          songNameAsFileName: this.albumData.preferences ? this.albumData.preferences.songNameAsFileName : false,
-        },
         artworkSrc: null
       },
       moveToAlbumId: null
@@ -196,12 +177,6 @@ export default {
           this.active = false;
         });
       }
-    },
-    updateAlbumPreferences() {
-      api.updateAlbumPreferences(this.albumData.id, this.album.preferences).then(response => {
-        eventBus.$emit('album-preferences-updated', this.album.preferences)
-        this.active = false;
-      });
     },
     moveAlbum() {
       let moveConfig = { albumIdFrom: this.albumData.id, albumIdTo: this.moveToAlbumId, updateAudioTags: this.album.updateAudioTags };

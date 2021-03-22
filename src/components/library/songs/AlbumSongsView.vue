@@ -95,7 +95,7 @@
                       </v-list-item-icon>
                       <v-list-item-content class="text-left">
                         <v-list-item-title>
-                          {{ album.preferences && album.preferences.songNameAsFileName ? song.fileName : song.name }}
+                          {{ song.name }}
                         </v-list-item-title>
                       </v-list-item-content>
                       <v-list-item-action>
@@ -157,9 +157,6 @@ export default {
       this.album.name = newAlbumData.name;
       this.album.genre = newAlbumData.genre;
       this.album.date = newAlbumData.date;
-    });
-    eventBus.$on('album-preferences-updated', newPreferences => {
-      this.album.preferences = newPreferences;
     });
     eventBus.$on('audio-is-playing', () => {
       this.setPlayingSongSelected();

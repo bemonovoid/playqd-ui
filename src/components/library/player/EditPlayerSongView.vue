@@ -70,22 +70,6 @@
 
           </v-expansion-panel>
 
-          <v-expansion-panel>
-            <v-expansion-panel-header>
-              Preferences
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <v-row>
-                <v-list-item class="pt-5">
-                  <v-list-item-title class="text-left">Song name as file name</v-list-item-title>
-                  <v-list-item-action>
-                    <v-switch dense color="info" hide-details v-model="song.preferences.songNameAsFileName" @change="updateSongPreferences()"></v-switch>
-                  </v-list-item-action>
-                </v-list-item>
-              </v-row>
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-
           <v-expansion-panel @change="getArtists()">
 
             <v-expansion-panel-header>
@@ -169,9 +153,6 @@ export default {
         lyrics: this.songData.lyrics,
         trackId: this.songData.trackId,
         updateAudioTags: true,
-        preferences: {
-          songNameAsFileName: this.songData.preferences ? this.songData.preferences.songNameAsFileName : false,
-        },
       },
     }
   },
@@ -192,9 +173,6 @@ export default {
           this.active = false;
         });
       }
-    },
-    updateSongPreferences() {
-
     },
     moveSong() {
       let moveConfig = { songId: this.songData.id, albumIdTo: this.moveToAlbumId, updateAudioTags: this.song.updateAudioTags }
