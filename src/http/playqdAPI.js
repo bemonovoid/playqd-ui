@@ -81,7 +81,13 @@ export default {
         return this.executeGet(url);
     },
 
-    getAlbumSongs(albumId, format) { return this.executeGet('/api/library/songs/album/' + albumId + '/?format=' + format) },
+    getAlbumSongs(albumId, format) {
+        let url = '/api/library/songs/album/' + albumId + '/?sortBy=TRACK_ID';
+        if (format) {
+            url += '&format=' + format;
+        }
+        return this.executeGet(url);
+    },
 
     getAlbumSongsFormats(albumId) { return this.executeGet('/api/library/songs/album/' + albumId + '/formats') },
 

@@ -17,7 +17,7 @@
             <v-col class="pl-5 text-start d-inline-block">
               <a class="text-body-2 red--text" @click="openPlayerView()">{{this.$store.state.playlist.currentSong.artist.name + ' - ' + this.$store.state.playlist.currentSong.name}}</a>
             </v-col>
-            <v-col class="text-right text-caption grey--text">
+            <v-col class="text-right text-caption grey--text" md="auto">
               {{$store.state.playlist.currentSong.fileExtension}} | {{$store.state.playlist.currentSong.audioBitRate}} kbps | {{$store.state.playlist.currentSong.audioSampleRate}} Hz
             </v-col>
             <v-col class="pr-5 text-right text-body-2 red--text" md="auto">

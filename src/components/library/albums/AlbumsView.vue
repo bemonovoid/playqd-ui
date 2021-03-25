@@ -50,7 +50,15 @@
                     </v-list-item-icon>
                   </v-list-item>
                 </v-list-item-group>
+                <v-subheader>Compare albums</v-subheader>
+                <v-list-item>
+                  <v-list-item-title>Compare all</v-list-item-title>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-title>Compare missing</v-list-item-title>
+                </v-list-item>
               </v-list>
+
             </v-menu>
           </v-list-item-action>
 
@@ -108,8 +116,7 @@
 
     <v-row>
       <v-col>
-        <v-pagination circle
-                      v-model="pagination.page"
+        <v-pagination v-model="pagination.page"
                       @next="nextPage"
                       @previous="prevPage"
                       @input="selectPage"

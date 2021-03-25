@@ -58,23 +58,11 @@
               </div>
             </v-col>
             <v-spacer></v-spacer>
-            <v-col class="text-right pt-5" md="auto">
-              <v-menu bottom left offset-y>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn style="text-transform: none" small icon v-bind="attrs" v-on="on" @click="getFormats">
-                    <v-icon small>mdi-arrow-down-drop-circle-outline</v-icon>
-                    format
-                  </v-btn>
-                </template>
-                <v-list dense :disabled="formats.length <= 1">
-                  <v-list-item-group color="primary" v-model="selectedFormatIdx">
-                    <v-list-item v-for="format in formats" :key="format.index" @click="filterByFormat(format)">
-                      <v-list-item-title>{{ format }}</v-list-item-title>
-                    </v-list-item>
-                  </v-list-item-group>
-                </v-list>
-              </v-menu>
-            </v-col>
+            <v-btn-toggle v-model="formatToggleBtn">
+              <v-col v-if="formats.length > 1" v-for="format in formats" :key="format.index" class="text-right px-1 pt-5" md="auto">
+                <v-btn small text style="text-transform: none" @click="filterByFormat(format)">{{format}}</v-btn>
+              </v-col>
+            </v-btn-toggle>
             <v-col class="text-right" md="auto">
               <EditAlbumView v-bind:album-data="album" :album-image-found.sync="showAlbumImage"></EditAlbumView>
             </v-col>
@@ -82,34 +70,7 @@
 
           <v-card-text class="px-2 pt-0">
             <v-list>
-              <v-list-item-group color="error" v-model="selectedSongIdx">
-                <template v-for="(song, i) in songs">
-                  <v-list-item :key="i" @click="playAlbum(i)">
-                      <v-list-item-icon class="py-0 mr-1">
-                        <div v-if="isPlayingSongRow(i)">
-                          <v-icon small>mdi-music-circle-outline mdi-spin</v-icon>
-                        </div>
-                        <div v-else class="text--disabled text-right">
-                          <span>{{i + 1}}</span>
-                        </div>
-                      </v-list-item-icon>
-                      <v-list-item-content class="text-left">
-                        <v-list-item-title>
-                          {{ song.name }}
-                        </v-list-item-title>
-                      </v-list-item-content>
-                      <v-list-item-action>
-                        <div v-if="isPlayingSongRow(i)" class="subtitle-2 text-no-wrap">
-                          - {{SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.duration - $store.state.audio.currentTimeAsInt)}}
-                        </div>
-                        <div v-else class="text--secondary">
-                          {{SONG_DURATION.convertSecondsToMinutesAndSeconds(song.duration)}}
-                        </div>
-                      </v-list-item-action>
-                  </v-list-item>
-                  <v-divider></v-divider>
-                </template>
-              </v-list-item-group>
+              <SongsListView :songs-data="this.songs"></SongsListView>
             </v-list>
           </v-card-text>
 
@@ -128,25 +89,21 @@ import api from "@/http/playqdAPI"
 import {SONG_HELPER} from "@/utils/songs-helper";
 
 import EditAlbumView from "@/components/library/albums/EditAlbumView";
+import SongsListView from "@/components/library/songs/SongsListView";
 
 export default {
   name: 'AlbumSongsView',
   components: {
+    SongsListView,
     EditAlbumView
   },
   props: ['albumData', 'albumFrom'],
   data() {
     return {
-      selectedSongIdx: null,
-      SONG_DURATION: SONG_HELPER,
       showAlbumImage: true,
       formats: [],
+      formatToggleBtn: null,
       selectedFormatIdx: null,
-      headers: [
-          {align: 'center', value: 'orderId', cellClass: 'pa-0'},
-          {align: 'start', value: 'name'},
-          {align: 'end', value: 'duration'}
-      ],
       album: this.albumData,
       songs: []
     }
@@ -158,9 +115,6 @@ export default {
       this.album.genre = newAlbumData.genre;
       this.album.date = newAlbumData.date;
     });
-    eventBus.$on('audio-is-playing', () => {
-      this.setPlayingSongSelected();
-    });
   },
   methods: {
     findAlbumSongs(format) {
@@ -170,15 +124,9 @@ export default {
           this.album = this.songs[0].album;
         }
         this.album.totalTime = this.songs.length + ' songs, ' + this.album.totalTimeHumanReadable;
-        this.setPlayingSongSelected();
-      });
-    },
-    getFormats() {
-      if (this.formats.length > 0) {
-        return;
-      }
-      api.getAlbumSongsFormats(this.album.id).then(response => {
-        this.formats = response.data;
+        if (this.formats.length === 0) {
+          this.formats = [...new Set( this.songs.map(s => s.fileExtension)) ];
+        }
       });
     },
     filterByFormat(format) {
@@ -192,27 +140,12 @@ export default {
         this.showAlbumImage = true;
       })
     },
-    isPlayingSongRow(idx) {
-      return idx === this.selectedSongIdx && this.album.id === this.$store.state.playlist.currentSong.album.id;
-    },
-    setPlayingSongSelected() {
-      if (this.$store.state.playlist.currentSong && this.album.id === this.$store.state.playlist.currentSong.album.id) {
-        this.selectedSongIdx = this.songs.findIndex((item) => item.id === this.$store.state.playlist.currentSong.id);
-      }
-    },
     playAlbum(songIdx) {
       eventBus.$emit('play-playlist', {songs: this.songs, startSongIdx: songIdx, shuffle: false});
     },
     playAlbumShuffled() {
       SONG_HELPER.shufflePlaylist(this.songs);
       eventBus.$emit('play-playlist', {songs: this.songs, startSongIdx: 0, shuffle: true});
-    },
-    playSong(songIdx) {
-      if (this.$store.state.playlist.id === null || this.$store.state.playlist.id !== this.album.id || this.$store.state.playlist.songs.length !== this.songs.length) {
-        this.playAlbum(songIdx);
-      } else {
-        eventBus.$emit('play-song', songIdx);
-      }
     }
   }
 }

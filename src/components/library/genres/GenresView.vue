@@ -43,13 +43,13 @@
 
     <v-row>
       <v-col>
-        <v-pagination circle
-                      v-model="pagination.page"
+        <v-pagination v-model="pagination.page"
                       @next="nextPage"
                       @previous="prevPage"
                       @input="selectPage"
                       :total-visible="5"
-                      :length="pagination.totalPages" ></v-pagination>
+                      :length="pagination.totalPages">
+        </v-pagination>
       </v-col>
     </v-row>
 

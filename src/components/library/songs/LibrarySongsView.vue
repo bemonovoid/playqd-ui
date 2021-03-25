@@ -1,6 +1,6 @@
 <template>
 
-  <div v-if="this.songs">
+  <div>
 
     <v-row>
       <v-col class="py-0 px-0 text-left">
@@ -11,6 +11,7 @@
               Total: {{pagination.totalElements}}
             </v-list-item-subtitle>
           </v-list-item-content>
+
           <v-list-item-action>
             <v-menu offset-y left>
               <template v-slot:activator="{ attrs, on}">
@@ -21,11 +22,32 @@
 
               <v-list dense class="text-left">
                 <v-subheader>Sort songs</v-subheader>
-                <v-list-item-group color="primary" v-model="selectedSortType.idx">
+                <v-list-item-group  color="primary" v-model="selectedSortType.idx">
                   <v-list-item v-for="(sortType, i) in sorting.types" :key="i" @click="sortSongs(sortType)">
                     <v-list-item-title>{{sortType.name}}</v-list-item-title>
                     <v-list-item-icon>
                       <v-icon right>{{sortType.icon}}</v-icon>
+                    </v-list-item-icon>
+                  </v-list-item>
+                </v-list-item-group>
+              </v-list>
+            </v-menu>
+          </v-list-item-action>
+          <v-list-item-action>
+            <v-menu offset-y left>
+              <template v-slot:activator="{ attrs, on}">
+                <v-btn small icon v-bind="attrs" v-on="on">
+                  <v-icon small>mdi-filter-menu-outline</v-icon>
+                </v-btn>
+              </template>
+
+              <v-list dense class="text-left">
+                <v-subheader>Filter songs</v-subheader>
+                <v-list-item-group color="primary" v-model="selectedSortType.idx">
+                  <v-list-item v-for="(filter, i) in filters.general" :key="i" @click="sortSongs(filter)">
+                    <v-list-item-title>{{filter.name}}</v-list-item-title>
+                    <v-list-item-icon>
+                      <v-icon right>{{filter.icon}}</v-icon>
                     </v-list-item-icon>
                   </v-list-item>
                 </v-list-item-group>
@@ -37,11 +59,9 @@
     </v-row>
 
     <v-row>
-      <v-col class="py-0">
-
-        <v-list class="text-left" dense>
-
-          <v-item-group align="left" class="py-0">
+      <v-col class="py-0 px-0 text-left">
+        <v-list-item>
+          <v-list-item-content class="py-0">
             <v-text-field flat dense clearable placeholder="Find in songs"
                           @keydown.enter="findSongsByName()" @keydown.esc="clearInput()"
                           v-model="songsNameQuery"
@@ -50,48 +70,15 @@
                           append-outer-icon="mdi-magnify"
                           @click:append-outer="findSongsByName()">
             </v-text-field>
-          </v-item-group>
+          </v-list-item-content>
+        </v-list-item>
+      </v-col>
+    </v-row>
 
-          <v-list-item-group color="primary">
+    <v-row>
+      <v-col class="py-0">
 
-            <template v-for="(song, i) in songs">
-              <v-list-item :key="i" @click="playLibrarySongs(i)" three-line class="px-0">
-
-                <v-list-item-avatar v-if="albumsWithImageNotFound.includes(song.album.id)" class="ml-0 mr-2">
-                  <v-img src="@/assets/default-album-cover.png" ></v-img>
-                </v-list-item-avatar>
-
-                <v-list-item-avatar v-else class="ml-0 mr-2">
-                  <v-img :src="$store.getters.getResourceBaseUrl + 'image/' + song.album.id + '?target=ALBUM'" alt="alt" @error="imageError(song.album.id)"></v-img>
-                </v-list-item-avatar>
-
-                <v-list-item-content class="py-0">
-                  <v-list-item-title class="text-body-2">{{song.name}}</v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{song.artist.name}}
-                  </v-list-item-subtitle>
-                  <v-list-item-subtitle class="text-caption">
-                    <i>{{song.fileExtension}}, play count: {{song.playCount}}, last: {{song.lastPlayedTime}}</i>
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-
-                <v-list-item-action>
-                  <v-list-item-action-text>
-                    <div class="text--secondary">
-                      {{SONG_DURATION.convertSecondsToMinutesAndSeconds(song.duration)}}
-                    </div>
-                  </v-list-item-action-text>
-                  <v-icon v-if="song.favorite === true" color="yellow darken-3">mdi-star</v-icon>
-                </v-list-item-action>
-
-              </v-list-item>
-
-              <v-divider></v-divider>
-            </template>
-
-          </v-list-item-group>
-
-        </v-list>
+        <SongsListView :songs-data.sync="this.songs" :library-list="true"></SongsListView>
 
       </v-col>
 
@@ -99,13 +86,13 @@
 
     <v-row>
       <v-col>
-        <v-pagination circle
-                      v-model="pagination.page"
+        <v-pagination v-model="pagination.page"
                       @next="nextPage"
                       @previous="prevPage"
                       @input="selectPage"
                       :total-visible="5"
-                      :length="pagination.totalPages" ></v-pagination>
+                      :length="pagination.totalPages">
+        </v-pagination>
       </v-col>
     </v-row>
 
@@ -115,27 +102,30 @@
 <script>
 
 import api from "@/http/playqdAPI";
-import {SONG_HELPER} from "@/utils/songs-helper";
-import {eventBus} from "@/main";
+import SongsListView from "@/components/library/songs/SongsListView";
 
 export default {
   name: "LibrarySongsView",
+  components: {SongsListView},
   data() {
     return {
-      SONG_DURATION: SONG_HELPER,
+      filters: {
+        general: [
+          {id: 'FAVORITES',       idx: 1, name: 'Favorites',       direction: 'ASC',  icon: 'mdi-star-outline'},
+          {id: 'RECENTLY_ADDED',  idx: 2, name: 'Recently Added',  direction: 'ASC',  icon: 'mdi-sort-clock-ascending-outline'},
+          {id: 'RECENTLY_PLAYED', idx: 3, name: 'Recently Played', direction: 'DESC', icon: 'mdi-sort-clock-ascending-outline'}
+        ],
+        format: ['flac', 'm4a', 'mp3', 'ogg', 'wav', 'wma'],
+        formatSelected: null
+      },
       sorting: {
         types: [
           {id: 'NAME',            idx: 0, name: 'Name',            direction: 'ASC',  icon: 'mdi-sort-alphabetical-ascending'},
-          {id: 'FAVORITES',       idx: 1, name: 'Favorites',       direction: 'ASC',  icon: 'mdi-star-outline'},
-          {id: 'RECENTLY_ADDED',  idx: 2, name: 'Recently Added',  direction: 'ASC',  icon: 'mdi-sort-clock-ascending-outline'},
-          {id: 'RECENTLY_PLAYED', idx: 3, name: 'Recently Played', direction: 'DESC', icon: 'mdi-sort-clock-ascending-outline'},
           {id: 'MOST_PLAYED',     idx: 4, name: 'Most played',     direction: 'DESC', icon: 'mdi-sort-ascending'}
         ]
       },
-      albumsWithImageNotFound: [],
-      selectedSortItemIdx: null,
       songsNameQuery: null,
-      songs: null,
+      songs: [],
       pagination: {
         page: 1,
         pageSize: 6,
@@ -183,12 +173,6 @@ export default {
     },
     createPageRequest(page, sortType) {
       return { page: page, pageSize: 6, sort: sortType ? sortType : this.selectedSortType, name: this.songsNameQuery }
-    },
-    playLibrarySongs(songIdx) {
-      eventBus.$emit('play-playlist', {songs: this.songs, startSongIdx: songIdx, shuffle: false});
-    },
-    imageError(albumId) {
-      this.albumsWithImageNotFound.push(albumId);
     }
   }
 }
