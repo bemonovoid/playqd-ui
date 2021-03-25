@@ -8,6 +8,7 @@ import GenresView from "@/components/library/genres/GenresView";
 import LibrarySongsView from "@/components/library/songs/LibrarySongsView.vue";
 import AlbumsView from "@/components/library/albums/AlbumsView";
 import AlbumSongsView from "@/components/library/songs/AlbumSongsView";
+import ArtistSongsView from "@/components/library/songs/ArtistSongsView";
 import PlayerView from "@/components/library/player/PlayerView";
 
 import PreferencesView from "@/components/preferences/PreferencesView";
@@ -24,6 +25,7 @@ const routes = [
     { path: '/library/songs', name: 'LibrarySongsView', component: LibrarySongsView, meta: {title: 'Library songs'} },
     { path: '/library/albums', name: 'AlbumsView', component: AlbumsView, props: route => ({artistId: route.query.artistId, genre: route.query.genre}), meta: {title: 'Albums'} },
     { path: '/library/artists/albums/:albumId', name: 'AlbumSongsView', component: AlbumSongsView, meta: {title: 'Album songs'}, props: true },
+    { path: '/library/artists/:artistId', name: 'ArtistSongsView', component: ArtistSongsView, meta: {title: 'Album songs'}, props: true },
     { path: '/library/player/:songId', name: 'PlayerView', component: PlayerView, meta: {title: 'Player'}, props: true },
     { path: '/preferences', name: 'PreferencesView', components: { preferencesRoute: PreferencesView }, meta: {title: 'Preferences'},
         children: [
@@ -35,19 +37,5 @@ const routes = [
 const router = new Router({
     routes
 });
-
-// router.beforeEach((to, from, next) => {
-//     if (to.matched.some(route => route.name !== 'LoginView')) {
-//         if (!store.getters.isLoggedIn) {
-//             next({
-//                 name: 'LoginView'
-//             })
-//         } else {
-//             next();
-//         }
-//     } else {
-//         next();
-//     }
-// });
 
 export default router;

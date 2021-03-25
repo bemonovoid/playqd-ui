@@ -170,6 +170,7 @@ export default {
     updateSongProperties() {
       if (this.editForm.valid) {
         api.updateSong(this.song).then(response => {
+          this.$store.commit('updateCurrentSong', response.data);
           this.active = false;
         });
       }

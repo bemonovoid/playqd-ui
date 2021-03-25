@@ -89,6 +89,8 @@ export default {
         return this.executeGet(url);
     },
 
+    getArtistSongs(artistId) { return this.executeGet('/api/library/songs/artist/' + artistId) },
+
     getAlbumSongsFormats(albumId) { return this.executeGet('/api/library/songs/album/' + albumId + '/formats') },
 
     getSong(songId) { return this.executeGet('/api/library/songs/' + songId) },

@@ -113,13 +113,8 @@ export default new Vuex.Store({
             }
             state.playlist.currentSong = nextSong;
         },
-        setCurrentSong: (state, payload) => {
-            let song = state.playlist.songs[payload];
-            state.playlist.currentSong = song;
-            state.playlist.currentSongIdx = payload;
-            if (state.playlist.songs.length === 0) {
-                state.playlist.songs[0] = state.playlist.currentSong;
-            }
+        updateCurrentSong: (state, payload) => {
+            state.playlist.currentSong = payload;
         },
         setCurrentSongFavoriteStatus: (state) => {
             state.playlist.currentSong.favorite = !state.playlist.currentSong.favorite;

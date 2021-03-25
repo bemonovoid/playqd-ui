@@ -44,10 +44,7 @@ export default {
     });
     eventBus.$on('play-prev-song', () => {
       this.loadPrevSong();
-    })
-    eventBus.$on('play-song', (payload) => {
-      this.loadSingleSong(payload);
-    })
+    });
     eventBus.$on('play-playlist', payload => {
       this.loadPlaylist(payload.songs, payload.startSongIdx, payload.shuffle);
     });
@@ -74,10 +71,6 @@ export default {
       this.$store.commit('setPlaylist', {
         playlistId: songs[startSongIdx].album.id, shuffle: shuffle, songs: songs, startSongIdx: startSongIdx
       });
-      this.loadAudio();
-    },
-    loadSingleSong(songIdx) {
-      this.$store.commit('setCurrentSong', songIdx);
       this.loadAudio();
     },
     loadNextSong() {

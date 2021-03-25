@@ -21,7 +21,7 @@
               {{$store.state.playlist.currentSong.fileExtension}} | {{$store.state.playlist.currentSong.audioBitRate}} kbps | {{$store.state.playlist.currentSong.audioSampleRate}} Hz
             </v-col>
             <v-col class="pr-5 text-right text-body-2 red--text" md="auto">
-              {{SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.currentTimeAsInt) + ' / ' + SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.duration)}}
+              {{ playlistUtils.secondsToHHmmss($store.state.audio.currentTimeAsInt) + ' / ' + playlistUtils.secondsToHHmmss($store.state.audio.duration) }}
             </v-col>
           </v-row>
           <v-slider
@@ -141,15 +141,15 @@
 
 <script>
 
-import {SONG_HELPER} from "@/utils/songs-helper";
 import {eventBus} from "@/main";
 import api from "@/http/playqdAPI";
+import playlistUtils from "@/utils/playlistUtils";
 
 export default {
   name: 'MiniPlayerView',
   data() {
     return {
-      SONG_DURATION: SONG_HELPER,
+      playlistUtils: playlistUtils,
       showAlbumImage: true,
       slider: {
         audioTime: 0,

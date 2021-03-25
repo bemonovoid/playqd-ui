@@ -86,7 +86,7 @@
 
 import {eventBus} from "@/main";
 import api from "@/http/playqdAPI"
-import {SONG_HELPER} from "@/utils/songs-helper";
+import playlistUtils from "@/utils/playlistUtils";
 
 import EditAlbumView from "@/components/library/albums/EditAlbumView";
 import SongsListView from "@/components/library/songs/SongsListView";
@@ -123,7 +123,7 @@ export default {
         if (!this.album) {
           this.album = this.songs[0].album;
         }
-        this.album.totalTime = this.songs.length + ' songs, ' + this.album.totalTimeHumanReadable;
+        this.album.totalTime = this.songs.length + ' songs, ' + playlistUtils.secondsToHHmmText(this.album.totalTimeInSeconds);
         if (this.formats.length === 0) {
           this.formats = [...new Set( this.songs.map(s => s.fileExtension)) ];
         }
@@ -144,7 +144,7 @@ export default {
       eventBus.$emit('play-playlist', {songs: this.songs, startSongIdx: songIdx, shuffle: false});
     },
     playAlbumShuffled() {
-      SONG_HELPER.shufflePlaylist(this.songs);
+      playlistUtils.shufflePlaylist(this.songs);
       eventBus.$emit('play-playlist', {songs: this.songs, startSongIdx: 0, shuffle: true});
     }
   }

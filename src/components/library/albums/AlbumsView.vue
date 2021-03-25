@@ -27,16 +27,18 @@
             <v-list-item-subtitle>Total {{ (this.$route.query.artistId ? ' artist ' : ' genre ')  + 'albums: ' + this.pagination.totalElements}}</v-list-item-subtitle>
           </v-list-item-content>
 
-          <v-list-item-action v-if="$route.query.artistId" class="mx-0">
-            <EditArtistView v-on:close="" v-bind:artist-data="albums[0].artist" :artist-image-found.sync="showArtistImage"></EditArtistView>
+          <v-list-item-action v-if="$route.query.artistId">
+            <v-btn fab icon small @click="openAllAlbums">
+              <v-icon small>mdi-motion-play-outline</v-icon>
+            </v-btn>
           </v-list-item-action>
 
-          <v-list-item-action class="mx-0">
+          <v-list-item-action>
             <v-menu offset-y left>
 
               <template v-slot:activator="{attrs, on}">
                 <v-btn fab small icon v-bind="attrs" v-on="on">
-                  <v-icon>mdi-dots-horizontal</v-icon>
+                  <v-icon small>mdi-sort</v-icon>
                 </v-btn>
               </template>
 
@@ -60,6 +62,10 @@
               </v-list>
 
             </v-menu>
+          </v-list-item-action>
+
+          <v-list-item-action v-if="$route.query.artistId" class="mx-0">
+            <EditArtistView v-on:close="" v-bind:artist-data="albums[0].artist" :artist-image-found.sync="showArtistImage"></EditArtistView>
           </v-list-item-action>
 
         </v-list-item>
@@ -204,6 +210,14 @@ export default {
               albumId: album.id,
               albumData: album,
               albumFrom: this.$route.query.artistId ? 'artist' : 'genre'
+            }
+      });
+    },
+    openAllAlbums() {
+      this.$router.push({name: 'ArtistSongsView', params:
+            {
+              artistId: this.$route.query.artistId,
+              artistData: this.albums[0].artist
             }
       });
     },

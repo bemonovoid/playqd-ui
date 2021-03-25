@@ -25,7 +25,7 @@
                {{ this.replaceSongNameWithFileName ? this.$store.state.playlist.currentSong.fileName : this.$store.state.playlist.currentSong.name }}
              </v-col>
              <v-col cols="1" class="text-right">
-               <EditPlayerSongView v-bind:song-data="this.$store.state.playlist.currentSong"></EditPlayerSongView>
+               <EditSongView v-bind:song-data="this.$store.state.playlist.currentSong"></EditSongView>
              </v-col>
            </v-row>
          </v-card-title>
@@ -64,10 +64,11 @@
                  <template v-slot:message>
                     <v-row class="no-gutters">
                       <v-col cols="6" class="py-0 px-1 red--text text-left">
-                        {{SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.currentTimeAsInt)}}
+                        {{ playlistUtils.secondsToHHmmss($store.state.audio.currentTimeAsInt) }}
                       </v-col>
                       <v-col cols="6" class="py-0 px-1 red--text text-right">
-                        - {{SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.duration - $store.state.audio.currentTimeAsInt)}}
+                        -
+                        {{ playlistUtils.secondsToHHmmss($store.state.audio.duration - $store.state.audio.currentTimeAsInt) }}
                       </v-col>
                     </v-row>
                  </template>
@@ -140,16 +141,16 @@
 
 import {eventBus} from "@/main";
 import api from "@/http/playqdAPI"
-import {SONG_HELPER} from "@/utils/songs-helper";
-import EditPlayerSongView from "@/components/library/player/EditPlayerSongView";
+import playlistUtils from "@/utils/playlistUtils";
+import EditSongView from "@/components/library/player/EditSongView";
 
 export default {
   name: 'PlayerView',
-  components: {EditPlayerSongView},
+  components: { EditSongView },
   props: ['playerSong'],
   data() {
     return {
-      SONG_DURATION: SONG_HELPER,
+      playlistUtils: playlistUtils,
       showAlbumImage: true,
       slider: {
         audioTime: 0,

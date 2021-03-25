@@ -38,10 +38,10 @@
           <v-list-item-action>
             <v-list-item-action-text>
               <div v-if="isPlayingSongRow(i, song.id)" class="subtitle-2 text-no-wrap">
-                - {{SONG_DURATION.convertSecondsToMinutesAndSeconds($store.state.audio.duration - $store.state.audio.currentTimeAsInt)}}
+                - {{ playlistUtils.secondsToHHmmss($store.state.audio.duration - $store.state.audio.currentTimeAsInt) }}
               </div>
               <div v-else class="text--secondary">
-                {{SONG_DURATION.convertSecondsToMinutesAndSeconds(song.duration)}}
+                {{ playlistUtils.secondsToHHmmss(song.duration) }}
               </div>
             </v-list-item-action-text>
             <v-icon small v-text="song.favorite === true ? 'mdi-star' : 'mdi-star-outline'" :color="song.favorite === true ? 'yellow darken-3' : ''"></v-icon>
@@ -59,14 +59,14 @@
 <script>
 
 import {eventBus} from "@/main";
-import {SONG_HELPER} from "@/utils/songs-helper";
+import playlistUtils from "@/utils/playlistUtils";
 
 export default {
   name: "SongsListView",
   props: ['songsData', 'libraryList', 'artistList', 'albumList'],
   data() {
     return {
-      SONG_DURATION: SONG_HELPER,
+      playlistUtils: playlistUtils,
       songAlbumsWithImageNotFound: [],
       selectedSongIdx: null,
     }
