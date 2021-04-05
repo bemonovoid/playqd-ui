@@ -31,7 +31,7 @@
          </v-card-title>
 
          <v-card-subtitle class="pt-0 pb-1">
-           <v-btn class="text-capitalize text-body-1 red--text" plain height="0" :to="{name: 'AlbumsView', query: {artistId: this.$store.state.playlist.currentSong.artist.id}}">
+           <v-btn class="text-capitalize text-body-1 green--text" plain height="0" :to="{name: 'AlbumsView', query: {artistId: this.$store.state.playlist.currentSong.artist.id}}">
              {{ this.$store.state.playlist.currentSong.artist.name }}
            </v-btn>
            <v-row>
@@ -63,10 +63,10 @@
 
                  <template v-slot:message>
                     <v-row class="no-gutters">
-                      <v-col cols="6" class="py-0 px-1 red--text text-left">
+                      <v-col cols="6" class="py-0 px-1 green--text text-left">
                         {{ playlistUtils.secondsToHHmmss($store.state.audio.currentTimeAsInt) }}
                       </v-col>
-                      <v-col cols="6" class="py-0 px-1 red--text text-right">
+                      <v-col cols="6" class="py-0 px-1 green--text text-right">
                         -
                         {{ playlistUtils.secondsToHHmmss($store.state.audio.duration - $store.state.audio.currentTimeAsInt) }}
                       </v-col>
@@ -200,10 +200,10 @@ export default {
     setRepeat() {
       if (this.$store.state.playlist.repeat === 'none') {
         this.$store.commit('setRepeatMode', 'all');
-        this.repeatIcon = {name: 'mdi-repeat', color: 'red'}
+        this.repeatIcon = {name: 'mdi-repeat', color: 'green'}
       } else if (this.$store.state.playlist.repeat === 'all') {
         this.$store.commit('setRepeatMode', 'once');
-        this.repeatIcon = {name: 'mdi-repeat-once', color: 'red'}
+        this.repeatIcon = {name: 'mdi-repeat-once', color: 'green'}
       } else {
         this.$store.commit('setRepeatMode', 'none');
         this.repeatIcon = {name: 'mdi-repeat', color: ''}

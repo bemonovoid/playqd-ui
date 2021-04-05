@@ -97,6 +97,11 @@ export default {
 
     getLibrarySettings() { return this.executeGet('/api/settings/library') },
 
+    getScanLogs(pageRequest) {
+        let page = pageRequest.page === 0 ? 0 : pageRequest.page - 1;
+        return this.executeGet('/api/settings/library/scans/?page=' + page + '&size=' + pageRequest.pageSize)
+    },
+
     updateArtist(data) { return this.executePut('/api/library/artists/' + data.id, data) },
 
     moveArtist(data) {return this.executePut('/api/library/artists/moved', data) },

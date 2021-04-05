@@ -2,7 +2,7 @@
 
   <v-list dense two-line class="py-0">
 
-    <v-list-item-group color="error" v-model="selectedSongIdx">
+    <v-list-item-group color="#3EA055" v-model="selectedSongIdx">
       <template v-for="(song, i) in songsData">
 
         <v-list-item class="px-1" @click="playSong(i)">

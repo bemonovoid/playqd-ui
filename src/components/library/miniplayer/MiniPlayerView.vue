@@ -2,7 +2,7 @@
 
   <div v-if="this.$store.state.playlist.currentSong">
 
-    <v-bottom-navigation app fixed horizontal class="hidden-sm-and-down pl-2" height="60">
+    <v-bottom-navigation app fixed horizontal class="hidden-sm-and-down pl-2" height="60" background-color="#3EA055">
 
       <v-row>
 
@@ -12,22 +12,22 @@
           <v-img v-else max-height="50px" max-width="50px" class="mr-1 mt-1 elevation-1" src="@/assets/default-album-cover.png"></v-img>
         </v-col>
 
-        <v-col class="text-left">
+        <v-col class="text-left white--text">
           <v-row>
             <v-col class="pl-5 text-start d-inline-block">
-              <a class="text-body-2 red--text" @click="openPlayerView()">{{this.$store.state.playlist.currentSong.artist.name + ' - ' + this.$store.state.playlist.currentSong.name}}</a>
+              <a class="text-body-2 white--text" @click="openPlayerView()">{{this.$store.state.playlist.currentSong.artist.name + ' - ' + this.$store.state.playlist.currentSong.name}}</a>
             </v-col>
-            <v-col class="text-right text-caption grey--text" md="auto">
+            <v-col class="text-right text-caption" md="auto">
               {{$store.state.playlist.currentSong.fileExtension}} | {{$store.state.playlist.currentSong.audioBitRate}} kbps | {{$store.state.playlist.currentSong.audioSampleRate}} Hz
             </v-col>
-            <v-col class="pr-5 text-right text-body-2 red--text" md="auto">
+            <v-col class="pr-5 text-right text-body-2" md="auto">
               {{ playlistUtils.secondsToHHmmss($store.state.audio.currentTimeAsInt) + ' / ' + playlistUtils.secondsToHHmmss($store.state.audio.duration) }}
             </v-col>
           </v-row>
           <v-slider
                     dense inverse-label
                     hide-details
-                    thumb-color="black"
+                    thumb-color="white"
                     track-color="grey"
                     track-fill-color="black"
                     min="0"
@@ -41,27 +41,27 @@
       </v-row>
 
       <v-btn icon small @click="playPrev()">
-        <v-icon>mdi-rewind</v-icon>
+        <v-icon color="white">mdi-rewind</v-icon>
       </v-btn>
 
       <v-btn v-if="this.$store.state.audio.isPlaying" @click="pause()">
-        <v-icon x-large>mdi-pause</v-icon>
+        <v-icon color="white" x-large>mdi-pause</v-icon>
       </v-btn>
 
       <v-btn v-else icon @click="resumePlay()">
-        <v-icon x-large>mdi-play</v-icon>
+        <v-icon color="white" x-large>mdi-play</v-icon>
       </v-btn>
 
       <v-btn small @click="playNext()">
-        <v-icon>mdi-fast-forward</v-icon>
+        <v-icon color="white">mdi-fast-forward</v-icon>
       </v-btn>
 
       <v-btn icon x-small>
-        <v-icon v-bind:color="$store.state.playlist.shuffle ? 'red' : 'grey darken-1'">mdi-shuffle-variant</v-icon>
+        <v-icon v-bind:color="$store.state.playlist.shuffle ? 'red' : 'white'">mdi-shuffle-variant</v-icon>
       </v-btn>
 
       <v-btn icon x-small>
-        <v-icon>mdi-repeat</v-icon>
+        <v-icon color="white">mdi-repeat</v-icon>
       </v-btn>
 
       <v-divider vertical/>
@@ -69,7 +69,7 @@
       <v-menu top :close-on-content-click="false" :offset-y="true">
         <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-bind="attrs" v-on="on" class="hidden-sm-and-down">
-            <v-icon v-bind:color="volumeIcon.color">{{volumeIcon.name}}</v-icon>
+            <v-icon color="white">{{volumeIcon.name}}</v-icon>
           </v-btn>
         </template>
 

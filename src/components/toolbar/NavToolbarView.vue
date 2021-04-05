@@ -1,17 +1,17 @@
 <template>
   <div>
-    <v-app-bar app dense color="blue-grey lighten-3" fixed flat elevation="0">
+    <v-app-bar app dense color="#3EA055" fixed flat elevation="0">
 
       <v-app-bar-nav-icon v-if="this.$route.name === 'LibraryView'" @click="navDrawer = true"></v-app-bar-nav-icon>
 
       <div v-else class="pl-0 text-left">
         <v-btn plain @click="routerGoBack()">
-          <v-icon>mdi-arrow-left</v-icon>
+          <v-icon color="white">mdi-arrow-left</v-icon>
         </v-btn>
       </div>
 
       <v-toolbar-title>
-        <v-btn plain color="white" :disabled="this.$route.name === 'LibraryView'"
+        <v-btn plain color="white"
                class="text-capitalize" @click="routerGoHome()">Playqd</v-btn>
       </v-toolbar-title>
 
@@ -20,7 +20,7 @@
       <v-menu bottom left offset-y>
         <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-bind="attrs" v-on="on">
-            <v-icon>mdi-account</v-icon>
+            <v-icon color="white">mdi-account</v-icon>
           </v-btn>
         </template>
         <v-list dense>

@@ -26,7 +26,7 @@
           <v-card-title class="text-center text-body-1" style="display: inherit">{{ album.name }}</v-card-title>
 
           <v-card-subtitle class="py-0">
-            <v-btn class="text-capitalize red--text" plain height="0"
+            <v-btn color="#3EA055" class="text-capitalize" plain height="0"
                 :to="{name: 'AlbumsView', query: {artistId: album.artist.id}}">{{album.artist.name}}
             </v-btn>
           </v-card-subtitle>
@@ -39,12 +39,12 @@
 
           <v-card-actions style="display: inherit">
 
-            <v-btn width="160" depressed rounded @click="playAlbum(0)">
+            <v-btn class="green--text" width="160" depressed rounded @click="playAlbum(0)">
               <v-icon left>mdi-play</v-icon>
               <span class="text-capitalize">Play</span>
             </v-btn>
 
-            <v-btn width="160" depressed rounded @click="playAlbumShuffled()">
+            <v-btn class="green--text" width="160" depressed rounded @click="playAlbumShuffled()">
               <v-icon left>mdi-shuffle-variant</v-icon>
               <span class="text-capitalize">Shuffle</span>
             </v-btn>

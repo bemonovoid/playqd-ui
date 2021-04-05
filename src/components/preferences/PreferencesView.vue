@@ -20,7 +20,7 @@
             <v-divider></v-divider>
 
             <v-list dense nav>
-              <v-list-item-group color="primary" v-model="selectedSettingsIdx">
+              <v-list-item-group color="success" v-model="selectedSettingsIdx">
                 <v-list-item v-for="item in items" :key="item.id" @click="openSettingsView(item.id)">
                   <v-list-item-content>
                     <v-list-item-title>{{item.title}}</v-list-item-title>

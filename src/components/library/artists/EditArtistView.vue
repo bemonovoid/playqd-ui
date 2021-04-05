@@ -41,7 +41,12 @@
               </v-row>
 
               <v-row>
-                <v-text-field dense label="Country code" class="pt-5" persistent-hint :hint="artistData.country" v-model="artist.country" :rules="editForm.artistCountryRules"></v-text-field>
+                <v-col>
+                  <v-text-field dense label="Country code" class="pt-5" persistent-hint :hint="artistData.country" v-model="artist.country" :rules="editForm.artistCountryRules"></v-text-field>
+                </v-col>
+                <v-col>
+                  <v-text-field dense label="Spotify artist id" class="pt-5" persistent-hint :hint="artistData.spotifyArtistId" v-model="artist.spotifyArtistId"></v-text-field>
+                </v-col>
               </v-row>
 
               <v-row>
@@ -154,6 +159,7 @@ export default {
       artists: [],
       artist: {
         id: this.artistData.id,
+        spotifyArtistId: this.artistData.spotifyArtistId,
         name: this.artistData.name,
         country: this.artistData.country,
         updateAudioTags: true
