@@ -13,11 +13,9 @@
     </v-row>
 
     <v-row>
-      <v-col class="py-0">
-
-        <v-list align="left" class="py-0">
-
-          <v-item-group align="left" class="py-0">
+      <v-col class="py-0 px-0 text-left">
+        <v-list-item>
+          <v-list-item-content class="py-0">
             <v-text-field flat dense clearable placeholder="Find in genres"
                           @keydown.enter="findGenreByName()" @keydown.esc="clearInput()"
                           v-model="genreNameQuery"
@@ -26,11 +24,21 @@
                           append-outer-icon="mdi-magnify"
                           @click:append-outer="findGenreByName()">
             </v-text-field>
-          </v-item-group>
+          </v-list-item-content>
+        </v-list-item>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col class="py-0">
+
+        <v-list align="left" class="py-0">
 
           <div v-for="(genre, i) in genres">
             <v-list-item  @click="showAlbumsByGenre(genre)" class="px-0">
-              <v-list-item-content>{{genre}}</v-list-item-content>
+              <v-list-item-content>
+                <v-list-item-title class="success--text">{{genre}}</v-list-item-title>
+              </v-list-item-content>
               <v-list-item-action>
                 <v-icon right>mdi-chevron-right</v-icon>
               </v-list-item-action>
@@ -43,7 +51,8 @@
 
     <v-row>
       <v-col>
-        <v-pagination v-model="pagination.page"
+        <v-pagination color="success"
+                      v-model="pagination.page"
                       @next="nextPage"
                       @previous="prevPage"
                       @input="selectPage"

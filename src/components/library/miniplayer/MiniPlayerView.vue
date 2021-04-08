@@ -2,7 +2,7 @@
 
   <div v-if="this.$store.state.playlist.currentSong">
 
-    <v-bottom-navigation app fixed horizontal class="hidden-sm-and-down pl-2" height="60" background-color="#3EA055">
+    <v-bottom-navigation app fixed horizontal class="hidden-sm-and-down pl-2" height="60">
 
       <v-row>
 
@@ -41,27 +41,27 @@
       </v-row>
 
       <v-btn icon small @click="playPrev()">
-        <v-icon color="white">mdi-rewind</v-icon>
+        <v-icon color="success">mdi-rewind</v-icon>
       </v-btn>
 
       <v-btn v-if="this.$store.state.audio.isPlaying" @click="pause()">
-        <v-icon color="white" x-large>mdi-pause</v-icon>
+        <v-icon color="success" x-large>mdi-pause</v-icon>
       </v-btn>
 
       <v-btn v-else icon @click="resumePlay()">
-        <v-icon color="white" x-large>mdi-play</v-icon>
+        <v-icon color="success" x-large>mdi-play</v-icon>
       </v-btn>
 
       <v-btn small @click="playNext()">
-        <v-icon color="white">mdi-fast-forward</v-icon>
+        <v-icon color="success">mdi-fast-forward</v-icon>
       </v-btn>
 
       <v-btn icon x-small>
-        <v-icon v-bind:color="$store.state.playlist.shuffle ? 'red' : 'white'">mdi-shuffle-variant</v-icon>
+        <v-icon v-bind:color="$store.state.playlist.shuffle ? 'red' : 'success'">mdi-shuffle-variant</v-icon>
       </v-btn>
 
       <v-btn icon x-small>
-        <v-icon color="white">mdi-repeat</v-icon>
+        <v-icon color="success">mdi-repeat</v-icon>
       </v-btn>
 
       <v-divider vertical/>
@@ -69,7 +69,7 @@
       <v-menu top :close-on-content-click="false" :offset-y="true">
         <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-bind="attrs" v-on="on" class="hidden-sm-and-down">
-            <v-icon color="white">{{volumeIcon.name}}</v-icon>
+            <v-icon color="success">{{volumeIcon.name}}</v-icon>
           </v-btn>
         </template>
 
@@ -102,36 +102,31 @@
 
     </v-bottom-navigation>
 
-    <v-app-bar app fixed bottom flat class="pr-5 hidden-md-and-up" height="60" color="grey lighten-3">
+    <v-bottom-navigation app fixed horizontal class="hidden-md-and-up" height="60">
 
-      <v-img v-if="showAlbumImage" max-height="50px" max-width="50px" class="mr-1"
-             :src="$store.getters.getResourceBaseUrl + 'image/' + $store.state.playlist.currentSong.album.id + '?target=ALBUM'"
-             @error="imageError"></v-img>
 
-      <v-img v-else max-height="50px" max-width="50px" class="mr-1" src="@/assets/default-album-cover.png"></v-img>
+      <div class="mt-1 ml-1">
+        <v-img v-if="showAlbumImage" max-height="50px" max-width="50px"
+               :src="$store.getters.getResourceBaseUrl + 'image/' + $store.state.playlist.currentSong.album.id + '?target=ALBUM'"
+               @error="imageError"></v-img>
 
-      <v-list-item class="pl-1 text-left text-truncate" @click="openPlayerView()">
+        <v-img v-else max-height="50px" max-width="50px" src="@/assets/default-album-cover.png"></v-img>
+      </div>
+
+      <v-list-item class="text-left text-truncate pl-2" @click="openPlayerView()">
         <v-list-item-content>
           <v-list-item-title>{{this.$store.state.playlist.currentSong.name}}</v-list-item-title>
           <v-list-item-subtitle>{{this.$store.state.playlist.currentSong.artist.name}}</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
 
-      <v-spacer></v-spacer>
+      <v-icon v-if="this.$store.state.audio.isPlaying" color="success" x-large  @click="pause()">mdi-pause</v-icon>
 
-      <v-btn icon v-if="this.$store.state.audio.isPlaying" @click="pause()">
-        <v-icon x-large>mdi-pause</v-icon>
-      </v-btn>
+      <v-icon v-else color="success" x-large @click="resumePlay()">mdi-play</v-icon>
 
-      <v-btn icon v-else @click="resumePlay()">
-        <v-icon x-large>mdi-play</v-icon>
-      </v-btn>
+      <v-icon color="success" class="px-2" @click="playNext()">mdi-fast-forward</v-icon>
 
-      <v-btn icon small @click="playNext()">
-        <v-icon>mdi-fast-forward</v-icon>
-      </v-btn>
-
-    </v-app-bar>
+    </v-bottom-navigation>
 
   </div>
 

@@ -2,7 +2,7 @@
 
   <v-list dense two-line class="py-0">
 
-    <v-list-item-group color="#3EA055" v-model="selectedSongIdx">
+    <v-list-item-group color="white" v-model="selectedSongIdx">
       <template v-for="(song, i) in songsData">
 
         <v-list-item class="px-1" @click="playSong(i)">
@@ -14,7 +14,7 @@
 
           <v-list-item-icon v-else class="py-0 mr-1">
             <div v-if="isPlayingSongRow(i, song.id)">
-              <v-icon>mdi-music-circle-outline mdi-spin</v-icon>
+              <v-icon color="success">mdi-music-circle-outline mdi-spin</v-icon>
             </div>
             <div v-else class="pt-2 text--disabled text-right">
               <span>{{i + 1}}</span>
@@ -23,7 +23,7 @@
 
           <v-list-item-content class="text-left">
 
-            <v-list-item-title class="text-body-1">
+            <v-list-item-title class="text-body-1 success--text">
               {{ song.name }}
             </v-list-item-title>
 

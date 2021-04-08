@@ -6,22 +6,16 @@
 
      <v-col>
 
-       <v-card align="center" elevation="0">
+       <v-card align="center" elevation="0" height="100%">
           <router-link :to="{name: 'AlbumSongsView', params: {albumId: this.$store.state.playlist.currentSong.album.id}}">
-            <v-img v-if="showAlbumImage" max-width="200px" max-height="200px" contain class="elevation-5"
+            <v-img v-if="showAlbumImage" max-width="500px" max-height="500px" contain class="elevation-5"
                    :src="$store.getters.getResourceBaseUrl + 'image/' + $store.state.playlist.currentSong.album.id + '?target=ALBUM'" @error="imageError">
             </v-img>
             <v-img v-else class="elevation-5" src="@/assets/default-album-cover.png" max-width="200px" max-height="200px"></v-img>
           </router-link>
          <v-card-title class="pt-2 text-h5" style="display: inherit">
            <v-row>
-             <v-col cols="1" class="text-left">
-               <v-btn small icon elevation="1" @click="updateFavoriteStatus()">
-                 <v-icon v-if="this.$store.state.playlist.currentSong.favorite" color="yellow darken-3">mdi-star</v-icon>
-                 <v-icon v-else>mdi-star-outline</v-icon>
-               </v-btn>
-             </v-col>
-             <v-col @click="replaceSongNameWithFileName = !replaceSongNameWithFileName">
+             <v-col @click="replaceSongNameWithFileName = !replaceSongNameWithFileName" class="text-left">
                {{ this.replaceSongNameWithFileName ? this.$store.state.playlist.currentSong.fileName : this.$store.state.playlist.currentSong.name }}
              </v-col>
              <v-col cols="1" class="text-right">
@@ -89,22 +83,22 @@
                </v-btn>
 
                <v-btn small fab elevation="3" :disabled="!this.$store.getters.hasPrevSong" @click="playPrev()">
-                 <v-icon large>mdi-skip-backward-outline</v-icon>
+                 <v-icon color="success" large>mdi-skip-backward-outline</v-icon>
                </v-btn>
 
                <v-btn class="mx-5" v-if="this.$store.state.audio.isPlaying" fab @click="pause()">
-                 <v-icon large>mdi-pause</v-icon >
+                 <v-icon color="success" large>mdi-pause</v-icon >
                </v-btn>
                <v-btn class="mx-5" v-else fab @click="resumePlay">
-                 <v-icon large class="pl-1">mdi-play-outline</v-icon>
+                 <v-icon color="success" large class="pl-1">mdi-play-outline</v-icon>
                </v-btn>
 
                <v-btn fab small elevation="3" :disabled="!this.$store.getters.hasNextSong" @click="playNext">
-                 <v-icon large>mdi-fast-forward-outline</v-icon>
+                 <v-icon color="success" large>mdi-fast-forward-outline</v-icon>
                </v-btn>
 
                <v-btn x-small fab elevation="3" class="ml-10" @click="fastForward()">
-                 <v-icon>mdi-fast-forward-10</v-icon>
+                 <v-icon color="success">mdi-fast-forward-10</v-icon>
                </v-btn>
              </v-col>
 
@@ -112,13 +106,17 @@
 
          </v-card-actions>
 
-         <v-row>
-           <v-col class="pb-2 text-left text-caption text-truncate">
+         <v-row class="pt-5">
+           <v-col class="ml-2 pb-2 text-left text-caption text-truncate">
              <small><i>Just played: </i></small>
              <p v-if="this.$store.getters.getPrevSong" class="grey--text">{{this.$store.getters.getPrevSong.name}}</p>
              <p v-else class="grey--text"> - - - </p>
            </v-col>
-           <v-col class="pb-2 text-right text-caption">
+           <v-col>
+             <v-icon v-if="this.$store.state.playlist.currentSong.favorite" color="yellow darken-3" @click="updateFavoriteStatus()">mdi-star</v-icon>
+             <v-icon v-else @click="updateFavoriteStatus()">mdi-star-outline</v-icon>
+           </v-col>
+           <v-col class="mr-2 pb-2 text-right text-caption">
              <small><i>Playing next: </i></small>
              <p v-if="this.$store.getters.getNextSong" class="grey--text">{{this.$store.getters.getNextSong.name}}</p>
              <p v-else class="grey--text"> - - - </p>
@@ -200,10 +198,10 @@ export default {
     setRepeat() {
       if (this.$store.state.playlist.repeat === 'none') {
         this.$store.commit('setRepeatMode', 'all');
-        this.repeatIcon = {name: 'mdi-repeat', color: 'green'}
+        this.repeatIcon = {name: 'mdi-repeat', color: 'yellow'}
       } else if (this.$store.state.playlist.repeat === 'all') {
         this.$store.commit('setRepeatMode', 'once');
-        this.repeatIcon = {name: 'mdi-repeat-once', color: 'green'}
+        this.repeatIcon = {name: 'mdi-repeat-once', color: 'yellow'}
       } else {
         this.$store.commit('setRepeatMode', 'none');
         this.repeatIcon = {name: 'mdi-repeat', color: ''}

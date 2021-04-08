@@ -16,7 +16,7 @@
             <v-menu offset-y left>
               <template v-slot:activator="{ attrs, on}">
                 <v-btn small icon v-bind="attrs" v-on="on">
-                  <v-icon>mdi-dots-horizontal</v-icon>
+                  <v-icon color="success">mdi-dots-horizontal</v-icon>
                 </v-btn>
               </template>
 
@@ -37,7 +37,7 @@
             <v-menu offset-y left>
               <template v-slot:activator="{ attrs, on}">
                 <v-btn small icon v-bind="attrs" v-on="on">
-                  <v-icon small>mdi-filter-menu-outline</v-icon>
+                  <v-icon color="success" small>mdi-filter-menu-outline</v-icon>
                 </v-btn>
               </template>
 
@@ -47,7 +47,7 @@
                   <v-list-item v-for="(filter, i) in filters.general" :key="i" @click="sortSongs(filter)">
                     <v-list-item-title>{{filter.name}}</v-list-item-title>
                     <v-list-item-icon>
-                      <v-icon right>{{filter.icon}}</v-icon>
+                      <v-icon color="success" right>{{filter.icon}}</v-icon>
                     </v-list-item-icon>
                   </v-list-item>
                 </v-list-item-group>
@@ -86,7 +86,8 @@
 
     <v-row>
       <v-col>
-        <v-pagination v-model="pagination.page"
+        <v-pagination color="success"
+                      v-model="pagination.page"
                       @next="nextPage"
                       @previous="prevPage"
                       @input="selectPage"

@@ -19,6 +19,7 @@ export const eventBus = new Vue();
 new Vue({
     router: router,
     vuetify: new Vuetify({
+        theme: {dark: true},
         icons: {
             iconfont: 'mdi'
         }

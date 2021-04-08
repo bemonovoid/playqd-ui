@@ -4,7 +4,7 @@
 
     <template v-slot:activator="{ on, attrs }">
       <v-btn small fab icon v-bind="attrs" v-on="on">
-        <v-icon small>mdi-file-document-edit-outline</v-icon>
+        <v-icon color="success" small>mdi-file-document-edit-outline</v-icon>
       </v-btn>
     </template>
 

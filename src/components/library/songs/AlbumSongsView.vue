@@ -33,7 +33,7 @@
           <v-card-subtitle class="py-0">
             <v-btn class="text-capitalize" plain height="0"
               :to="{name: 'AlbumsView', query: {genre: album.genre}}">
-              <small>{{ album.genre ? album.genre : ''}} {{ album.date ? ' - '+ album.date : '' }}</small>
+              <small>{{genreAndYear}}</small>
             </v-btn>
           </v-card-subtitle>
 
@@ -63,7 +63,7 @@
                 <v-btn small text style="text-transform: none" @click="filterByFormat(format)">{{format}}</v-btn>
               </v-col>
             </v-btn-toggle>
-            <v-col class="text-right" md="auto">
+            <v-col class="text-right" cols="2" md="auto">
               <EditAlbumView v-bind:album-data="album" :album-image-found.sync="showAlbumImage"></EditAlbumView>
             </v-col>
           </v-row>
@@ -106,6 +106,14 @@ export default {
       selectedFormatIdx: null,
       album: this.albumData,
       songs: []
+    }
+  },
+  computed: {
+    genreAndYear: function () {
+      if (this.album.genre && this.album.date) {
+        return this.album.genre + ' - ' + this.album.date;
+      }
+      return this.album.genre ? this.album.genre : '' + this.album.date ? this.album.date : ''
     }
   },
   mounted() {

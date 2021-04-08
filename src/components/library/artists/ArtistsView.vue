@@ -17,7 +17,7 @@
             <v-menu offset-y left>
               <template v-slot:activator="{ attrs, on}">
                 <v-btn fab small icon v-bind="attrs" v-on="on">
-                  <v-icon>mdi-dots-horizontal</v-icon>
+                  <v-icon color="success">mdi-dots-horizontal</v-icon>
                 </v-btn>
               </template>
 
@@ -27,7 +27,7 @@
                   <v-list-item v-for="(sortType, i) in sorting.types" :key="i" @click="sortArtists(sortType)">
                     <v-list-item-title>{{sortType.name}}</v-list-item-title>
                     <v-list-item-icon>
-                      <v-icon right small>{{sortType.icon}}</v-icon>
+                      <v-icon color="success" right small>{{sortType.icon}}</v-icon>
                     </v-list-item-icon>
                   </v-list-item>
                 </v-list-item-group>
@@ -39,12 +39,10 @@
     </v-row>
 
     <v-row>
-      <v-col class="py-0">
-
-        <v-list align="left" class="py-0">
-
-          <v-item-group align="left" class="py-0">
-            <v-text-field flat dense clearable placeholder="Find in artists"
+      <v-col class="py-0 px-0 text-left">
+        <v-list-item>
+          <v-list-item-content class="py-0">
+            <v-text-field flat clearable placeholder="Find in artists"
                           @keydown.enter="findArtistsByName()" @keydown.esc="clearInput()"
                           v-model="artistNameQuery"
                           @click:clear="clearInput()"
@@ -52,14 +50,22 @@
                           append-outer-icon="mdi-magnify"
                           @click:append-outer="findArtistsByName()">
             </v-text-field>
-          </v-item-group>
+          </v-list-item-content>
+        </v-list-item>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col class="py-0">
+
+        <v-list align="left" class="py-0">
 
           <v-list-item-group color="primary">
 
             <v-list-item v-for="(artist, i) in artists" :key="i" class="px-0" :to="{name: 'AlbumsView', query: {artistId: artist.id}}">
 
               <v-list-item-avatar v-if="artistsWithImageNotFound.includes(artist.id)" class="ml-0 mr-2">
-                <v-icon>mdi-account-music</v-icon>
+                <v-icon color="success">mdi-account-music</v-icon>
               </v-list-item-avatar>
 
               <v-list-item-avatar v-else class="ml-0 mr-2">
@@ -67,7 +73,7 @@
               </v-list-item-avatar>
 
               <v-list-item-content class="py-0">
-                <v-list-item-title v-text="artist.name"></v-list-item-title>
+                <v-list-item-title class="success--text" v-text="artist.name"></v-list-item-title>
                 <v-list-item-subtitle class="text-caption">
                   {{albumsCountString(artist) + ', ' + albumSongsCountString(artist)}}
                 </v-list-item-subtitle>
@@ -89,7 +95,8 @@
 
     <v-row>
       <v-col>
-        <v-pagination v-model="pagination.page"
+        <v-pagination color="success"
+                      v-model="pagination.page"
                       @next="nextPage"
                       @previous="prevPage"
                       @input="selectPage"

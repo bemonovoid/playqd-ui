@@ -2,9 +2,9 @@
   <v-app class="grey lighten-4">
     <NavToolbarView/>
     <v-main>
-      <router-view name="preferencesRoute"></router-view>
       <v-container>
         <Audio/>
+        <router-view name="preferencesRoute"></router-view>
         <v-row>
           <v-col md="6" offset-md="3" class="pt-0">
             <router-view></router-view>

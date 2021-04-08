@@ -13,11 +13,11 @@
           <v-list-item v-for="(item, i) in items" :key="i" @click="showItem(item.viewName)">
 
             <v-list-item-icon>
-              <v-icon v-text="item.icon"></v-icon>
+              <v-icon color="success" v-text="item.icon"></v-icon>
             </v-list-item-icon>
 
             <v-list-item-content>
-              <v-list-item-title v-text="item.title"></v-list-item-title>
+              <v-list-item-title class="success--text" v-text="item.title"></v-list-item-title>
             </v-list-item-content>
 
             <v-list-item-action>

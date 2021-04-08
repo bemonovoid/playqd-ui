@@ -29,7 +29,7 @@
 
           <v-list-item-action v-if="$route.query.artistId">
             <v-btn fab icon small @click="openAllAlbums">
-              <v-icon small>mdi-motion-play-outline</v-icon>
+              <v-icon color="success" small>mdi-motion-play-outline</v-icon>
             </v-btn>
           </v-list-item-action>
 
@@ -38,7 +38,7 @@
 
               <template v-slot:activator="{attrs, on}">
                 <v-btn fab small icon v-bind="attrs" v-on="on">
-                  <v-icon small>mdi-sort</v-icon>
+                  <v-icon color="success" small>mdi-sort</v-icon>
                 </v-btn>
               </template>
 
@@ -122,7 +122,8 @@
 
     <v-row>
       <v-col>
-        <v-pagination v-model="pagination.page"
+        <v-pagination color="success"
+                      v-model="pagination.page"
                       @next="nextPage"
                       @previous="prevPage"
                       @input="selectPage"
