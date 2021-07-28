@@ -9,20 +9,21 @@ export default new Vuex.Store({
         authToken: null,
         audio: {
             isPlaying: false,
+            loading: false,
             volume: 0.5,
             currentTime: 0,
             currentTimeAsInt: 0,
-            duration: 0
+            duration: 0.1
         },
         playlist: {
             id: null,
             shuffle: false,
             repeat: 'none',
-            loopAll: false,
-            loopCurrent:false,
             currentSong: null,
             currentSongIdx: -1,
-            songs: []
+            nowPlaying: null,
+            songs: [],
+            queue: []
         },
         miniPlayer: {
             show: true
@@ -35,34 +36,13 @@ export default new Vuex.Store({
         isLoggedIn: (state) => {
             return state.loginSuccess;
         },
-        repeatAll: (state) => {
-            return state.playlist.repeat === 'all';
-        },
-        hasNextSong: (state, getters) => {
-           return getters.repeatAll || state.playlist.currentSongIdx + 1 < state.playlist.songs.length;
-        },
-        hasPrevSong: (state) => {
-            return state.playlist.currentSongIdx - 1 >= 0;
-        },
-        getNextSong: (state, getters) => {
-            if (getters.hasNextSong) {
-                if (state.playlist.currentSongIdx + 1 === state.playlist.songs.length && getters.repeatAll) {
-                    return state.playlist.songs[0];
-                }
-                return state.playlist.songs[state.playlist.currentSongIdx + 1];
-            }
-            return null;
-        },
-        getPrevSong: (state, getters) => {
-            if (getters.hasPrevSong) {
-                return state.playlist.songs[state.playlist.currentSongIdx - 1]
-            }
-            return null;
-        },
         getCurrentSongDurationInMinutesAndSeconds: (state) => {
             let seconds = state.audio.duration;
             return Math.floor(seconds / 60) + ':' + ('0' + Math.floor(seconds % 60)).slice(-2);
         },
+        /**
+         * @deprecated
+         */
         audioIsPlaying: (state) => {
             return state.audio.isPlaying;
         }
@@ -83,6 +63,9 @@ export default new Vuex.Store({
             state.audio.currentTimeAsInt = parseInt(payload.currentTime, 10);
             state.audio.duration = payload.duration;
         },
+        setAudioIsLoading: (state, payload) => {
+            state.audio.loading = payload;
+        },
         setAudioIsPlaying: (state, payload) => {
             state.audio.isPlaying = payload;
         },
@@ -91,17 +74,53 @@ export default new Vuex.Store({
         },
         setPlaylist: (state, payload) => {
             state.playlist.id = payload.playlistId;
-            state.playlist.shuffle = payload.shuffle;
-            state.playlist.currentSong = payload.songs[payload.startSongIdx];
-            state.playlist.currentSongIdx = payload.startSongIdx;
+            state.playlist.nowPlaying = payload.nowPlaying;
             state.playlist.songs = payload.songs;
+            state.playlist.queue = payload.songs.slice();
         },
+        setPlaylistQueue: (state, payload) => {
+            state.playlist.nowPlaying = payload.nowPlaying;
+            state.playlist.queue = payload.queue;
+        },
+        setShuffle: (state, payload) => {
+            state.playlist.shuffleSelected = [];
+            state.playlist.shuffle = payload;
+        },
+        setRepeat: (state, payload) => {
+            state.playlist.repeat = payload;
+        },
+        setNowPlayingSong: (state, payload) => {
+            state.playlist.nowPlaying = payload;
+        },
+        setPlaylistEnded: (state) => {
+            state.playlist.nowPlaying = null;
+            state.playlist.songs = [];
+            state.playlist.queue = [];
+        },
+        /**
+         * @deprecated
+         */
+        updateCurrentSong: (state, payload) => {
+            state.playlist.currentSong = payload;
+        },
+        setCurrentSongFavoriteStatus: (state) => {
+            state.playlist.currentSong.favorite = !state.playlist.currentSong.favorite;
+        },
+        setShowMiniPlayer: (state, payload) => {
+            state.miniPlayer.show = payload;
+        },
+        /**
+         * @deprecated
+         */
         setCurrentSongToPrev: (state) => {
             if (state.playlist.currentSongIdx - 1 >= 0) {
                 let prevSong = state.playlist.songs[--state.playlist.currentSongIdx];
                 state.playlist.currentSong = prevSong;
             }
         },
+        /**
+         * @deprecated
+         */
         setCurrentSongToNext: (state) => {
             let nextSong = null;
             if (state.playlist.currentSongIdx + 1 < state.playlist.songs.length) {
@@ -112,18 +131,6 @@ export default new Vuex.Store({
                 return;
             }
             state.playlist.currentSong = nextSong;
-        },
-        updateCurrentSong: (state, payload) => {
-            state.playlist.currentSong = payload;
-        },
-        setCurrentSongFavoriteStatus: (state) => {
-            state.playlist.currentSong.favorite = !state.playlist.currentSong.favorite;
-        },
-        setShowMiniPlayer: (state, payload) => {
-            state.miniPlayer.show = payload;
-        },
-        setRepeatMode: (state, payload) => {
-            state.playlist.repeat = payload;
         }
     }
 });

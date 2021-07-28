@@ -17,47 +17,48 @@ export default {
 
     getSongSrcUrl(songId) { return this.getResourceApiUrl() + 'audio/' + songId},
 
-    getArtistImageSrc(artistId) { return this.executeGet('/api/library/artists/' + artistId + '/image/src') },
+    findArtistImages(artistId) { return this.executeGet('/api/library/artists/' + artistId + '/images') },
 
     getAlbumImageSrc(albumId) { return this.executeGet('/api/library/albums/' + albumId + '/image/src') },
 
     getAllBasicArtists() { return this.executeGet('/api/library/artists/view/basic') },
 
-    getArtists(pageRequest) {
+    getArtists(pagination, sort, name) {
         let url = '/api/library/artists/' +
-            '?page=' + (pageRequest.page === 0 ? 0 : pageRequest.page - 1) +
-            '&size=' + pageRequest.pageSize +
-            '&sortBy=' + pageRequest.sort.id +
-            '&direction=' + pageRequest.sort.direction;
-        if (pageRequest.name && pageRequest.name.length > 0) {
-            url += '&name=' + pageRequest.name;
+            '?page=' + (pagination.page === 0 ? 0 : pagination.page - 1) +
+            '&size=' + pagination.pageSize +
+            '&sortBy=' + sort.by.toString().toUpperCase() +
+            '&direction=' + sort.direction;
+        if (name && name.length > 0) {
+            url += '&name=' + name;
         }
         return this.executeGet(url);
     },
-
-    getAlbums(pageRequest) {
+    getAlbums(pagination, sort, artistId, genre, name) {
         let url = '/api/library/albums/' +
-            '?page=' + (pageRequest.page === 0 ? 0 : pageRequest.page - 1) + '&size=' + pageRequest.pageSize;
-        if (pageRequest.sort) {
-            url += '&sortBy=' + pageRequest.sort.id + '&direction=' + pageRequest.sort.direction;
+            '?page=' + (pagination.page === 0 ? 0 : pagination.page - 1) +
+            '&size=' + pagination.pageSize +
+            '&sortBy=' + sort.by.toString().toUpperCase() +
+            '&direction=' + sort.direction;
+        if (artistId) {
+            url += '&artistId=' + artistId;
         }
-        if (pageRequest.artistId) {
-            url += '&artistId=' + pageRequest.artistId;
+        if (name && name.length > 0) {
+            url += '&name=' + name;
         }
-        if (pageRequest.name && pageRequest.name.length > 0) {
-            url += '&name=' + pageRequest.name;
-        } else if (pageRequest.genre && pageRequest.genre.length > 0) {
-            url += '&genre=' + pageRequest.genre;
+        if (genre && genre.length > 0) {
+            url += '&genre=' + genre;
         }
         return this.executeGet(url);
     },
 
-    getGenres(pageRequest) {
+    getGenres(pagination, sort, name) {
         let url = '/api/library/genres/' +
-            '?page=' + (pageRequest.page === 0 ? 0 : pageRequest.page - 1) +
-            '&size=10' +
-            '&direction=ASC';
-        if (pageRequest.name && pageRequest.name.length > 0) {
+            '?page=' + (pagination.page === 0 ? 0 : pagination.page - 1) +
+            '&size=' + pagination.pageSize +
+            '&sortBy=' + sort.by.toString().toUpperCase() +
+            '&direction=' + sort.direction;
+        if (name && name.length > 0) {
             url += '&name=' + pageRequest.name;
         }
         return this.executeGet(url);
@@ -102,7 +103,13 @@ export default {
         return this.executeGet('/api/settings/library/scans/?page=' + page + '&size=' + pageRequest.pageSize)
     },
 
-    updateArtist(data) { return this.executePut('/api/library/artists/' + data.id, data) },
+    updateArtistGroup(data) { return this.executePatch('/api/library/artists/group', data) },
+
+    updateArtistDetails(artistId, data) { return this.executePatch('/api/library/artists/' + artistId, data) },
+
+    updateArtistMisc(data) { return this.executePut('/api/library/artists/' + data.id, data) },
+
+    addArtistImages(artistId, data) { return this.executePut('/api/library/artists/' + artistId + '/images', data) },
 
     moveArtist(data) {return this.executePut('/api/library/artists/moved', data) },
 

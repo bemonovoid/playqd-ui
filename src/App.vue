@@ -1,22 +1,22 @@
 <template>
   <v-app class="grey lighten-4">
-    <NavToolbarView/>
+    <HeaderToolbarComponent/>
     <v-main>
-      <v-container>
+      <v-container fluid>
         <Audio/>
-        <router-view name="preferencesRoute"></router-view>
-        <v-row>
-          <v-col md="6" offset-md="3" class="pt-0">
-            <router-view></router-view>
-          </v-col>
-        </v-row>
+<!--        <router-view name="preferencesRoute"></router-view>-->
+<!--        <v-row>-->
+<!--          <v-col md="6" offset-md="3" class="pt-0">-->
+            <router-view name="applicationRoute"></router-view>
+<!--          </v-col>-->
+<!--        </v-row>-->
       </v-container>
     </v-main>
-    <transition>
-      <div v-show="this.$store.state.miniPlayer.show">
-        <MiniPlayerView></MiniPlayerView>
-      </div>
-    </transition>
+<!--    <transition>-->
+<!--      <div v-show="this.$store.state.miniPlayer.show">-->
+<!--        <MiniPlayerView></MiniPlayerView>-->
+<!--      </div>-->
+<!--    </transition>-->
   </v-app>
 </template>
 
@@ -28,7 +28,7 @@ import {eventBus} from "@/main";
 
 import Audio from "@/components/audio/Audio";
 
-import NavToolbarView from "@/components/toolbar/NavToolbarView";
+import HeaderToolbarComponent from "@/components/application/HeaderToolbarComponent";
 import MiniPlayerView from "@/components/library/miniplayer/MiniPlayerView";
 
 export default {
@@ -36,12 +36,12 @@ export default {
   store: store,
   components: {
     Audio,
-    NavToolbarView,
+    HeaderToolbarComponent,
     MiniPlayerView
   },
   mounted() {
     if (this.$store.state.authToken === null) {
-      this.$router.push({name: 'LoginView'});
+      // this.$router.push({name: 'LoginView'});
     }
     eventBus.$on('song-is-ready-to-play', () => {
       this.appTitle.inner = this.$store.state.playlist.currentSong.artist.name;
@@ -78,3 +78,11 @@ export default {
 }
 
 </script>
+
+<style>
+
+  /*html {*/
+  /*  overflow-y: visible;*/
+  /*}*/
+
+</style>

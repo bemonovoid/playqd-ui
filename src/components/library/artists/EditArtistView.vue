@@ -191,10 +191,10 @@ export default {
       });
     },
     findArtistImage() {
-      api.getArtistImageSrc(this.artistData.id).then(response => {
-        this.$emit('update:artistImageFound', true)
-        this.active = false;
-      });
+      // api.getArtistImageSrc(this.artistData.id).then(response => {
+      //   this.$emit('update:artistImageFound', true)
+      //   this.active = false;
+      // });
     }
   }
 }

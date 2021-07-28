@@ -2,7 +2,6 @@
 
   <div>
     <v-row>
-
       <v-col class="py-0 px-0 text-left">
         <v-list-item>
 
@@ -140,7 +139,7 @@ export default {
         totalPages: 0
       },
       selectedSortType: {},
-      defaultPageRequest: {},
+      defaultPageRequest: {}
     }
   },
   mounted() {

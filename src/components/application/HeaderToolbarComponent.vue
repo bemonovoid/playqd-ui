@@ -1,26 +1,17 @@
 <template>
   <div>
-    <v-app-bar app dense fixed flat elevation="0">
-
-      <v-app-bar-nav-icon v-if="this.$route.name === 'LibraryView'" @click="navDrawer = true"></v-app-bar-nav-icon>
-
-      <div v-else class="pl-0 text-left">
-        <v-btn plain @click="routerGoBack()">
-          <v-icon color="success">mdi-arrow-left</v-icon>
-        </v-btn>
-      </div>
+    <v-app-bar app dark fixed flat elevation="1">
 
       <v-toolbar-title>
-        <v-btn plain color="success"
-               class="text-capitalize" @click="routerGoHome()">Playqd</v-btn>
-      </v-toolbar-title>
+        <v-btn plain class="text-capitalize" @click="routerGoHome()">Playqd</v-btn>
+        </v-toolbar-title>
 
       <v-spacer/>
 
       <v-menu bottom left offset-y>
         <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-bind="attrs" v-on="on">
-            <v-icon color="success">mdi-account</v-icon>
+            <v-icon>mdi-account</v-icon>
           </v-btn>
         </template>
         <v-list dense>
@@ -44,8 +35,11 @@
 import {eventBus} from "@/main";
 import api from "@/http/playqdAPI";
 
+import SearchComponent from "@/components/application/NavToolbarComponent";
+
 export default {
-  name: 'NavToolbarView',
+  name: 'HeaderToolbarComponent',
+  components: {SearchComponent},
   data () {
     return {
       navDrawer: false,

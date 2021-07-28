@@ -93,7 +93,7 @@
                  <v-icon color="success" large class="pl-1">mdi-play-outline</v-icon>
                </v-btn>
 
-               <v-btn fab small elevation="3" :disabled="!this.$store.getters.hasNextSong" @click="playNext">
+               <v-btn fab small elevation="3" :disabled="!playlistUtils.hasNextSong(null)" @click="playNext">
                  <v-icon color="success" large>mdi-fast-forward-outline</v-icon>
                </v-btn>
 
@@ -109,7 +109,7 @@
          <v-row class="pt-5">
            <v-col class="ml-2 pb-2 text-left text-caption text-truncate">
              <small><i>Just played: </i></small>
-             <p v-if="this.$store.getters.getPrevSong" class="grey--text">{{this.$store.getters.getPrevSong.name}}</p>
+             <p v-if="this.$store.getters.getPrevSong" class="grey--text">{{playlistUtils.getPrevSong(null)}}</p>
              <p v-else class="grey--text"> - - - </p>
            </v-col>
            <v-col>
@@ -118,7 +118,7 @@
            </v-col>
            <v-col class="mr-2 pb-2 text-right text-caption">
              <small><i>Playing next: </i></small>
-             <p v-if="this.$store.getters.getNextSong" class="grey--text">{{this.$store.getters.getNextSong.name}}</p>
+             <p v-if="this.$store.getters.hasNextSong" class="grey--text">{{this.$store.state.playlist.nowPlaying.name}}</p>
              <p v-else class="grey--text"> - - - </p>
            </v-col>
          </v-row>
